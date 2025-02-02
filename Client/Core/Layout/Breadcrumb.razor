@@ -1,0 +1,57 @@
+@inject NavigationManager NavigationManager
+@namespace Client.Core.Layout
+@implements IDisposable
+
+<MudBreadcrumbs Class="pl-6 pa-1 relative" Items="Items">
+
+</MudBreadcrumbs>
+@code {
+
+    private List<BreadcrumbItem> Items = new List<BreadcrumbItem>
+{
+new BreadcrumbItem("Home", href: "/"),
+};
+    protected override void OnInitialized()
+    {
+        ReMakeBreadCrumb();
+        NavigationManager.LocationChanged += NavigationManager_LocationChanged;
+    }
+    private void ReMakeBreadCrumb()
+    {
+        Items.RemoveRange(1, Items.Count - 1);
+        var index = 0;
+        var url =NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (url.Contains('?'))
+        {
+             url = url.Substring(0, url.IndexOf("?"));
+        }
+        var path = url.Split("/").ToList();
+        path.ForEach(x =>
+        {
+            if (x.Length > 0)
+            {
+                var str = index >= 1 ? string.Join("/", path.GetRange(0, index + 1)) : x;
+                Items.Add(new BreadcrumbItem(x, href: $"/{str}", path.Last() == x ? true : false));
+            }
+            index++;
+        });
+        StateHasChanged();
+    }
+    protected void NavigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        ReMakeBreadCrumb();
+
+
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= NavigationManager_LocationChanged;
+    }
+}
+
+<style>
+    li>a:hover {
+        color: var(--mud-palette-primary);
+    }
+</style>

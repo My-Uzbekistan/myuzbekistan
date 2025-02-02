@@ -1,0 +1,98 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Globalization;
+@using MudBlazor
+@using ActualLab.Fusion.Authentication
+@using ActualLab.Fusion.Blazor
+@using ActualLab.Fusion.UI
+@using System.Runtime.InteropServices
+
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject Session Session
+@inject UIActionFailureTracker UIActionFailureTracker
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+
+@{
+    var failures = UIActionFailureTracker.Items;
+}
+
+<MudThemeProvider Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode"
+                  IsDarkModeChanged="LayoutService.SetDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
+<MudSnackbarProvider />
+
+
+<AuthorizeView Policy="IsAdmin">
+    <Authorized>
+        <MudLayout Style="height:100vh">
+            <MudAppBar Elevation="0" Class="layout_appbar-main">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                               OnClick="@((e) => DrawerToggle())" />
+                <MudSpacer />
+
+                <MudStack Row="true">
+                    <MudSelect T="CultureInfo" @bind-Value="@Culture"
+                               Dense="true" Margin="Margin.Dense" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="supportedCultures[0]">
+                            <img src="Images/united-states.png" height="14" class="mr-1" />  English
+                        </MudSelectItem>
+                        <MudSelectItem Value="supportedCultures[1]">
+                            <img src="Images/russia.png" height="14" class="mr-1" /> Русский
+                        </MudSelectItem>
+                        <MudSelectItem Value="supportedCultures[2]">
+                            <img src="Images/uzbekistan.png" height="14" class="mr-1" />  O'zbekcha
+                        </MudSelectItem>
+                    </MudSelect>
+
+                    <AppbarButtons></AppbarButtons>
+                    <MudMenu Icon="@Icons.Material.Outlined.Settings" Color="Color.Primary" AnchorOrigin="Origin.BottomCenter">
+                        <MudMenuItem OnClick="HandleLogout">Выйти</MudMenuItem>
+                    </MudMenu>
+                </MudStack>
+
+            </MudAppBar>
+
+            <MudDrawer @bind-Open="_drawerOpen" Class="layout_drawer-main" Elevation="0" Variant="DrawerVariant.Responsive">
+                <MudDrawerHeader Class="layout_drawer-header utc-logo">
+                    <Logo Class="layout_drawer-logo" />
+                    @if (_drawerOpen)
+                    {
+                        <LogoText Class="layout_drawer-logotext" />
+                    }
+                </MudDrawerHeader>
+                <MudNavMenu>
+                    <NavMenu></NavMenu>
+                </MudNavMenu>
+                @if (_drawerOpen)
+                {
+                    <MudText Class="layout_drawer-process">@RuntimeInformation.FrameworkDescription / @RuntimeInformation.ProcessArchitecture <span class="layout_drawer-migalka"></span></MudText>
+                }
+                else
+                {
+                    <MudText Class="layout_drawer-process">
+                        <MudTooltip Text="@(RuntimeInformation.FrameworkDescription + "/" + RuntimeInformation.ProcessArchitecture)" Arrow="true" Placement="Placement.Right">
+                            <span class="layout_drawer-migalka"></span>
+                        </MudTooltip>
+                    </MudText>
+                }
+            </MudDrawer>
+
+
+
+            <MudMainContent>
+                @foreach (var failure in failures)
+                {
+                    <WhenCommanError @key="failure" Exception="failure.Error" Dismissed="@(_=>UIActionFailureTracker.Remove(failure))" />
+                }
+                @Body
+            </MudMainContent>
+        </MudLayout>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+

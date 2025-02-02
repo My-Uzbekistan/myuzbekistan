@@ -1,0 +1,82 @@
+﻿@using ActualLab.Fusion.Authentication
+@using ActualLab.Fusion.Extensions
+@using Client.Core.Services
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.Options
+@using Server;
+@using ActualLab.Fusion.Blazor
+@using ActualLab.Fusion.Server.Authentication
+@using ActualLab.Fusion.Server.Controllers
+@using System.Globalization;
+@inject ServerAuthHelper _serverAuthHelper
+@inject IAuth _auth
+@inject ISandboxedKeyValueStore store
+@inject BlazorCircuitContext _blazorCircuitContext
+@inject IHttpContextAccessor contextAccessor
+@inject LayoutService LayoutService
+
+
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en")">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <script src="_content/ActualLab.Fusion.Blazor.Authentication/scripts/fusionAuth.js"></script>
+    <script>
+        window.blazorCulture = {
+        get: () => window.localStorage['BlazorCulture'],
+        set: (value) => window.localStorage['BlazorCulture'] = value
+        };
+        window.BlazorHelpers = {
+        RedirectTo: function (path) {
+        window.location = path;
+        }
+        };
+    </script>
+    <HeadOutlet @rendermode="RenderModeForPage" />
+</head>
+
+<body>
+    @{
+        var sessionId = _serverAuthHelper.Session.Id.Value;
+    }
+
+    <Routes SessionId="@sessionId" @rendermode="RenderModeForPage" IsDark="@theme" />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src=@Assets["_content/Extensions.MudBlazor.StaticInput/NavigationObserver.js"]></script>
+</body>
+</html>
+
+@code {
+    bool theme;
+    string? closeWindowFlowName { get; set; }
+    User? user { get; set; }
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
+        ? null
+        : InteractiveServer;
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpContext = contextAccessor.HttpContext!;
+        await _serverAuthHelper.UpdateAuthState(contextAccessor.HttpContext!);
+        user = await _auth.GetUser(_serverAuthHelper.Session)!;
+        if (user != null)
+        {
+            bool.TryParse(await store.Get(_serverAuthHelper.Session, $"@user/{user.Id}/theme"), out theme);
+        }
+        LayoutService.IsDarkMode = theme;
+        this.closeWindowFlowName = closeWindowFlowName;
+        await base.OnInitializedAsync();
+    }
+}

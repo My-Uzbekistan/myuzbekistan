@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PublishTrimmed>true</PublishTrimmed>
+		<TrimmerDefaultAction>link</TrimmerDefaultAction>
+		<RunAOTCompilation>false</RunAOTCompilation>
+		<PacketVersions>9.0.1</PacketVersions>
+		<FusionVersion>9.5.59</FusionVersion>
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<MudIllegalParameters>V7IgnoreCase</MudIllegalParameters>
+	</PropertyGroup>
+	<!-- OTHERS -->
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="MudBlazor" Version="8.*" />
+		<PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+	</ItemGroup>
+	<!-- ActualLab.FUSION -->
+	<ItemGroup>
+		<PackageReference Include="ActualLab.Fusion.Blazor" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Blazor.Authentication" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Ext.Contracts" Version="$(FusionVersion)" />
+	</ItemGroup>
+	<!-- MICROSOFT -->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="$(PacketVersions)" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+</Project>

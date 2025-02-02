@@ -1,0 +1,26 @@
+﻿<MudButton Color="Color.Error" Class="me-2" Style="width:90px" ButtonType="ButtonType.Button" OnClick="Back" Variant="Variant.Filled"> @L["Cancel"] </MudButton>
+
+<MudButton ButtonType="ButtonType.Submit" Style="width:90px" Variant="Variant.Filled" Color="Color.Primary" Disabled="@Processing" >
+    @if (Processing)
+    {
+        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+        <MudText Class="ms-2">@L["Wait"]...</MudText>
+    }
+    else
+    {
+        <MudText>@L["Save"]</MudText>
+    }
+</MudButton>
+
+@code {
+    [Parameter]
+    public bool Processing { get; set; } = false;
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    void Back()
+    {
+        OnCancel.InvokeAsync();
+    }
+}

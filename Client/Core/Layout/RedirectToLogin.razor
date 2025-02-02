@@ -1,0 +1,18 @@
+﻿@using ActualLab.Fusion.Authentication
+@inject NavigationManager Navigation
+@inject Session Session
+@inject IAuth Auth
+@inject IJSRuntime JSRuntime
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool sasa)
+    {
+        var inf = await Auth.GetAuthInfo(Session);
+        
+        if (!inf!.IsAuthenticated())
+        {
+            await JSRuntime.InvokeVoidAsync("BlazorHelpers.RedirectTo", "/Login");
+        }
+    }
+}
