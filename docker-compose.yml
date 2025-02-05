@@ -46,7 +46,7 @@ services:
       - swarm-new
     restart: always
     volumes:
-      - '/mnt/nfs/shared/travel/postgres:/var/lib/postgresql/data'
+      - 'travel_pg:/var/lib/postgresql/data'
     environment:
       TZ: Asia/Tashkent
       PGTZ: Asia/Tashkent
@@ -56,11 +56,12 @@ services:
     deploy:
       placement:
           constraints:
-            - node.labels.role!=master
+            - node.labels.role == worker-58
 
 networks:
   swarm-new:
     external: true
 
 volumes:
-  traefik-public-certificates: 
+  traefik-public-certificates:
+  travel_pg:
