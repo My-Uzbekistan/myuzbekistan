@@ -1,6 +1,6 @@
 services:
   travel_web: 
-    image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    image: $CI_REGISTRY_IMAGE:prod-$CI_COMMIT_SHA
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:7100
