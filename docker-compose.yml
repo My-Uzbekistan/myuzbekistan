@@ -1,0 +1,66 @@
+services:
+  travel_web: 
+    image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:7100
+      - TZ=Asia/Tashkent
+      - PGTZ=Asia/Tashkent
+    # ports:
+    #   - 7100
+    volumes:
+          - traefik-public-certificates:/certificates
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.role!=master
+      labels:
+        - traefik.enable=true
+        - traefik.constraint-label=swarm-new
+        - traefik.docker.network=swarm-new
+        # middleware redirect
+        - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+        - traefik.http.middlewares.test-redirectscheme.redirectscheme.permanent=true
+        # domain
+        - traefik.http.routers.travel.middlewares=redirect-to-https
+        - traefik.http.routers.travel.rule=Host(`travel.sec.uz`)
+        - traefik.http.routers.travel.entrypoints=http
+        - traefik.http.routers.travel.service=travel
+        - traefik.http.services.travel.loadbalancer.server.port=7100
+        # secure
+        - traefik.http.routers.travel-secure.rule=Host(`travel.sec.uz`)
+        - traefik.http.routers.travel-secure.service=travel-secure
+        - traefik.http.routers.travel-secure.tls.certresolver=le
+        - traefik.http.routers.travel-secure.tls=true
+        - traefik.http.routers.travel-secure.entrypoints=https
+        - traefik.http.services.travel-secure.loadbalancer.server.port=7100
+    networks:
+      - swarm-new
+
+  travel_postgres:
+    # ports:
+    #   - 5432
+    image: postgis/postgis:16-3.4-alpine
+    networks:
+      - swarm-new
+    restart: always
+    volumes:
+      - '/mnt/nfs/shared/travel/postgres:/var/lib/postgresql/data'
+    environment:
+      TZ: Asia/Tashkent
+      PGTZ: Asia/Tashkent
+      POSTGRES_DB: 'postgres'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'retr69nNLmnYwZlqvVLM1ULRUv4BekfX2Sq'
+    deploy:
+      placement:
+          constraints:
+            - node.labels.role!=master
+
+networks:
+  swarm-new:
+    external: true
+
+volumes:
+  traefik-public-certificates: 
