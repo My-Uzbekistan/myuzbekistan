@@ -27,6 +27,9 @@ using MudBlazorWebApp1.Components.Account;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
 
+using UFile.Server;
+using UFile.Shared;
+
 
 #region Builder And Logging
 var builder = WebApplication.CreateBuilder(args);
@@ -137,6 +140,12 @@ services.AddScoped<LayoutService>();
 services.AddSingleton<UserContext>();
 services.AddScoped<PageHistoryState>();
 services.AddScoped<UInjector>();
+#endregion
+#region File
+services.AddFileServer(UploadType.Tus, cfg);
+services.AddSingleton<IOnCreateCompleteEvent, OnCreateCompleteEvent>();
+services.AddSingleton<IOnAuthorizeEvent, OnAuthorizeEvent>();
+services.AddSingleton<IOnFileCompleteEvent, OnFileCompleteEvent>();
 #endregion
 #region Audit and HttpAcess
 services.AddAudit(cfg);

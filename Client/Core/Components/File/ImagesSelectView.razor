@@ -1,0 +1,100 @@
+@namespace Client.Core.Components
+@inject IUFileService UFileService
+<MudGrid Style="align-items:center" Class="flex-row mt-5">
+ @if (Value != null)
+  {
+    @foreach (var item in Value)
+    {
+        <MudBadge Icon="@Icons.Material.Filled.Clear" Color="Color.Error" Overlap="true" Bordered="true" Visible="true" OnClick="() => ClearImage(item)">
+            <MudItem Style="width:270px; height:150px;" Class="border-dotted border-2 mud-border-primary d-flex justify-center align-center ms-5 mb-6">
+                @if (item != null)
+                {
+                       
+                    <MudImage @onclick="() => ShowImage(item)" ObjectFit="ObjectFit.Contain" Fluid="true" Src="@(url + item.Path)" Alt="@item.Name" Style="max-width:250px; max-height:130px;" />
+                }
+                else
+                {
+                    <MudChip Icon="@Icons.Material.Filled.CloudUpload" IconColor="Color.Warning" Variant="Variant.Text" Color="Color.Warning">Click here to select images</MudChip>
+                }
+            </MudItem>
+        </MudBadge>
+    }
+  }
+    <MudItem>
+        <MudPaper @onclick="() => IsImageSelect = true" Class="border-dashed border-2 mud-border-primary pa-4 ms-2 mb-6" Style="height: 90px; display:flex; flex-direction:column; align-items:center; justify-content: space-around; cursor:pointer">
+            <MudIcon Icon="@Icons.Material.Filled.Add" />
+            <MudText>Add Images</MudText>
+        </MudPaper>
+    </MudItem>
+  
+</MudGrid>
+
+
+<ImageSelect @bind-Value="@ImageToAdd" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" />
+
+<MudDialog @bind-IsVisible="@isImageShow" Options="dialogOptions" Style="min-width:600px; height:auto">
+
+    <DialogContent>
+        <MudImage Fluid="true" Src="@(url + ImageToShow.Path)" Alt="@ImageToShow.Name" />
+    </DialogContent>
+
+</MudDialog>
+
+@code {
+    [Parameter]
+    public ICollection<FileView>? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<ICollection<FileView>> ValueChanged { get; set; }
+
+    DialogOptions dialogOptions = new() { FullWidth = true };
+
+    public bool IsImageSelect { get; set; } = false;
+
+    bool isImageShow = false;
+
+    FileView ImageToShow = new();
+
+    FileView ImageToAdd = new();
+    string url = string.Empty;
+
+    
+    protected async override Task OnParametersSetAsync()
+    {
+        if (Value == null)
+        {
+            Value = new HashSet<FileView>();
+        }
+        else
+        {
+            Value = Value.ToHashSet();
+        }
+        var urlTask = UFileService.GetFileUrl();
+         url = await urlTask;
+    }
+
+    void ShowImage(FileView image)
+    {
+        ImageToShow = image;
+        isImageShow = true;
+    }
+
+    void OnImageSelected()
+    {
+        Value!.Add(ImageToAdd);
+        ValueChanged.InvokeAsync(Value);
+        IsImageSelect = false;
+    }
+
+    void ClearImage(FileView file)
+    {
+        Value?.Remove(file);
+        ValueChanged.InvokeAsync(Value);
+    }
+}
+
+<style>
+    .mud-badge {
+        cursor: pointer;
+    }
+</style>

@@ -1,0 +1,98 @@
+@inject NavigationManager Navigator
+@inject IUFileService UFileService
+@namespace Client.Core.Components
+
+
+<InputFile id="fileInput112" OnChange="OnChanged" hidden multiple accept=".jpg, .jpeg, .png" />
+
+<MudButton HtmlTag="label"
+           Variant="Variant.Filled"
+           Color="Color.Primary"
+           StartIcon="@Icons.Material.Filled.CloudUpload"
+           for="fileInput112">
+    Upload image
+</MudButton>
+@_percent
+@if (Link is not null)
+{
+    @*<a href="@Link" target="_blank"> link </a>*@
+
+
+    @*@Link*@
+}
+<span id="downloadLink"></span>
+@code {
+
+    string _percent = "0";
+    private string? _link { get; set; }
+    public string? Link
+    {
+        get => _link;
+        set
+        {
+            if (_link == value) return;
+            _link = value;
+
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> LinkChanged { get; set; }
+
+    readonly CancellationTokenSource _cancelTokenSource = new();
+
+
+    void OnChanged(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            _percent = "0";
+            Link = null;
+            var file = e.File;
+            if (file == null)
+            {
+                return;
+            }
+
+            var metadata = new Dictionary<string, string>
+                {
+                    ["fileName"] = file.Name,
+                    ["name"] = file.Name,
+                    ["contentType"] = file.ContentType,
+                };
+
+            
+            UFileService.Upload(file.OpenReadStream(file.Size), metadata, _cancelTokenSource.Token).ConfigureAwait(false);
+            UFileService.UploadProgress += (s) =>
+            {
+                _percent = s;
+                StateHasChanged();
+            };
+            UFileService.Completed += async (url) =>
+            {
+                Link = url;
+
+                await InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                    LinkChanged.InvokeAsync(Link);
+                });
+
+
+            };
+            UFileService.HadError += (s) => { System.Console.WriteLine(s.Message); };
+       
+
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+
+}
