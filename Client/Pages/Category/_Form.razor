@@ -1,0 +1,49 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => PageHistoryState.Back("categories")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudTextField  @bind-Value="Model.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Name)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)"Required="true"/>
+                            <Client.Pages.Category._ContentEntityMultiSelect @bind-Value="Model.ContentsView"  For="@(() => Model.ContentsView)"Required="true"/>
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>
+@code {
+    [Parameter]
+    public CategoryView Model { get; set; } = new();
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<CategoryView> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+   
+    string GetTitle()
+    {
+      return IsNew ? @L["Create"] : @L["Edit"] ;
+    }
+}

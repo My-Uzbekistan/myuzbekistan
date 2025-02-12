@@ -1,0 +1,50 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => PageHistoryState.Back("files")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudTextField  @bind-Value="Model.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Name)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Extension" Label="Extension" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Extension)"/>
+                            <MudTextField  @bind-Value="Model.Path" Label="Path" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Path)"/>
+                            <MudNumericField  @bind-Value="Model.Size" AutoFocus="false" Label="Size" Variant="Variant.Text" For="@(() => Model.Size)"Required="true"/>                                
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>
+@code {
+    [Parameter]
+    public FileView Model { get; set; } = new();
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<FileView> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+   
+    string GetTitle()
+    {
+      return IsNew ? @L["Create"] : @L["Edit"] ;
+    }
+}

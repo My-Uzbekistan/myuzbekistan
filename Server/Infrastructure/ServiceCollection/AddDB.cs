@@ -46,12 +46,13 @@ public static class AddDB
                     case DataBaseType.SQLite:
                         var dbPath = "/App.db";
                         db.UseSqlite($"Data Source={Directory.GetCurrentDirectory() + dbPath}");
-
+                        
                         break;
                     case DataBaseType.PostgreSQL:
                         db.UseNpgsql(cfg!.GetConnectionString("Default")!, x =>
                         {
                             x.EnableRetryOnFailure(0);
+                            x.UseNetTopologySuite();
                         });
 
                         db.UseNpgsqlHintFormatter();

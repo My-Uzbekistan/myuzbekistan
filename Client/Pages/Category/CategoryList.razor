@@ -1,0 +1,79 @@
+@page  "/categories" 
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject ICategoryService CategoryService
+
+@inherits MixedStateComponent<TableResponse<CategoryView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Category">
+    <Actions>
+        <MudLink Href="/categories/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="CategoryView">
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel=Contents.Title>
+                @string.Join(" ",context.ContentsView?.Select(x=> x.Title)?.ToList() ?? new List<string>() )
+                </MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/categories/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<CategoryView>? Items ;
+    
+    private string[] SortColumns = new string[] {"Name","Description","Contents","Id",};
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+    }
+
+    protected override async Task<TableResponse<CategoryView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var categories = await CategoryService.GetAll(MutableState.Value);
+        return categories;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeleteCategoryCommand(Session,Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}

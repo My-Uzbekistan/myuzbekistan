@@ -1,0 +1,47 @@
+@page "/files/{Id:long}"
+
+@inherits ComputedStateComponent<FileView>
+@inject IFileService FileService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+@{
+    var Model = State.LastNonErrorValue ?? new FileView() { };
+}
+
+<Client.Pages.File._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+
+
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing {get;set;}=false;
+    
+    public async Task OnSubmit(FileView entity)
+    {
+       Processing =true;
+     
+     
+       var response = await Command.Run(new UpdateFileCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+          navigation.NavigateTo("/files");
+       }
+
+       Processing=false;
+    }
+
+    protected override async Task<FileView> ComputeState(CancellationToken cancellationToken)
+    {
+        return await FileService.Get(Id,cancellationToken);
+    }
+}

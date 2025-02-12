@@ -1,0 +1,75 @@
+@page  "/favorites" 
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject IFavoriteService FavoriteService
+
+@inherits MixedStateComponent<TableResponse<FavoriteView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Favorite">
+    <Actions>
+        <MudLink Href="/favorites/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="FavoriteView">
+                <MudTd DataLabel="Content.Title">@context.ContentView?.Title</MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/favorites/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<FavoriteView>? Items ;
+    
+    private string[] SortColumns = new string[] {"Content","Id",};
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+    }
+
+    protected override async Task<TableResponse<FavoriteView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var favorites = await FavoriteService.GetAll(MutableState.Value);
+        return favorites;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeleteFavoriteCommand(Session,Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}

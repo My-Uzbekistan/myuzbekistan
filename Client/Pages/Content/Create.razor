@@ -1,0 +1,31 @@
+@page "/contents/create"
+
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+<Client.Pages.Content._Form OnSubmit="OnSubmit" Processing="@Processing" IsNew="true"/>
+
+@code {
+ 
+    public bool Processing {get;set;} = false;
+
+    public async Task OnSubmit(ContentView entity)
+    {
+       Processing = true;
+       
+
+       var response= await Command.Run(new CreateContentCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message, Severity.Error);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessCreate"], Severity.Success);
+          navigation.NavigateTo("/contents");
+       }
+       Processing = false;
+    }
+}

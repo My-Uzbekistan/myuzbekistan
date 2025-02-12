@@ -1,0 +1,80 @@
+@page  "/files" 
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject IFileService FileService
+
+@inherits MixedStateComponent<TableResponse<FileView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="File">
+    <Actions>
+        <MudLink Href="/files/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="FileView">
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="FileId">@context.FileId</MudTd>
+                <MudTd DataLabel="Extension">@context.Extension</MudTd>
+                <MudTd DataLabel="Path">@context.Path</MudTd>
+                <MudTd DataLabel="Size">@context.Size</MudTd>
+                <MudTd DataLabel="Type">@context.Type</MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/files/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<FileView>? Items ;
+    
+    private string[] SortColumns = new string[] {"Name","FileId","Extension","Path","Size","Type","Id",};
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+    }
+
+    protected override async Task<TableResponse<FileView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var files = await FileService.GetAll(MutableState.Value);
+        return files;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeleteFileCommand(Session,Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}

@@ -1,0 +1,48 @@
+@using System.Linq.Expressions
+@inherits ComputedStateComponent<TableResponse<ReviewView>>
+@inject IReviewService ReviewService
+
+@{
+    var data = State.ValueOrDefault ?? new TableResponse<ReviewView>();
+}
+
+<MudSelect T="ReviewView" @attributes="Attributes" Required=Required MultiSelection="true" SelectedValues="Value" ToStringFunc="(x)=>x?.Comment" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
+    @foreach (var item in data.Items)
+    {
+        <MudSelectItem T="ReviewView" Value="@item">@item.Comment</MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+   
+   [Parameter]
+    public ICollection<ReviewView>? Value { get; set; }
+   
+   [Parameter]
+    public EventCallback<ICollection<ReviewView>> ValueChanged { get; set; }
+    
+    [Parameter]
+    public bool Required { get; set; }=false;
+    
+    [Parameter]
+    public Expression<Func<ICollection<ReviewView>>>? For { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Attributes { get; set; }
+
+    async Task UpdateValue(ICollection<ReviewView> value)
+    {
+        Value = value;
+
+        await ValueChanged.InvokeAsync(Value);
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+
+    protected override async Task<TableResponse<ReviewView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await ReviewService.GetAll(new() { PageSize = 100 }, cancellationToken);
+    }
+
+
+}

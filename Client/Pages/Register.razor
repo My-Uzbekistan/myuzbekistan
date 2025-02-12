@@ -1,7 +1,8 @@
 ﻿@page "/Account/Register"
+@using myuzbekistan.Shared
 @layout AuthLayout
 @inject UserManager<ApplicationUser> UserManager
-@inject RoleManager<IdentityRole> RoleManager
+@inject RoleManager<IdentityRole<long>> RoleManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IEmailSender<ApplicationUser> EmailSender
@@ -69,7 +70,7 @@
         var result = await UserManager.CreateAsync(user, Input.Password);
         if (!(await RoleManager.RoleExistsAsync("Admin")))
         {
-            await RoleManager.CreateAsync(new IdentityRole("Admin"));
+            await RoleManager.CreateAsync(new IdentityRole<long>("Admin"));
         }
 
         if (!result.Succeeded)

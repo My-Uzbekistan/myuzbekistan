@@ -1,0 +1,47 @@
+@page "/contents/{Id:long}"
+
+@inherits ComputedStateComponent<ContentView>
+@inject IContentService ContentService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+@{
+    var Model = State.LastNonErrorValue ?? new ContentView() { };
+}
+
+<Client.Pages.Content._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+
+
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing {get;set;}=false;
+    
+    public async Task OnSubmit(ContentView entity)
+    {
+       Processing =true;
+     
+     
+       var response = await Command.Run(new UpdateContentCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+          navigation.NavigateTo("/contents");
+       }
+
+       Processing=false;
+    }
+
+    protected override async Task<ContentView> ComputeState(CancellationToken cancellationToken)
+    {
+        return await ContentService.Get(Id,cancellationToken);
+    }
+}

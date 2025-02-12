@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using myuzbekistan.Services;
 
@@ -17,9 +18,10 @@ namespace Services.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbSessionInfo<string>", b =>
@@ -209,7 +211,7 @@ namespace Services.Data.Migrations
                     b.ToTable("_KeyValues");
                 });
 
-            modelBuilder.Entity("myuzbekistan.Shared.TodoEntity", b =>
+            modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -220,8 +222,9 @@ namespace Services.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("ImageId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -232,7 +235,193 @@ namespace Services.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TodoEntity");
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("CategoryId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<string[]>("Facilities")
+                        .HasColumnType("text[]");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<string[]>("Languages")
+                        .HasColumnType("text[]");
+
+                    b.Property<Point>("Location")
+                        .HasColumnType("geometry");
+
+                    b.PrimitiveCollection<int[]>("PhoneNumbers")
+                        .HasColumnType("integer[]");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("PriceInDollar")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("RatingAverage")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Recommended")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("WorkingHours")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId1");
+
+                    b.ToTable("Contents");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.FavoriteEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ContentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentId");
+
+                    b.ToTable("Favorites");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ContentEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ContentEntityId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Extension")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("FileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("text");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentEntityId");
+
+                    b.HasIndex("ContentEntityId1");
+
+                    b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ReviewEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long?>("ContentEntityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentEntityId");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUserIdentity<string>", b =>
@@ -244,9 +433,63 @@ namespace Services.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.CategoryEntity", "Category")
+                        .WithMany("Contents")
+                        .HasForeignKey("CategoryId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.FavoriteEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", "Content")
+                        .WithMany()
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Content");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
+                        .WithMany("Files")
+                        .HasForeignKey("ContentEntityId");
+
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("ContentEntityId1");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ReviewEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("ContentEntityId");
+                });
+
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUser<string>", b =>
                 {
                     b.Navigation("Identities");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>
+                {
+                    b.Navigation("Contents");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
+                {
+                    b.Navigation("Files");
+
+                    b.Navigation("Photos");
+
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

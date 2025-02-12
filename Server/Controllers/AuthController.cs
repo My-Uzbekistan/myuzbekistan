@@ -107,7 +107,7 @@ public class AuthController : ControllerBase
         {
             new(JwtRegisteredClaimNames.Sub, user.UserName!),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(ClaimTypes.NameIdentifier, user.Id)
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

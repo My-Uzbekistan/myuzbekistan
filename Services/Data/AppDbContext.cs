@@ -29,7 +29,6 @@ public partial class AppDbContext : DbContextBase
         _context = context.CreateDbContext();
     }
 
-    public DbSet<TodoEntity> Tasks { get; protected set; } = null!;
 
     // ActualLab.Fusion.EntityFramework tables
     public DbSet<DbUser<string>> Users { get; protected set; } = null!;

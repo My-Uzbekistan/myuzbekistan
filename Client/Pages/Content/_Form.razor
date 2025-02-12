@@ -1,0 +1,60 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => PageHistoryState.Back("contents")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudTextField  @bind-Value="Model.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Title)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.CategoryId" Label="CategoryId" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CategoryId)"Required="true"/>
+                            <Client.Pages.Content._CategoryEntitySelect @bind-Value="Model.CategoryView"  For="@(() => Model.CategoryView)"Required="true"/>
+                            <MudSwitch @bind-Checked="Model.IsPublished" For="@(() => Model.IsPublished)"Required="true"/>
+                            <MudSwitch @bind-Checked="Model.IsDeleted" For="@(() => Model.IsDeleted)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Slug" Label="Slug" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Slug)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkingHours)"Required="true"/>
+                            <ImagesSelectView @bind-Value="Model.FilesView" />
+                            <ImagesSelectView @bind-Value="Model.PhotosView" />
+                            <Client.Pages.Content._ReviewEntityMultiSelect   @bind-Value="Model.ReviewsView"  For="@(() => Model.ReviewsView)"Required="true"/>
+                            <MudNumericField  @bind-Value="Model.RatingAverage" AutoFocus="false" Label="RatingAverage" Variant="Variant.Text" For="@(() => Model.RatingAverage)"Required="true"/>                                
+                            <MudTextField  @bind-Value="Model.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)"/>
+                            <MudSwitch @bind-Checked="Model.Recommended" For="@(() => Model.Recommended)"Required="true"/>
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>
+@code {
+    [Parameter]
+    public ContentView Model { get; set; } = new();
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<ContentView> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+   
+    string GetTitle()
+    {
+      return IsNew ? @L["Create"] : @L["Edit"] ;
+    }
+}

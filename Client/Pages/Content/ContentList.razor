@@ -1,0 +1,100 @@
+@page  "/contents" 
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject IContentService ContentService
+
+@inherits MixedStateComponent<TableResponse<ContentView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Content">
+    <Actions>
+        <MudLink Href="/contents/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="ContentView">
+                <MudTd DataLabel="Title">@context.Title</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="CategoryId">@context.CategoryId</MudTd>
+                <MudTd DataLabel="Category.Name">@context.CategoryView?.Name</MudTd>
+                <MudTd DataLabel="IsPublished">@context.IsPublished</MudTd>
+                <MudTd DataLabel="IsDeleted">@context.IsDeleted</MudTd>
+                <MudTd DataLabel="Slug">@context.Slug</MudTd>
+                <MudTd DataLabel="WorkingHours">@context.WorkingHours</MudTd>
+                <MudTd DataLabel="Facilities">@context.Facilities</MudTd>
+                <MudTd DataLabel="Location">@context.Location</MudTd>
+                <MudTd DataLabel="PhoneNumbers">@context.PhoneNumbers</MudTd>
+                <MudTd DataLabel="Files">
+                <ImagesView Files="@context.FilesView?.ToList()"/>
+                </MudTd>
+                <MudTd DataLabel="Photos">
+                <ImagesView Files="@context.PhotosView?.ToList()"/>
+                </MudTd>
+                <MudTd DataLabel=Reviews.Comment>
+                @string.Join(" ",context.ReviewsView?.Select(x=> x.Comment)?.ToList() ?? new List<string>() )
+                </MudTd>
+                <MudTd DataLabel="Languages">@context.Languages</MudTd>
+                <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
+                <MudTd DataLabel="Price">@context.Price</MudTd>
+                <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
+                <MudTd DataLabel="Address">@context.Address</MudTd>
+                <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/contents/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<ContentView>? Items ;
+    
+    private string[] SortColumns = new string[] {"Title","Description","CategoryId","Category","IsPublished","IsDeleted","Slug","WorkingHours","Facilities","Location","PhoneNumbers","Files","Photos","Reviews","Languages","RatingAverage","Price","PriceInDollar","Address","Recommended","Id",};
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+    }
+
+    protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var contents = await ContentService.GetAll(MutableState.Value);
+        return contents;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeleteContentCommand(Session,Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}
