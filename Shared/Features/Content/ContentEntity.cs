@@ -1,11 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ActualLab.Fusion.Blazor;
+using MemoryPack;
+using Microsoft.EntityFrameworkCore;
 using Shared.Localization;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 using Point = NetTopologySuite.Geometries.Point;
 
 namespace myuzbekistan.Shared;
 
-[PrimaryKey(nameof(CategoryEntity.Id), nameof(CategoryEntity.Locale))]
+[PrimaryKey(nameof(ContentEntity.Id), nameof(ContentEntity.Locale))]
 public class ContentEntity : BaseEntity
 {
     
@@ -13,15 +17,15 @@ public class ContentEntity : BaseEntity
     public string Description { get; set; } = null!;
     public long CategoryId { get; set; } 
     public CategoryEntity Category { get; set; } = null!;
-     
     public string WorkingHours { get; set; } = null!;
-    public string[]? Facilities { get; set; } = [];
+    public List<FacilityEntity>? Facilities { get; set; } = [];
     public Point? Location { get; set; }
-    public int[]? PhoneNumbers { get; set; } = [];
+    [Column(TypeName = "jsonb")]
+    public List<CallInformation> PhoneNumbers { get; set; } = [];
     public ICollection<FileEntity>? Files { get; set; } = [];
     public ICollection<FileEntity>? Photos { get; set; } = [];
     public ICollection<ReviewEntity>? Reviews { get; set; } = [];
-    public string[]? Languages { get; set; } = [];
+    public ICollection<LanguageEntity>? Languages { get; set; } = [];
     public int RatingAverage { get; set; } 
     public decimal Price { get; set; }
     public decimal PriceInDollar { get; set; }
@@ -31,4 +35,13 @@ public class ContentEntity : BaseEntity
     public string Locale { get; set; } = null!;
     public ContentStatus Status { get; set; } = ContentStatus.Active;
 
+}
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class CallInformation
+{
+    [property: DataMember] public string Contact { get; set; } = null!;
+    [property: DataMember] public string Name { get; set; } = null!;
+    [property: DataMember] public string Icon { get; set; } = null!;
 }

@@ -23,8 +23,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                      s.Title.Contains(options.Search)
                     || s.Description.Contains(options.Search)
                     || s.WorkingHours.Contains(options.Search)
-                    || s.Facilities.Contains(options.Search)
-                    || s.Languages.Contains(options.Search)
+                    || (s.Facilities != null && s.Facilities.Any(x => x.Name.Contains(options.Search)))
+                    || (s.Languages != null && s.Languages.Any(x => x.Name.Contains(options.Search)))
                     || s.Address != null && s.Address.Contains(options.Search)
             );
         }
@@ -39,6 +39,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         content = content.Include(x => x.Files);
         content = content.Include(x => x.Photos);
         content = content.Include(x => x.Reviews);
+        content = content.Include(x => x.Facilities);
+        content = content.Include(x => x.Languages);
         var count = await content.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await content.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<ContentView>() { Items = items.MapToViewList(), TotalItems = count };
@@ -49,7 +51,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var content =  dbContext.Contents
+        var content = dbContext.Contents
         .Include(x => x.Category)
         .Include(x => x.Files)
         .Include(x => x.Photos)
@@ -82,7 +84,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
         }
 
-        
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
     }

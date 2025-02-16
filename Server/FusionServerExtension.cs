@@ -9,8 +9,10 @@ public static class FusionServerExtension
     {
         fusion.AddService<ICategoryService, CategoryService>();
         fusion.AddService<IContentService, ContentService>();
+        fusion.AddService<IFacilityService, FacilityService>();
         fusion.AddService<IFavoriteService, FavoriteService>();
         fusion.AddService<IFileService, FileService>();
+        fusion.AddService<ILanguageService, LanguageService>();
         fusion.AddService<IReviewService, ReviewService>();
         fusion.AddService<IAuditLogsService, AuditLogService>();
         

@@ -1,0 +1,60 @@
+﻿<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-4">@L["Manage Contacts"]</MudText>
+
+    @foreach (var contact in PhoneNumbers)
+    {
+        <MudGrid Class="mb-3" AlignItems="AlignItems.Center">
+            <MudItem xs="12" md="2">
+                <MudSelect T="string" @bind-Value="contact.Icon" Label="@L["Contact Type"]" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("telegram.svg")">@L["Telegram"]</MudSelectItem>
+                    <MudSelectItem Value="@("phone.svg")">@L["Phone"]</MudSelectItem>
+                    <MudSelectItem Value="@("instagram.svg")">@L["Instagram"]</MudSelectItem>
+                    <MudSelectItem Value="@("whatsapp.svg")">@L["WhatsApp"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                @if (contact.Icon == "phone.svg" || contact.Icon == "whatsapp.svg" || contact.Icon == "telegram.svg")
+                {
+                    <MudTextField @bind-Value="contact.Contact" Mask="@(new PatternMask("(00) 000-00-00"))" Label="@L["Phone Number"]" Variant="Variant.Outlined" />
+                }
+                else
+                {
+                    <MudTextField @bind-Value="contact.Contact" Label="@L["Username"]" Variant="Variant.Outlined" />
+                }
+            </MudItem>
+
+            <MudItem xs="12" md="2">
+                <MudTextField @bind-Value="contact.Name" Label="@L["Contact Name"]" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12" md="2">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => RemoveContact(contact))" />
+            </MudItem>
+        </MudGrid>
+    }
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddContact">
+        @L["Add Contact"]
+    </MudButton>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public List<CallInformation> PhoneNumbers { get; set; } = new();
+
+    private void AddContact()
+    {
+        PhoneNumbers.Add(new CallInformation
+            {
+                Contact = string.Empty,
+                Name = string.Empty,
+                Icon = "phone.svg" // Значение по умолчанию
+            });
+    }
+
+    private void RemoveContact(CallInformation contact)
+    {
+        PhoneNumbers.Remove(contact);
+    }
+}

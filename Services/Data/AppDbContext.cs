@@ -13,9 +13,19 @@ using ActualLab.Fusion.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Newtonsoft.Json;
 
 namespace myuzbekistan.Services;
 
+public class JsonbValueConverter<T> : ValueConverter<T, string>
+{
+    public JsonbValueConverter()
+        : base(
+            v => JsonConvert.SerializeObject(v),   // Преобразование из объекта в строку (сохранение)
+            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  // Преобразование из строки в объект (чтение)
+    { }
+}
 public partial class AppDbContext : DbContextBase
 {
     private readonly AuditDbContext _context;
@@ -42,6 +52,15 @@ public partial class AppDbContext : DbContextBase
     {
         AddTimestamps();
         return base.SaveChanges();
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ContentEntity>(entity =>
+        {
+            entity.Property(e => e.PhoneNumbers)
+                  .HasConversion(new JsonbValueConverter<List<CallInformation>>());
+        });
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -33,6 +33,7 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.Extensions.FileProviders;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Text.Json;
 
 
 #region Builder And Logging
@@ -85,7 +86,13 @@ services.AddSingleton(c => new CommandTracer(c));
 #endregion
 #region MudBlazor and Pages
 builder.Services
-    .AddControllers();
+    .AddControllers()
+ .AddJsonOptions(options =>
+  {
+      options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+      options.JsonSerializerOptions.Converters.Add(new CustomMainPageApiConverter());
+      options.JsonSerializerOptions.Converters.Add(new ContentEntityConverter());
+  });
 builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents((t) =>

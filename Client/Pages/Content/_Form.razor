@@ -17,39 +17,51 @@
             <ChildContent>
                 <DataAnnotationsValidator></DataAnnotationsValidator>
                 <MudGrid>
-                    <MudItem lg="8" xs="12">
-                        <MudPaper Class="pa-4">
-                            <ObjectGraphDataAnnotationsValidator />
-                            <ValidationSummary />
+                    <MudItem md="8" xs="12">
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudPaper Class="pa-4">
 
-                            <MudTextField @bind-Value="Model.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Title)" Required="true" />
-                            @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
-                            {
-                                <MudTextField @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" Required="true" />
-                            }
+                                    <MudTextField @bind-Value="Model.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Title)" Required="true" />
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
+                                    {
+                                        <MudTextField @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" Required="true" />
+                                    }
 
-                            @* <MudTextField @bind-Value="Model.Slug" Label="Slug" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Slug)" Required="true" /> *@
+                                    @* <MudTextField @bind-Value="Model.Slug" Label="Slug" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Slug)" Required="true" /> *@
 
-                            @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))
-                            {
-                                <MudTextField @bind-Value="Model.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkingHours)" Required="true" />
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))
+                                    {
+                                        <MudTextField @bind-Value="Model.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkingHours)" Required="true" />
 
-                            }
+                                    }
 
 
-                            @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
-                            {
-                                <MudTextField @bind-Value="Model.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
-                            }
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
+                                    {
+                                        <MudTextField @bind-Value="Model.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
+                                    }
 
-                            <input type="hidden" @bind-value="Model.Id">
-                        </MudPaper>
+                                    <input type="hidden" @bind-value="Model.Id">
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="12">
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.PhoneNumbers))
+                                {
+                                    <Contact PhoneNumbers="@Model.PhoneNumbers" />
+                                }
+                            </MudItem>
+                        </MudGrid>
+
                     </MudItem>
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
-                                <_PlacesForm @bind-Location="Model.Location" @bind-Address="Model.Address" />
-                                <MudSwitch Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="Model.Recommended" @bind-Checked:after="()=>{UpdateRecommended(Model.Recommended);}" For="@(() => Model.Recommended)"  />
+                                <MudStack Row="true">
+                                    <_PlacesForm @bind-Location="Model.Location" @bind-Address="Model.Address" />
+
+                                    <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="Model.Recommended" @bind-Checked:after="()=>{UpdateRecommended(Model.Recommended);}" For="@(() => Model.Recommended)" />
+                                </MudStack>
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
                                 {
                                     <ImagesSelectView Label="@L["Conditions"]" @bind-Value="Model.FilesView" />
@@ -64,6 +76,7 @@
 
                     </MudItem>
                 </MudGrid>
+
             </ChildContent>
         </FormContainer>
     </EditForm>

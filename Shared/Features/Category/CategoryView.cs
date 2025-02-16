@@ -5,6 +5,10 @@ using System.ComponentModel.DataAnnotations;
 using Shared.Localization;
 
 namespace myuzbekistan.Shared;
+[DataContract, MemoryPackable]
+public partial record CategoryApi([property: DataMember] string Name, [property: DataMember] string Icon, [property: DataMember] long Id);
+public partial record MainPageApi([property: DataMember] string CategoryName, [property: DataMember] long CategoryId, [property: DataMember]  List<ContentEntity> ContentView);
+
 
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]

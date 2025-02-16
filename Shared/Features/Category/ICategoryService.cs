@@ -17,5 +17,9 @@ public interface ICategoryService:IComputeService
     [CommandHandler]
     Task Delete(DeleteCategoryCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
+
+    Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default);
+
+    Task<List<MainPageApi>> GetMainPageApi(CancellationToken cancellationToken = default);
 }
     

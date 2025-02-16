@@ -1,0 +1,48 @@
+@using System.Linq.Expressions
+@inherits ComputedStateComponent<TableResponse<FacilityView>>
+@inject IFacilityService FacilityService
+
+@{
+    var data = State.ValueOrDefault ?? new TableResponse<FacilityView>();
+}
+
+<MudSelect T="FacilityView" @attributes="Attributes" Required=Required MultiSelection="true" SelectedValues="Value" ToStringFunc="(x)=>x?.Name" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
+    @foreach (var item in data.Items)
+    {
+        <MudSelectItem T="FacilityView" Value="@item">@item.Name</MudSelectItem>
+    }
+</MudSelect>
+
+@code {
+   
+   [Parameter]
+    public ICollection<FacilityView>? Value { get; set; }
+   
+   [Parameter]
+    public EventCallback<ICollection<FacilityView>> ValueChanged { get; set; }
+    
+    [Parameter]
+    public bool Required { get; set; }=false;
+    
+    [Parameter]
+    public Expression<Func<ICollection<FacilityView>>>? For { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Attributes { get; set; }
+
+    async Task UpdateValue(ICollection<FacilityView> value)
+    {
+        Value = value;
+
+        await ValueChanged.InvokeAsync(Value);
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+
+    protected override async Task<TableResponse<FacilityView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await FacilityService.GetAll(new() { PageSize = 100 }, cancellationToken);
+    }
+
+
+}
