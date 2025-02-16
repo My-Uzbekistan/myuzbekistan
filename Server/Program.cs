@@ -124,12 +124,22 @@ services.AddSwaggerDocument();
 #endregion
 #region Localization
 services.AddLocalization();
+
+
+var supportedCultures = new[] { "en", "ru", "uz" };
+
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en"),
+    SupportedCultures = [.. supportedCultures.Select(c => new System.Globalization.CultureInfo(c))],
+    SupportedUICultures = [.. supportedCultures.Select(c => new System.Globalization.CultureInfo(c))]
+};
+
+// Добавляем провайдер для чтения из заголовка Accept-Language
+localizationOptions.RequestCultureProviders.Insert(0, new AcceptLanguageHeaderRequestCultureProvider());
 services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[] { "en-US", "ru-RU", "uz-Latn" };
-    options.DefaultRequestCulture = new RequestCulture("uz-Latn");
-    options.AddSupportedCultures(supportedCultures);
-    options.AddSupportedUICultures(supportedCultures);
+    options = localizationOptions;
 });
 #endregion
 #region CORS AND PROXY
@@ -194,13 +204,13 @@ app.UseWebSockets(new WebSocketOptions()
 #endregion
 
 app.UseFusionSession();
-app.UseRequestLocalization();
+app.UseRequestLocalization(localizationOptions);
 
 app.UseResponseCaching();
 app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseAntiforgery();
-UFile.Server.UFileRegistration.UseFileServer(app,UploadType.Tus);
+UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Tus);
 
 app.UseCors();
 
@@ -261,6 +271,6 @@ public class CustomPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : 
         }
     }
 
-   
+
 }
 
