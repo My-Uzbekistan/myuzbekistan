@@ -7,11 +7,11 @@ using ActualLab.Async;
 using System.Reactive;
 namespace myuzbekistan.Services;
 
-public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService 
+public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
     [ComputeMethod]
-    public async virtual Task<TableResponse<ContentView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<TableResponse<ContentView>> GetAll(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -19,49 +19,49 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
         if (!String.IsNullOrEmpty(options.Search))
         {
-            content = content.Where(s => 
+            content = content.Where(s =>
                      s.Title.Contains(options.Search)
                     || s.Description.Contains(options.Search)
-                    || s.CategoryId.Contains(options.Search)
-                    || s.Slug.Contains(options.Search)
                     || s.WorkingHours.Contains(options.Search)
                     || s.Facilities.Contains(options.Search)
                     || s.Languages.Contains(options.Search)
-                    || s.Address !=null && s.Address.Contains(options.Search)
+                    || s.Address != null && s.Address.Contains(options.Search)
             );
         }
+        #region CategoryId
+
+        content = content.Where(x => x.CategoryId == CategoryId);
+        #endregion
 
         Sorting(ref content, options);
-        
+
         content = content.Include(x => x.Category);
         content = content.Include(x => x.Files);
         content = content.Include(x => x.Photos);
         content = content.Include(x => x.Reviews);
         var count = await content.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await content.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-        return new TableResponse<ContentView>(){ Items = items.MapToViewList(), TotalItems = count };
+        return new TableResponse<ContentView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
     [ComputeMethod]
-    public async virtual Task<ContentView> Get(long Id, CancellationToken cancellationToken = default)
+    public async virtual Task<List<ContentView>> Get(long Id, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var content = await dbContext.Contents
+        var content =  dbContext.Contents
         .Include(x => x.Category)
-        .Include(x => x.Facilities)
-        .Include(x => x.PhoneNumbers)
         .Include(x => x.Files)
         .Include(x => x.Photos)
         .Include(x => x.Reviews)
-        .Include(x => x.Languages)
-        .FirstOrDefaultAsync(x => x.Id == Id);
-        
-        return content == null ? throw new ValidationException("ContentEntity Not Found") : content.MapToView();
+        .Where(x => x.Id == Id).ToList();
+
+        return content == null ? throw new ValidationException("ContentEntity Not Found") : content.MapToViewList();
     }
 
     #endregion
     #region Mutations
+    long maxId;
     public async virtual Task Create(CreateContentCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
@@ -71,10 +71,18 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         }
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        ContentEntity content=new ContentEntity();
-        Reattach(content, command.Entity, dbContext); 
+        maxId = !dbContext.Categories.Any() ? 0 : dbContext.Categories.Max(x => x.Id);
+        maxId++;
+        foreach (var item in command.Entity)
+        {
+            ContentEntity content = new ContentEntity();
+            Reattach(content, item, dbContext);
+            content.Id = maxId;
+            dbContext.Add(content);
+
+        }
+
         
-        dbContext.Update(content);
         await dbContext.SaveChangesAsync(cancellationToken);
 
     }
@@ -89,15 +97,11 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var content = await dbContext.Contents
-        .Include(x=>x.Category)
-        .Include(x=>x.Facilities)
-        .Include(x=>x.PhoneNumbers)
-        .Include(x=>x.Files)
-        .Include(x=>x.Photos)
-        .Include(x=>x.Reviews)
-        .Include(x=>x.Languages)
-        .FirstOrDefaultAsync(x => x.Id == command.Id);
-        if (content == null) throw  new ValidationException("ContentEntity Not Found");
+        .Include(x => x.Category)
+        .Include(x => x.Files)
+        .Include(x => x.Photos)
+        .Include(x => x.Reviews)
+        .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken) ?? throw new ValidationException("ContentEntity Not Found");
         dbContext.Remove(content);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -105,31 +109,31 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
     public async virtual Task Update(UpdateContentCommand command, CancellationToken cancellationToken = default)
     {
+        var con = command.Entity.First();
         if (Invalidation.IsActive)
         {
             _ = await Invalidate();
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var content = await dbContext.Contents
-        .Include(x=>x.Category)
-        .Include(x=>x.Facilities)
-        .Include(x=>x.PhoneNumbers)
-        .Include(x=>x.Files)
-        .Include(x=>x.Photos)
-        .Include(x=>x.Reviews)
-        .Include(x=>x.Languages)
-        .FirstOrDefaultAsync(x => x.Id == command.Entity!.Id);
+        var content = dbContext.Contents
+        .Include(x => x.Category)
+        .Include(x => x.Files)
+        .Include(x => x.Photos)
+        .Include(x => x.Reviews)
+        .Where(x => x.Id == con.Id).ToList() ?? throw new ValidationException("ContentEntity Not Found");
 
-        if (content == null) throw  new ValidationException("ContentEntity Not Found"); 
+        foreach (var item in command.Entity)
+        {
+            Reattach(content.First(x => x.Locale == item.Locale), item, dbContext);
+            dbContext.Update(content.First(x => x.Locale == item.Locale));
+        }
 
-        Reattach(content, command.Entity, dbContext);
-        
         await dbContext.SaveChangesAsync(cancellationToken);
     }
     #endregion
 
-    
+
 
     #region Helpers
 
@@ -140,18 +144,15 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         ContentMapper.From(contentView, content);
 
 
-        if(content.Category != null)
-        content.Category = dbContext.Categories
-        .First(x => x.Id == content.Category.Id);
-        if(content.Files != null)
-        content.Files  = dbContext.Files
-        .Where(x => content.Files.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
-        if(content.Photos != null)
-        content.Photos  = dbContext.Files
-        .Where(x => content.Photos.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
-        if(content.Reviews != null)
-        content.Reviews  = dbContext.Reviews
-        .Where(x => content.Reviews.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
+        if (content.Category != null)
+            content.Category = dbContext.Categories
+            .First(x => x.Id == content.Category.Id);
+        if (content.Files != null)
+            content.Files = [.. dbContext.Files.Where(x => content.Files.Select(tt => tt.Id).ToList().Contains(x.Id))];
+        if (content.Photos != null)
+            content.Photos = [.. dbContext.Files.Where(x => content.Photos.Select(tt => tt.Id).ToList().Contains(x.Id))];
+        if (content.Reviews != null)
+            content.Reviews = [.. dbContext.Reviews.Where(x => content.Reviews.Select(tt => tt.Id).ToList().Contains(x.Id))];
 
     }
 
@@ -161,9 +162,6 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         "Description" => content.Ordering(options, o => o.Description),
         "CategoryId" => content.Ordering(options, o => o.CategoryId),
         "Category" => content.Ordering(options, o => o.Category),
-        "IsPublished" => content.Ordering(options, o => o.IsPublished),
-        "IsDeleted" => content.Ordering(options, o => o.IsDeleted),
-        "Slug" => content.Ordering(options, o => o.Slug),
         "WorkingHours" => content.Ordering(options, o => o.WorkingHours),
         "Facilities" => content.Ordering(options, o => o.Facilities),
         "Location" => content.Ordering(options, o => o.Location),
@@ -179,7 +177,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         "Recommended" => content.Ordering(options, o => o.Recommended),
         "Id" => content.Ordering(options, o => o.Id),
         _ => content.OrderBy(o => o.Id),
-        
+
     };
     #endregion
 }

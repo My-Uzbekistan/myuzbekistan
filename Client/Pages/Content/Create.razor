@@ -1,17 +1,20 @@
-@page "/contents/create"
+@page "/categories/{CategoryId:long}/contents/create"
 
 @inject UICommander Command
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
 @inject Session Session
 
-<Client.Pages.Content._Form OnSubmit="OnSubmit" Processing="@Processing" IsNew="true"/>
+<Client.Pages.Content._Form OnSubmit="OnSubmit" Processing="@Processing" IsNew="true" CategoryId="CategoryId" />
 
 @code {
  
+    [Parameter]
+    public long CategoryId { get; set; }
+
     public bool Processing {get;set;} = false;
 
-    public async Task OnSubmit(ContentView entity)
+    public async Task OnSubmit(List<ContentView> entity)
     {
        Processing = true;
        
@@ -24,7 +27,7 @@
        else
        {
           Snackbar.Add(@L["SuccessCreate"], Severity.Success);
-          navigation.NavigateTo("/contents");
+            navigation.NavigateTo($"/categories/{CategoryId}/contents");
        }
        Processing = false;
     }

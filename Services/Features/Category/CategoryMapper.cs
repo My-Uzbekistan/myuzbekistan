@@ -15,11 +15,14 @@ public static partial class CategoryMapper
     #region Internal
 
     [MapProperty("Contents", "ContentsView")]
+    [MapProperty("Icon", "IconView")]
     private static partial CategoryView To(this CategoryEntity src);
     private static partial List<CategoryView> ToList(this List<CategoryEntity> src);
     [MapProperty("ContentsView", "Contents")]
+    [MapProperty("IconView", "Icon")]
     private static partial CategoryEntity From(this CategoryView CategoryView);
     [MapProperty("ContentsView", "Contents")]
+    [MapProperty("IconView", "Icon")]
     public static partial void From(CategoryView personView, CategoryEntity personEntity);
 
     #endregion

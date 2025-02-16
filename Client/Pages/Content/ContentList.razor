@@ -1,4 +1,4 @@
-@page  "/contents" 
+@page "/categories/{CategoryId:long}/contents"
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -14,7 +14,7 @@
 
 <ListContainer Title="Content">
     <Actions>
-        <MudLink Href="/contents/create">
+        <MudLink Href="@($"categories/{CategoryId}/contents/create")">
             <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
             @L["Create"]
             </MudButton>
@@ -26,8 +26,6 @@
                 <MudTd DataLabel="Description">@context.Description</MudTd>
                 <MudTd DataLabel="CategoryId">@context.CategoryId</MudTd>
                 <MudTd DataLabel="Category.Name">@context.CategoryView?.Name</MudTd>
-                <MudTd DataLabel="IsPublished">@context.IsPublished</MudTd>
-                <MudTd DataLabel="IsDeleted">@context.IsDeleted</MudTd>
                 <MudTd DataLabel="Slug">@context.Slug</MudTd>
                 <MudTd DataLabel="WorkingHours">@context.WorkingHours</MudTd>
                 <MudTd DataLabel="Facilities">@context.Facilities</MudTd>
@@ -52,7 +50,7 @@
                        
                 <MudTd Class="d-flex justify-end">
                     <div style="display:flex; gap:7px;">
-                        <MudLink Href=@($"/contents/{context.Id }")>
+                    <MudLink Href=@($"categories/{CategoryId}/contents/{context.Id}")>
                             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
                         </MudLink>
                         <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
@@ -64,9 +62,10 @@
 
 @code {
 
+    [Parameter] public long CategoryId { get; set; }
     private TableResponse<ContentView>? Items ;
     
-    private string[] SortColumns = new string[] {"Title","Description","CategoryId","Category","IsPublished","IsDeleted","Slug","WorkingHours","Facilities","Location","PhoneNumbers","Files","Photos","Reviews","Languages","RatingAverage","Price","PriceInDollar","Address","Recommended","Id",};
+    private string[] SortColumns = new string[] {"Title","Description","CategoryId","Category","Slug","WorkingHours","Facilities","Location","PhoneNumbers","Files","Photos","Reviews","Languages","RatingAverage","Price","PriceInDollar","Address","Recommended","Id",};
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -80,7 +79,7 @@
 
     protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken = default)
     {
-        var contents = await ContentService.GetAll(MutableState.Value);
+        var contents = await ContentService.GetAll(CategoryId, MutableState.Value);
         return contents;
 
     }

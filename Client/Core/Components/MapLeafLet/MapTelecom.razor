@@ -1,0 +1,232 @@
+﻿﻿@using BlazorLeaflet.Models
+@using BlazorLeaflet.Models.Events
+@using BlazorLeaflet;
+@using System.Text.Json
+@using NetTopologySuite.Geometries
+@inject IJSRuntime jsRuntime
+
+
+@if (_map != null)
+{
+    <MudGrid Class="px-2 pb-2 pt-1 " Justify="Justify.Center">
+        <MudItem xs="12" md="12" lg="12">
+            <MudStack Class="pa-3 mt-1" Style="position:absolute;z-index:999">
+                <MudButton Style="width:50px" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="(e=>_map.ZoomIn(e))"><MudIcon Icon="@Icons.Material.Filled.Add"></MudIcon></MudButton>
+                <MudButton Style="width:50px" Size="Size.Small" Variant="Variant.Filled" Color="Color.Primary" OnClick="(e=>_map.ZoomOut(e))"><MudIcon Icon="@Icons.Material.Filled.HorizontalRule"></MudIcon></MudButton>
+            </MudStack>
+            <div style="height:@GetHeight(Height);z-index:-1; width: 100%;">
+                <LeafletMap Map="_map" />
+            </div>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter] public bool IsSearchable { get; set; } = true;
+
+    private Map _map = null!;
+
+    [Parameter]  public bool ForGetLocation { get; set; } = false;
+
+    [Parameter]  public Location? Value { get; set; }
+
+    private List<LeafLetMarker>? _items = new List<LeafLetMarker>();
+
+    private List<Marker> Markers { get; set; } = new List<Marker>();
+
+    [Parameter]  public bool Draggable { get; set; } = true;
+
+    [Parameter]  public int Height { get; set; } = 650;
+
+    [Parameter]  public List<LatLng>? Routes { get; set; }
+
+    [Parameter]  public List<LatLngDouble>? GpsRoutes { get; set; }
+
+    [Parameter]  public EventCallback<Location> ValueChanged { get; set; }
+
+    [Parameter]  public float? Zoom { get; set; }
+
+    [Parameter]  public float? MinZoom { get; set; }
+
+    private Marker? CurrentMarker { get; set; }
+
+    private bool _IsNotFirstRender = false;
+
+    [Parameter] public List<LeafLetMarker>? Items
+    {
+        get{  return _items; }
+        set
+        {
+            _items = value;
+            if (_IsNotFirstRender && _items is not null)
+            {
+                UploadMarker(_items);
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _map = DefaultMap(jsRuntime, Value.LatLng, Zoom, MinZoom);
+            _map.OnInitialized += async () =>
+            {
+                _map.AddLayer(TileLayer);
+                if (ForGetLocation)
+                {
+                    CurrentMarker = SetMarker(Value.LatLng.Lng, Value.LatLng.Lat, Draggable);
+                    _map.AddLayer(CurrentMarker);
+                }
+                else
+                {
+                    if (Items != null)
+                    {
+                        UploadMarker(Items);
+                    }
+                    if (Routes != null)
+                    {
+                        _map.AddRouting(jsRuntime, Routes, GpsRoutes);
+                    }
+                }
+                _IsNotFirstRender = true;
+            };
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+    private void UploadMarker(List<LeafLetMarker> models)
+    {
+        foreach (var item in models)
+        {
+            var newMarker = SetMarker(item.Lng, item.Lat, Draggable, "driver", item.EngineOn, item.Name, item.CarNumber); ;
+            var oldMarker = Markers.FirstOrDefault(x => x.Title == item.CarNumber);
+            if (oldMarker is not null && oldMarker.Position != newMarker.Position)
+            {
+                Markers.Remove(oldMarker);
+                _map.RemoveLayer(oldMarker);
+                Markers.Add(newMarker);
+                _map.AddLayer(newMarker);
+            }
+            if (oldMarker is null)
+            {
+                Markers.Add(newMarker);
+                _map.AddLayer(newMarker);
+            }
+        }
+    }
+    private Icon DefaultIcon(string Url) => new Icon
+    {
+        Url = Url,
+        Anchor = new System.Drawing.Point(20, 57),
+        PopupAnchor = new System.Drawing.Point(0, -40),
+        Size = new System.Drawing.Size(40, 57)
+    };
+    public Map DefaultMap(IJSRuntime jsRuntime, LatLng latLng, float? zoom, float? minZoom)
+    {
+        var lat = new LatLng { Lat = latLng.Lat, Lng = latLng.Lng };
+        var map = new Map(jsRuntime)
+        {
+            Center = lat,
+            ZoomControl = false,
+        };
+        if (zoom != null)
+            map.Zoom = (float)zoom;
+
+        if (minZoom != null)
+            map.MinZoom = (float)minZoom;
+
+        return map;
+    }
+    public static TileLayer TileLayer => new TileLayer
+    {
+        UrlTemplate = "https://map.uztelecom.uz/hot/{z}/{x}/{y}.png"
+    };
+    public Marker SetMarker(double Lat, double Lng, bool Draggable, string? type = null, bool? engineOn= null, string? Name = null, string? car = null)
+    {
+        var marker = new Marker((float)Lng, (float)Lat)
+        {
+            Draggable = Draggable,
+        };
+        string? ContentName = null;
+
+        if (Name != null)
+            ContentName += "<b>" + Name + "</b>" +"<br>";
+        if (car != null)
+            ContentName += "<b>" + car + "</b>";
+
+        marker.OnDrag += Marker_OnDrag;
+        marker.OnDragEnd += Marker_OnDragEnd;
+        _map.OnClick += Map_OnClick;
+        marker.Popup = new Popup { Content = ContentName };
+
+        if (engineOn != null && type != null)
+        {
+            if (type.ToLower() == "driver")
+            {
+                marker.Icon = engineOn==true ? DefaultIcon("/Images/carOnOrder.svg") : DefaultIcon("/Images/freeCar.svg");
+            }
+        }
+        if (engineOn == null)
+        {
+            marker.Icon = default;
+        }
+       
+        marker.Title = car;
+
+        return marker;
+    }
+    private async void Map_OnClick(Map sender, BlazorLeaflet.Models.Events.MouseEvent e)
+    {
+        if (e.LatLng != null && CurrentMarker != null)
+        {
+            var address = await _map.GetGeoadress(jsRuntime, e.LatLng);
+            var location = new Location
+            {
+                Address = address,
+                LatLng = e.LatLng
+            };
+            sender.RemoveLayer(CurrentMarker);
+            CurrentMarker = SetMarker(e.LatLng.Lng, e.LatLng.Lat, true, null, null, address);
+            sender.AddLayer(CurrentMarker);
+            await ValueChanged.InvokeAsync(location!);
+        }
+    }
+
+
+    public LatLng Current;
+    private void Marker_OnDrag(Marker sender, BlazorLeaflet.Models.Events.DragEvent e)
+    {
+        Current = e.LatLng;
+    }
+    private async void Marker_OnDragEnd(Marker sender, object e)
+    {
+        if (CurrentMarker != null)
+        {
+            var address = await _map.GetGeoadress(jsRuntime, Current);
+            var location = new Location
+            {
+                Address = address,
+                LatLng = Current
+            };
+            ValueChanged.InvokeAsync(location!);
+        }
+    }
+    public string GetHeight(int h)
+    {
+        return h + "px";
+    }
+    private async Task OnSearch(string? search)
+    {
+        if (!String.IsNullOrEmpty(search)&&search.Length>4&&search.Length<9)
+        {
+            var car = _items.FirstOrDefault(x => x.CarNumber!.Replace(" ", "").ToLower().Contains(search.Replace(" ", "").ToLower()));
+            if (car != null)
+                await jsRuntime.InvokeVoidAsync("window.leafletBlazor" + ".zoomToLocation", _map.Id, car.Lat, car.Lng, 18f, car.CarNumber, true);
+        }
+        else
+            await jsRuntime.InvokeVoidAsync("window.leafletBlazor" + ".zoomToLocation", _map.Id, Value.LatLng.Lat, Value.LatLng.Lng, 4.8f, "", false);
+        StateHasChanged();
+    }
+    
+}

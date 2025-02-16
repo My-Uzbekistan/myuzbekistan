@@ -1,6 +1,6 @@
-@page "/contents/{Id:long}"
+@page "/categories/{CategoryId:long}/contents/{Id:long}"
 
-@inherits ComputedStateComponent<ContentView>
+@inherits ComputedStateComponent<List<ContentView>>
 @inject IContentService ContentService
 @inject UICommander Command
 @inject ISnackbar Snackbar
@@ -8,20 +8,22 @@
 @inject Session Session
 
 @{
-    var Model = State.LastNonErrorValue ?? new ContentView() { };
+    var Model = State.LastNonErrorValue ?? new List<ContentView>() { };
 }
 
-<Client.Pages.Content._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+<Client.Pages.Content._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false" CategoryId="CategoryId" />
 
 
 
 @code {
     [Parameter]
+    public long CategoryId { get; set; }
+    [Parameter]
     public long Id { get; set; }
 
     public bool Processing {get;set;}=false;
     
-    public async Task OnSubmit(ContentView entity)
+    public async Task OnSubmit(List<ContentView> entity)
     {
        Processing =true;
      
@@ -40,7 +42,7 @@
        Processing=false;
     }
 
-    protected override async Task<ContentView> ComputeState(CancellationToken cancellationToken)
+    protected override async Task<List<ContentView>> ComputeState(CancellationToken cancellationToken)
     {
         return await ContentService.Get(Id,cancellationToken);
     }

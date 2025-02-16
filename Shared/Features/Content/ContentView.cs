@@ -2,18 +2,20 @@ using MemoryPack;
 using ActualLab.Fusion.Blazor;
 using System.Runtime.Serialization;
 using Point = NetTopologySuite.Geometries.Point;
+using Shared.Localization;
+using System.ComponentModel.DataAnnotations;
 namespace myuzbekistan.Shared;
 
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class ContentView
 {
-   [property: DataMember] public string Title { get; set; } = null!;
+    [Display(ResourceType = typeof(SharedResource), Name = "Title")]
+    [Required(ErrorMessageResourceName = "RequiredError", ErrorMessageResourceType = typeof(SharedResource))]
+    [property: DataMember] public string Title { get; set; } = null!;
    [property: DataMember] public string Description { get; set; } = null!;
-   [property: DataMember] public string CategoryId { get; set; } = null!;
-   [property: DataMember] public CategoryView CategoryView { get; set; } 
-   [property: DataMember] public bool IsPublished { get; set; } 
-   [property: DataMember] public bool IsDeleted { get; set; } 
+   [property: DataMember] public long CategoryId { get; set; }
+    [property: DataMember] public CategoryView CategoryView { get; set; } = null!;
    [property: DataMember] public string Slug { get; set; } = null!;
    [property: DataMember] public string WorkingHours { get; set; } = null!;
    [property: DataMember] public String[]? Facilities { get; set; } = null!;
@@ -29,6 +31,8 @@ public partial class ContentView
    [property: DataMember] public string? Address { get; set; } 
    [property: DataMember] public bool Recommended { get; set; } 
    [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public string Locale { get; set; } = null!;
+    [property: DataMember] public ContentStatus Status { get; set; } = ContentStatus.Active;
 
     public override bool Equals(object? o)
     {

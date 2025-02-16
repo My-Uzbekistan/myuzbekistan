@@ -7,9 +7,9 @@ namespace myuzbekistan.Shared;
 public interface IContentService:IComputeService
 {
     [ComputeMethod]
-    Task<TableResponse<ContentView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
+    Task<TableResponse<ContentView>> GetAll(long CategoryId, TableOptions options, CancellationToken cancellationToken = default);
     [ComputeMethod]
-    Task<ContentView> Get(long Id, CancellationToken cancellationToken = default);
+    Task<List<ContentView>> Get(long Id, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Create(CreateContentCommand command, CancellationToken cancellationToken = default);
     [CommandHandler]

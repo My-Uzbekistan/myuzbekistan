@@ -9,7 +9,7 @@
     Images = State.LastNonErrorValue ?? new TableResponse<FileView>() { };
 }
 
-<MudDialog IsVisible="@IsImageSelect" IsVisibleChanged="(isVisible) => OnVisibleChanged(isVisible)" Options="dialogOptions">
+<MudDialog Visible="@IsImageSelect" VisibleChanged="(isVisible) => OnVisibleChanged(isVisible)" Options="dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">
             List of Images

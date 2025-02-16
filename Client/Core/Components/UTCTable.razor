@@ -24,7 +24,6 @@ else
                 </MudItem>
             </MudGrid>
         </MudPaper>
-
         <MudTable Items="Values.Items" T="Tclass" RowsPerPage=MutableState.Value.PageSize  Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
             <HeaderContent>
                 <TableSorter Columns="SortColumns" MutableState="MutableState" T="Tclass" />

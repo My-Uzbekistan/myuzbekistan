@@ -1,0 +1,72 @@
+﻿@using BlazorLeaflet.Models
+@using Client.Core.Components.MapLeafLet
+@using Point = NetTopologySuite.Geometries.Point;
+@inject IDialogService DialogService
+@inject ISnackbar SnackBar
+<MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+    @L["PickLocation"]
+</MudButton>
+<MudDialog @bind-Visible="_visible" Options="new DialogOptions{ FullWidth = true, MaxWidth = MaxWidth.Large }">
+    <TitleContent>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid Justify="Justify.Center">
+            <MudItem Style="display:flex;" xs="12" lg="4">
+                <MudPaper Class="mt-5 pa-4" Style="width:100%">
+                    <MudTextField @bind-Value="Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Outlined" />
+                    <MudNumericField @bind-Value="Loc.LatLng.Lat" Culture="@CultureInfo.InvariantCulture" Margin=Margin.Normal Label="@L["Lat"]" AutoFocus="false" Variant="Variant.Outlined" />
+                    <MudNumericField @bind-Value="Loc.LatLng.Lng" Culture="@CultureInfo.InvariantCulture" Label="@L["Lng"]" AutoFocus="false" Variant="Variant.Outlined" />
+                </MudPaper>
+            </MudItem>
+            <MudItem Style="display:flex;" xs="12" lg="8">
+                <MudPaper Class="mt-5 pt-2" Style="width:100%">
+                    <Client.Core.Components.MapLeafLet.MapTelecom Height="400" Value=@Loc ValueChanged="@(x=>ChangedValue(x))" Zoom="7f" ForGetLocation=true Draggable=true IsSearchable="false" />
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Confirm">@L["Confirm"]</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    bool _visible = false;
+    private void OpenDialogAsync()
+    {
+        _visible = !_visible;
+    }
+
+    private void Cancel() => _visible = false;
+
+    private async Task Confirm()
+    {
+        await LocationChanged.InvokeAsync(Location);
+        await AddressChanged.InvokeAsync(Address);
+        _visible = false;
+    }
+
+    [Parameter]
+    public Point? Location { get; set; } = null!;
+    [Parameter]
+    public EventCallback<Point> LocationChanged { get; set; }
+
+    [Parameter]
+    public string? Address { get; set; } = null!;
+    [Parameter]
+    public EventCallback<string> AddressChanged { get; set; }
+
+    public Location Loc { get; set; } = new Location { LatLng = new LatLng() { Lat = 41.345f, Lng = 69.324f } };
+
+
+    void ChangedValue(Location location)
+    {
+        Address = location.Address;
+        Location = new NetTopologySuite.Geometries.Point(location.LatLng.Lng, location.LatLng.Lat) { SRID = 4326 };
+    }
+
+}

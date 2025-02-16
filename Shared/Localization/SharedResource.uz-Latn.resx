@@ -129,9 +129,6 @@
   <data name="Cancel" xml:space="preserve">
     <value>Bekor qilish</value>
   </data>
-  <data name="TableBottom" xml:space="preserve">
-    <value>Mos yozuvlar topilmadi</value>
-  </data>
   <data name="Loading" xml:space="preserve">
     <value>Yuklash</value>
   </data>
@@ -167,5 +164,26 @@
   </data>
   <data name="NameError" xml:space="preserve">
     <value>NameErroruz</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Ism</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Tavsif</value>
+  </data>
+  <data name="RequiredError" xml:space="preserve">
+    <value>{0} maydonini kiritish shart.</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Faol</value>
+  </data>
+  <data name="InActive" xml:space="preserve">
+    <value>O'chiq</value>
+  </data>
+  <data name="TableBottom" xml:space="preserve">
+    <value>Mos yozuvlar topilmadi</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Sarlavha</value>
   </data>
 </root>

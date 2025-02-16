@@ -1,60 +1,145 @@
+@using BlazorLeaflet.Models
+@using Client.Core.Components.MapLeafLet
+
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
 @inject PageHistoryState PageHistoryState
+@inject ICategoryService categoryService
 
-<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
-<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
-    <Actions>
-        <SaveCancelButton OnCancel='() => PageHistoryState.Back("contents")' Processing="@Processing" />
-    </Actions>
-    <ChildContent>
-        <MudGrid>
-            <MudItem xs="8">
-                <MudPaper Class="pa-4">
-                        <ObjectGraphDataAnnotationsValidator />
-                        <ValidationSummary />
-                            <MudTextField  @bind-Value="Model.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Title)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.CategoryId" Label="CategoryId" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CategoryId)"Required="true"/>
-                            <Client.Pages.Content._CategoryEntitySelect @bind-Value="Model.CategoryView"  For="@(() => Model.CategoryView)"Required="true"/>
-                            <MudSwitch @bind-Checked="Model.IsPublished" For="@(() => Model.IsPublished)"Required="true"/>
-                            <MudSwitch @bind-Checked="Model.IsDeleted" For="@(() => Model.IsDeleted)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.Slug" Label="Slug" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Slug)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkingHours)"Required="true"/>
-                            <ImagesSelectView @bind-Value="Model.FilesView" />
-                            <ImagesSelectView @bind-Value="Model.PhotosView" />
-                            <Client.Pages.Content._ReviewEntityMultiSelect   @bind-Value="Model.ReviewsView"  For="@(() => Model.ReviewsView)"Required="true"/>
-                            <MudNumericField  @bind-Value="Model.RatingAverage" AutoFocus="false" Label="RatingAverage" Variant="Variant.Text" For="@(() => Model.RatingAverage)"Required="true"/>                                
-                            <MudTextField  @bind-Value="Model.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)"/>
-                            <MudSwitch @bind-Checked="Model.Recommended" For="@(() => Model.Recommended)"Required="true"/>
-                            <input type="hidden" @bind-value="Model.Id"> 
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </ChildContent>
-</FormContainer>
-</EditForm>
+@foreach (var Model in Model)
+{
+    <EditForm hidden="@(!Language.Equals(Model.Locale))" EditContext="@_contexts[Model.Locale]" OnSubmit="OnValidSubmit">
+        <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+
+            <Actions>
+                <SaveCancelButton OnCancel='() => PageHistoryState.Back("contents")' Processing="@Processing" />
+            </Actions>
+            <ChildContent>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <MudGrid>
+                    <MudItem lg="8" xs="12">
+                        <MudPaper Class="pa-4">
+                            <ObjectGraphDataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <MudTextField @bind-Value="Model.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Title)" Required="true" />
+                            @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
+                            {
+                                <MudTextField @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" Required="true" />
+                            }
+
+                            @* <MudTextField @bind-Value="Model.Slug" Label="Slug" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Slug)" Required="true" /> *@
+
+                            @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))
+                            {
+                                <MudTextField @bind-Value="Model.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkingHours)" Required="true" />
+
+                            }
+
+
+                            @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
+                            {
+                                <MudTextField @bind-Value="Model.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
+                            }
+
+                            <input type="hidden" @bind-value="Model.Id">
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                        <MudExpansionPanels Class="mb-3">
+                            <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
+                                <_PlacesForm @bind-Location="Model.Location" @bind-Address="Model.Address" />
+                                <MudSwitch Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="Model.Recommended" @bind-Checked:after="()=>{UpdateRecommended(Model.Recommended);}" For="@(() => Model.Recommended)"  />
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
+                                {
+                                    <ImagesSelectView Label="@L["Conditions"]" @bind-Value="Model.FilesView" />
+                                }
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
+                                {
+                                    <ImagesSelectView Label="@L["Photos"]" @bind-Value="Model.PhotosView" />
+                                }
+                            </MudExpansionPanel>
+                            <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
+                        </MudExpansionPanels>
+
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </FormContainer>
+    </EditForm>
+}
 @code {
+
+    string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
+
     [Parameter]
-    public ContentView Model { get; set; } = new();
+    public List<ContentView> Model { get; set; } = [new ContentView { Locale = "uz" }, new ContentView { Locale = "ru" }, new ContentView { Locale = "en" },];
+    private Dictionary<string, EditContext?> _contexts = new() { { "uz", null }, { "en", null }, { "ru", null } };
+    private Dictionary<string, bool> Errors { get; set; } = new() { { "en", false }, { "uz", false }, { "ru", false } };
+
+    [Parameter]
+    public long CategoryId { get; set; }
+
+    public CategoryView categoryView { get; set; } = null!;
+    public List<CategoryView> categoriesView { get; set; } = null!;
 
     [Parameter]
     public bool IsNew { get; set; } = false;
 
     [Parameter]
-    public EventCallback<ContentView> OnSubmit { get; set; }
+    public EventCallback<List<ContentView>> OnSubmit { get; set; }
 
     [Parameter]
     public bool Processing { get; set; }
 
-    
-    private async void OnValidSubmit(EditContext context)
+    protected override void OnInitialized()
     {
-        await OnSubmit.InvokeAsync(Model);
+        base.OnInitialized();
+
     }
-   
+
+    protected override async Task OnInitializedAsync()
+    {
+        var categories = await categoryService.Get(CategoryId);
+        categoryView = categories.First();
+
+        foreach (var item in Model)
+        {
+            item.CategoryId = CategoryId;
+            item.CategoryView = categories.First(x => x.Locale == item.Locale);
+            _contexts[item.Locale] = new(item);
+
+        }
+        await base.OnInitializedAsync();
+
+    }
+
+    public void UpdateRecommended(bool rec)
+    {
+        Model.ForEach(x =>
+        {
+            x.Recommended = rec;
+        });
+    }
+
+
+    private void OnValidSubmit(EditContext context)
+    {
+        foreach (var item in _contexts)
+        {
+            if (item.Value!.Validate() || item.Key == Language)
+                Errors[item.Key] = false;
+            else
+                Errors[item.Key] = true;
+        }
+        if (Errors.All(x => !x.Value))
+        {
+            OnSubmit.InvokeAsync(Model);
+        }
+    }
+
     string GetTitle()
     {
-      return IsNew ? @L["Create"] : @L["Edit"] ;
+        return IsNew ? @L["Create"] : @L["Edit"];
     }
 }

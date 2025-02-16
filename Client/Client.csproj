@@ -19,6 +19,7 @@
 		<PackageReference Include="MudBlazor" Version="8.*" />
 		<PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+		<PackageReference Include="BlazorLeaflet-net6" Version="0.5.0-alpha" />
 	</ItemGroup>
 	<!-- ActualLab.FUSION -->
 	<ItemGroup>

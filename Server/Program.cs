@@ -29,6 +29,10 @@ using System.Text;
 
 using UFile.Server;
 using UFile.Shared;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Microsoft.Extensions.FileProviders;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 
 #region Builder And Logging
@@ -55,7 +59,7 @@ services.AddDataBase<AppDbContext>(env, cfg, (DataBaseType)Enum.Parse(typeof(Dat
 services.AddAuth(env, cfg);
 services.AddAuthorizationCore(config =>
 {
-    foreach (var p in builder.Configuration.GetSection("Auth:Policies").Get<List<Policy>>() ?? new List<Policy>())
+    foreach (var p in builder.Configuration.GetSection("Auth:Policies").Get<List<Policy>>() ?? [])
     {
         config.AddPolicy(p.Name, policy => policy.RequireRole(p.Roles));
     }
@@ -116,7 +120,7 @@ services.AddLocalization();
 services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[] { "en-US", "ru-RU", "uz-Latn" };
-    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.DefaultRequestCulture = new RequestCulture("uz-Latn");
     options.AddSupportedCultures(supportedCultures);
     options.AddSupportedUICultures(supportedCultures);
 });
@@ -142,6 +146,7 @@ services.AddScoped<PageHistoryState>();
 services.AddScoped<UInjector>();
 #endregion
 #region File
+//FileServiceCollection.AddFileServer(services, UploadType.Minio, cfg);
 services.AddFileServer(UploadType.Tus, cfg);
 services.AddSingleton<IOnCreateCompleteEvent, OnCreateCompleteEvent>();
 services.AddSingleton<IOnAuthorizeEvent, OnAuthorizeEvent>();
@@ -188,6 +193,7 @@ app.UseResponseCaching();
 app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseAntiforgery();
+UFile.Server.UFileRegistration.UseFileServer(app,UploadType.Tus);
 
 app.UseCors();
 
@@ -248,29 +254,6 @@ public class CustomPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : 
         }
     }
 
-    //public string HashPassword(TUser user, string password)
-    //{
-    //    return BCrypt.Net.BCrypt.HashPassword(password, workFactor: 10); // workFactor âëèÿåò íà ñêîðîñòü
-    //}
-
-    //public PasswordVerificationResult VerifyHashedPassword(TUser user, string hashedPassword, string providedPassword)
-    //{
-    //    var stopwatch = Stopwatch.StartNew();
-
-    //    try
-    //    {
-    //        BCrypt.Net.BCrypt.HashPassword(providedPassword, workFactor: 10); // workFactor âëèÿåò íà ñêîðîñòü
-    //        _logger.LogInformation("HashPassword took: {ElapsedMilliseconds} ms", stopwatch.ElapsedMilliseconds);
-    //        stopwatch.Restart();
-    //        return BCrypt.Net.BCrypt.Verify(providedPassword, hashedPassword)
-    //        ? PasswordVerificationResult.Success
-    //        : PasswordVerificationResult.Failed;
-    //    }
-    //    finally
-    //    {
-    //        stopwatch.Stop();
-    //        _logger.LogInformation("VerifyHashedPassword took: {ElapsedMilliseconds} ms", stopwatch.ElapsedMilliseconds);
-    //    }
-    //}
+   
 }
 

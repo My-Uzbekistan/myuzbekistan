@@ -32,4 +32,26 @@
 	<ItemGroup>
 	  <Folder Include="Features\Category\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Localization\SharedResource.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SharedResource.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Localization\SharedResource.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
+	    <CustomToolNamespace>Shared.Localization</CustomToolNamespace>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Localization\SharedResource.ru-RU.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <CustomToolNamespace>Shared.Localization</CustomToolNamespace>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Localization\SharedResource.uz-Latn.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <CustomToolNamespace>Shared.Localization</CustomToolNamespace>
+	  </EmbeddedResource>
+	</ItemGroup>
 </Project>

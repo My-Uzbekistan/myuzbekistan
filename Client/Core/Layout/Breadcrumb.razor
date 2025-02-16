@@ -2,9 +2,12 @@
 @namespace Client.Core.Layout
 @implements IDisposable
 
-<MudBreadcrumbs Class="pl-6 pa-1 relative" Items="Items">
+<MudHidden Class="pl-6 pa-1" Breakpoint="Breakpoint.Xs" Invert="false">
+    <MudBreadcrumbs Class="relative" Items="Items">
 
-</MudBreadcrumbs>
+    </MudBreadcrumbs>
+</MudHidden>
+
 @code {
 
     private List<BreadcrumbItem> Items = new List<BreadcrumbItem>

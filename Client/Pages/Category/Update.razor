@@ -1,6 +1,6 @@
 @page "/categories/{Id:long}"
 
-@inherits ComputedStateComponent<CategoryView>
+@inherits ComputedStateComponent<List<CategoryView>>
 @inject ICategoryService CategoryService
 @inject UICommander Command
 @inject ISnackbar Snackbar
@@ -8,7 +8,7 @@
 @inject Session Session
 
 @{
-    var Model = State.LastNonErrorValue ?? new CategoryView() { };
+    var Model = State.LastNonErrorValue ?? new List<CategoryView>() { };
 }
 
 <Client.Pages.Category._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
@@ -21,7 +21,7 @@
 
     public bool Processing {get;set;}=false;
     
-    public async Task OnSubmit(CategoryView entity)
+    public async Task OnSubmit(List<CategoryView> entity)
     {
        Processing =true;
      
@@ -40,7 +40,7 @@
        Processing=false;
     }
 
-    protected override async Task<CategoryView> ComputeState(CancellationToken cancellationToken)
+    protected override async Task<List<CategoryView>> ComputeState(CancellationToken cancellationToken)
     {
         return await CategoryService.Get(Id,cancellationToken);
     }

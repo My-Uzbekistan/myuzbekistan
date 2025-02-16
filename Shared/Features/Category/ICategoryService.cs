@@ -9,7 +9,7 @@ public interface ICategoryService:IComputeService
     [ComputeMethod]
     Task<TableResponse<CategoryView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
     [ComputeMethod]
-    Task<CategoryView> Get(long Id, CancellationToken cancellationToken = default);
+    Task<List<CategoryView>> Get(long Id, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Create(CreateCategoryCommand command, CancellationToken cancellationToken = default);
     [CommandHandler]

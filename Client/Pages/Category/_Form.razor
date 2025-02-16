@@ -1,49 +1,109 @@
+@using System.Globalization
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
 @inject PageHistoryState PageHistoryState
 
-<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
-<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
-    <Actions>
-        <SaveCancelButton OnCancel='() => PageHistoryState.Back("categories")' Processing="@Processing" />
-    </Actions>
-    <ChildContent>
-        <MudGrid>
-            <MudItem xs="8">
-                <MudPaper Class="pa-4">
-                        <ObjectGraphDataAnnotationsValidator />
-                        <ValidationSummary />
-                            <MudTextField  @bind-Value="Model.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Name)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)"Required="true"/>
-                            <Client.Pages.Category._ContentEntityMultiSelect @bind-Value="Model.ContentsView"  For="@(() => Model.ContentsView)"Required="true"/>
-                            <input type="hidden" @bind-value="Model.Id"> 
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </ChildContent>
-</FormContainer>
-</EditForm>
+@foreach (var current in Model)
+{
+    <EditForm hidden="@(!Language.Equals(current.Locale))" EditContext="@_contexts[current.Locale]" OnSubmit="HandleSubmit">
+        <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+            <Actions>
+                <SaveCancelButton OnCancel='() => PageHistoryState.Back("categories")' Processing="@Processing" />
+            </Actions>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem lg="8" xs="12">
+                        <MudPaper Class="pa-4">
+                            <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
+                            @* <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" /> *@
+                            <ImageSelectView @bind-Value="current.IconView" />
+                            <input type="hidden" @bind-value="current.Id">
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                        <MudExpansionPanels Class="mb-3">
+                            <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
+                                <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status);}" Class="pa-4" Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
+                                    <MudSelectItem T="ContentStatus" Value="ContentStatus.Active">@L["Active"]</MudSelectItem>
+                                    <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
+                                </MudSelect>
+                                <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="()=>{ Model.ForEach(x=>{ x.Order = current.Order; });  }"></MudNumericField>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
+                                @foreach (ContentFields field in (ContentFields[])Enum.GetValues(typeof(ContentFields)))
+                                {
+                                    <FlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => {PopulateFlags(current.Fields);}" BitWise=(int)field Label="@L[field.ToString()]" />
+                                }
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                        <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </FormContainer>
+    </EditForm>
+}
 @code {
+
+    string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
+
     [Parameter]
-    public CategoryView Model { get; set; } = new();
+    public List<CategoryView> Model { get; set; } = [new CategoryView { Locale = "uz" }, new CategoryView { Locale = "ru" }, new CategoryView { Locale = "en" },];
+    private Dictionary<string, EditContext?> _contexts = new() { { "uz", null }, { "en", null }, { "ru", null } };
 
     [Parameter]
     public bool IsNew { get; set; } = false;
 
     [Parameter]
-    public EventCallback<CategoryView> OnSubmit { get; set; }
+    public EventCallback<List<CategoryView>> OnSubmit { get; set; }
 
     [Parameter]
     public bool Processing { get; set; }
 
-    
-    private async void OnValidSubmit(EditContext context)
+    private Dictionary<string, bool> Errors { get; set; } = new() { { "en", false }, { "uz", false }, { "ru", false } };
+
+    protected override void OnInitialized()
     {
-        await OnSubmit.InvokeAsync(Model);
+        base.OnInitialized();
+        foreach (var item in Model)
+        {
+            _contexts[item.Locale] = new(item);
+        }
     }
-   
+
+    void HandleSubmit(EditContext ctx)
+    {
+        foreach (var item in _contexts)
+        {
+            if (item.Value!.Validate() || item.Key == Language)
+                Errors[item.Key] = false;
+            else
+                Errors[item.Key] = true;
+        }
+        if (Errors.All(x => !x.Value))
+        {
+            OnSubmit.InvokeAsync(Model);
+        }
+    }
+
+    void OnChangeStatus(ContentStatus status)
+    {
+        Model.ForEach(s =>
+        {
+            s.Status = status;
+        });
+    }
+
+    void PopulateFlags(int flag)
+    {
+        Model.ForEach(x =>
+        {
+            x.Fields = flag;
+        });
+    }
+
     string GetTitle()
     {
-      return IsNew ? @L["Create"] : @L["Edit"] ;
+        return IsNew ? @L["Create"] : @L["Edit"];
     }
 }
