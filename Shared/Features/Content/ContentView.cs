@@ -18,7 +18,7 @@ public partial class ContentView
     [property: DataMember] public CategoryView CategoryView { get; set; } = null!;
    [property: DataMember] public string Slug { get; set; } = null!;
    [property: DataMember] public string WorkingHours { get; set; } = null!;
-   [property: DataMember] public List<FacilityView>? Facilities { get; set; } = null!;
+   [property: DataMember] public ICollection<FacilityView> Facilities { get; set; } = [];
    [property: DataMember, MemoryPackAllowSerialize] public Point? Location { get; set; } 
    [property: DataMember] public List<CallInformation> PhoneNumbers { get; set; } = [];
    [property: DataMember] public ICollection<FileView>? FilesView { get; set; } 

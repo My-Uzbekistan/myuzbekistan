@@ -62,6 +62,10 @@
 
                                     <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="Model.Recommended" @bind-Checked:after="()=>{UpdateRecommended(Model.Recommended);}" For="@(() => Model.Recommended)" />
                                 </MudStack>
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Facilities))
+                                {
+                                    <_FacilityEntityMultiSelect Label="@L["Facilities"]" @bind-Value="Model.Facilities" For="()=> Model.Facilities" />
+                                }
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
                                 {
                                     <ImagesSelectView Label="@L["Conditions"]" @bind-Value="Model.FilesView" />
