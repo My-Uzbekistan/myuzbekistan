@@ -124,23 +124,30 @@ services.AddSwaggerDocument();
 #endregion
 #region Localization
 services.AddLocalization();
-
-
-var supportedCultures = new[] { "en", "ru", "uz" };
-
-var localizationOptions = new RequestLocalizationOptions
-{
-    DefaultRequestCulture = new RequestCulture("en"),
-    SupportedCultures = [.. supportedCultures.Select(c => new System.Globalization.CultureInfo(c))],
-    SupportedUICultures = [.. supportedCultures.Select(c => new System.Globalization.CultureInfo(c))]
-};
-
-// Добавляем провайдер для чтения из заголовка Accept-Language
-localizationOptions.RequestCultureProviders.Insert(0, new AcceptLanguageHeaderRequestCultureProvider());
 services.Configure<RequestLocalizationOptions>(options =>
 {
-    options = localizationOptions;
+    var supportedCultures = new[] { "en-US", "ru-RU", "uz-Latn" };
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.AddSupportedCultures(supportedCultures);
+    options.AddSupportedUICultures(supportedCultures);
 });
+
+
+//var supportedCultures = new[] { "en-US", "ru-RU", "uz-Latn" };
+
+//var localizationOptions = new RequestLocalizationOptions
+//{
+//    DefaultRequestCulture = new RequestCulture("en-US"),
+//    SupportedCultures = [.. supportedCultures.Select(c => new System.Globalization.CultureInfo(c))],
+//    SupportedUICultures = [.. supportedCultures.Select(c => new System.Globalization.CultureInfo(c))]
+//};
+
+// Добавляем провайдер для чтения из заголовка Accept-Language
+//localizationOptions.RequestCultureProviders.Insert(0, new AcceptLanguageHeaderRequestCultureProvider());
+//services.Configure<RequestLocalizationOptions>(options =>
+//{
+//    options = localizationOptions;
+//});
 #endregion
 #region CORS AND PROXY
 services.AddCors(cors => cors.AddDefaultPolicy(
@@ -204,7 +211,7 @@ app.UseWebSockets(new WebSocketOptions()
 #endregion
 
 app.UseFusionSession();
-app.UseRequestLocalization(localizationOptions);
+app.UseRequestLocalization();
 
 app.UseResponseCaching();
 app.UseResponseCompression();

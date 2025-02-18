@@ -21,29 +21,29 @@
     [Parameter]
     public long Id { get; set; }
 
-    public bool Processing {get;set;}=false;
-    
+    public bool Processing { get; set; } = false;
+
     public async Task OnSubmit(List<ContentView> entity)
     {
-       Processing =true;
-     
-     
-       var response = await Command.Run(new UpdateContentCommand(Session,entity));
-       if(response.HasError)
-       {
-          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
-       }
-       else
-       {
-          Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
-          navigation.NavigateTo("/contents");
-       }
+        Processing = true;
 
-       Processing=false;
+
+        var response = await Command.Run(new UpdateContentCommand(Session, entity));
+        if (response.HasError)
+        {
+            Snackbar.Add(@L["Error"] + " : " + response.Error?.Message, Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+            navigation.NavigateTo($"/categories/{CategoryId}/contents");
+        }
+
+        Processing = false;
     }
 
     protected override async Task<List<ContentView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await ContentService.Get(Id,cancellationToken);
+        return await ContentService.Get(Id, cancellationToken);
     }
 }

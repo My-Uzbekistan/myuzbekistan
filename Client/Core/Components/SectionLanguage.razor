@@ -5,7 +5,7 @@
             <MudItem xs="12">
                 <MudSimpleTable Outlined=true Hover=true>
                     <tbody>
-                        <tr onclick="@(()=>ChangeLang("uz"))">
+                        <tr @onclick="@(()=>ChangeLang("uz"))">
                             <td>@L["Uzbek"]</td>
                             <td>
                                 <MudLink Disabled=@DisabledLink("uz") OnClick="@(()=>ChangeLang("uz"))">
@@ -18,7 +18,7 @@
                             }
 
                         </tr>
-                        <tr onclick="@(()=>ChangeLang("ru"))">
+                        <tr @onclick="@(()=>ChangeLang("ru"))">
                             <td>@L["Russian"]</td>
                             <td>
                                 <MudLink Disabled=@DisabledLink("ru") OnClick="@(()=>ChangeLang("ru"))">
@@ -30,7 +30,7 @@
                                 <td>  <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Error"></MudIcon>  </td>
                             }
                         </tr>
-                        <tr onclick="@(()=>ChangeLang("en"))">
+                        <tr @onclick="@(()=>ChangeLang("en"))">
                             <td>@L["English"]</td>
                             <td>
                                 <MudLink Disabled=@DisabledLink("en") OnClick="@(()=>ChangeLang("en"))">

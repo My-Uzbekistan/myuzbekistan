@@ -33,6 +33,10 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         content = content.Where(x => x.CategoryId == CategoryId);
         #endregion
 
+
+        if (!String.IsNullOrEmpty(options.Lang))
+            content = content.Where(x => x.Locale.Equals(options.Lang));
+
         Sorting(ref content, options);
 
         content = content.Include(x => x.Category);

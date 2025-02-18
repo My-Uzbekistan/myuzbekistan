@@ -26,7 +26,10 @@ public class FacilityService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
 
         Sorting(ref facility, options);
-        
+
+        if (!String.IsNullOrEmpty(options.Lang))
+            facility = facility.Where(x => x.Locale.Equals(options.Lang));
+
         facility = facility.Include(x => x.Icon);
         var count = await facility.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await facility.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);

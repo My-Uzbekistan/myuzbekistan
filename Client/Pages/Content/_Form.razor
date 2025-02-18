@@ -48,7 +48,7 @@
                             <MudItem xs="12">
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.PhoneNumbers))
                                 {
-                                    <Contact PhoneNumbers="@Model.PhoneNumbers" />
+                                    <Contact PhoneNumbers="@Model.PhoneNumbers" PhoneNumbersChange="handleModelChanged" />
                                 }
                             </MudItem>
                         </MudGrid>
@@ -113,6 +113,14 @@
     {
         base.OnInitialized();
 
+    }
+
+    public void handleModelChanged(List<CallInformation> callInformation)
+    {
+        Model.ForEach(i =>
+        {
+            i.PhoneNumbers = callInformation;
+        });
     }
 
     protected override async Task OnInitializedAsync()

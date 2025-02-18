@@ -41,7 +41,7 @@
 
     protected override async Task<TableResponse<LanguageView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await LanguageService.GetAll(new() { PageSize = 100 }, cancellationToken);
+        return await LanguageService.GetAll(new() { PageSize = 100, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"), }, cancellationToken);
     }
 
 

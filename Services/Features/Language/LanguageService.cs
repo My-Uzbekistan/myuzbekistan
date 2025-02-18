@@ -26,7 +26,10 @@ public class LanguageService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
 
         Sorting(ref language, options);
-        
+
+        if (!String.IsNullOrEmpty(options.Lang))
+            language = language.Where(x => x.Locale.Equals(options.Lang));
+
         var count = await language.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await language.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<LanguageView>(){ Items = items.MapToViewList(), TotalItems = count };

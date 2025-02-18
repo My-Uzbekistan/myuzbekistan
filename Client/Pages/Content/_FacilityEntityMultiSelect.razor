@@ -46,7 +46,7 @@
 
     protected override async Task<TableResponse<FacilityView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await FacilityService.GetAll(new() { PageSize = 100 }, cancellationToken);
+        return await FacilityService.GetAll(new() { PageSize = 100, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en") }, cancellationToken);
     }
 
 
