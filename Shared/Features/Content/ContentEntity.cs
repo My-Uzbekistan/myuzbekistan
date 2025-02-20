@@ -17,11 +17,11 @@ public class ContentEntity : BaseEntity
     public string? Description { get; set; } 
     public long CategoryId { get; set; } 
     public CategoryEntity Category { get; set; } = null!;
-    public string WorkingHours { get; set; } = null!;
+    public string? WorkingHours { get; set; } 
     public List<FacilityEntity>? Facilities { get; set; } = [];
     public Point? Location { get; set; }
     [Column(TypeName = "jsonb")]
-    public List<CallInformation> PhoneNumbers { get; set; } = [];
+    public List<CallInformation>? PhoneNumbers { get; set; } = [];
     public ICollection<FileEntity>? Files { get; set; } = [];
     public FileEntity? Photo { get; set; } 
     public ICollection<FileEntity>? Photos { get; set; } = [];

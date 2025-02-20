@@ -16,16 +16,16 @@ public partial class ContentView
    [property: DataMember] public string? Description { get; set; } 
    [property: DataMember] public long CategoryId { get; set; }
     [property: DataMember] public CategoryView CategoryView { get; set; } = null!;
-   [property: DataMember] public string Slug { get; set; } = null!;
-   [property: DataMember] public string WorkingHours { get; set; } = null!;
+   [property: DataMember] public string? Slug { get; set; } 
+   [property: DataMember] public string? WorkingHours { get; set; } 
    [property: DataMember] public ICollection<FacilityView> Facilities { get; set; } = [];
    [property: DataMember, MemoryPackAllowSerialize] public Point? Location { get; set; } 
-   [property: DataMember] public List<CallInformation> PhoneNumbers { get; set; } = [];
+   [property: DataMember] public List<CallInformation>? PhoneNumbers { get; set; } = [];
    [property: DataMember] public ICollection<FileView>? FilesView { get; set; } 
    [property: DataMember] public ICollection<FileView>? PhotosView { get; set; } 
    [property: DataMember] public FileView? PhotoView { get; set; } 
    [property: DataMember] public ICollection<ReviewView>? ReviewsView { get; set; } 
-   [property: DataMember] public ICollection<LanguageView>? Languages { get; set; } = null!;
+   [property: DataMember] public ICollection<LanguageView>? Languages { get; set; } 
    [property: DataMember] public int RatingAverage { get; set; }
    [property: DataMember] public Decimal Price { get; set; }
    [property: DataMember] public Decimal PriceInDollar { get; set; }
