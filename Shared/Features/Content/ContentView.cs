@@ -13,7 +13,7 @@ public partial class ContentView
     [Display(ResourceType = typeof(SharedResource), Name = "Title")]
     [Required(ErrorMessageResourceName = "RequiredError", ErrorMessageResourceType = typeof(SharedResource))]
     [property: DataMember] public string Title { get; set; } = null!;
-   [property: DataMember] public string Description { get; set; } = null!;
+   [property: DataMember] public string? Description { get; set; } 
    [property: DataMember] public long CategoryId { get; set; }
     [property: DataMember] public CategoryView CategoryView { get; set; } = null!;
    [property: DataMember] public string Slug { get; set; } = null!;
