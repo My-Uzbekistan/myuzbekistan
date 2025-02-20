@@ -67,17 +67,15 @@ public partial class AppDbContext : DbContextBase
     {
         AddTimestamps();
 
-        using (var scope = _serviceScopeFactory.CreateScope())
+        using var scope = _serviceScopeFactory.CreateScope();
+        var userContext = scope.ServiceProvider.GetService<UserContext>();
+        if (userContext!.UserClaims.Count() > 1)
         {
-            var userContext = scope.ServiceProvider.GetService<UserContext>();
-            if (userContext!.UserClaims.Count() > 1)
-            {
-                var identity = userContext.UserClaims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
-                await _context.SaveChangesAndAuditAsync(this.ChangeTracker.Entries(), identity, cancellationToken: cancellationToken);
-                return await base.SaveChangesAsync(cancellationToken);
-            }
+            var identity = userContext.UserClaims.First(x => x.Type == ClaimTypes.NameIdentifier).Value;
+            await _context.SaveChangesAndAuditAsync(this.ChangeTracker.Entries(), identity, cancellationToken: cancellationToken);
             return await base.SaveChangesAsync(cancellationToken);
         }
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     private void AddTimestamps()

@@ -25,7 +25,7 @@ public class OnCreateCompleteEvent : IOnCreateCompleteEvent
             Size = ctx.FileSize,
             FileId = Guid.Parse(ctx.FileId),
         };
-        string[] imgFormat = { "png", "jpg", "jpeg" };
+        string[] imgFormat = { "png", "jpg", "jpeg", "svg" };
         if (imgFormat.Contains(fileView.Extension) && fileView.Extension != null)
         {
             fileView.Type = UFileTypes.Image;

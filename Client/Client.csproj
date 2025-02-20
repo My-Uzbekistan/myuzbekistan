@@ -24,6 +24,7 @@
 	<!-- ActualLab.FUSION -->
 	<ItemGroup>
 		<PackageReference Include="ActualLab.Fusion.Blazor" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Server" Version="$(FusionVersion)" />
 		<PackageReference Include="ActualLab.Fusion.Blazor.Authentication" Version="$(FusionVersion)" />
 		<PackageReference Include="ActualLab.Fusion.Ext.Contracts" Version="$(FusionVersion)" />
 	</ItemGroup>

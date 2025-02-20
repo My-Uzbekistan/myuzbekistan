@@ -6,7 +6,7 @@
     var data = State.ValueOrDefault ?? new TableResponse<LanguageView>();
 }
 
-<MudSelect T="LanguageView" @attributes="Attributes" Required=Required MultiSelection="true" SelectedValues="Value" ToStringFunc="(x)=>x?.Name" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
+<MudSelect class="@Class" Label="@Label" T="LanguageView" @attributes="Attributes" Required=Required MultiSelection="true" SelectedValues="Value" ToStringFunc="(x)=>x?.Name" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
     @foreach (var item in data.Items)
     {
         <MudSelectItem T="LanguageView" Value="@item">@item.Name</MudSelectItem>
@@ -14,16 +14,21 @@
 </MudSelect>
 
 @code {
-   
-   [Parameter]
-    public ICollection<LanguageView>? Value { get; set; }
-   
-   [Parameter]
-    public EventCallback<ICollection<LanguageView>> ValueChanged { get; set; }
-    
     [Parameter]
-    public bool Required { get; set; }=false;
-    
+    public string? Class { get; set; } = string.Empty;
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public ICollection<LanguageView>? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<ICollection<LanguageView>> ValueChanged { get; set; }
+
+    [Parameter]
+    public bool Required { get; set; } = false;
+
     [Parameter]
     public Expression<Func<ICollection<LanguageView>>>? For { get; set; }
 

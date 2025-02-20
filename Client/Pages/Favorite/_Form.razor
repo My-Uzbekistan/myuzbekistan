@@ -3,23 +3,22 @@
 @inject PageHistoryState PageHistoryState
 
 <EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
-<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
-    <Actions>
-        <SaveCancelButton OnCancel='() => PageHistoryState.Back("favorites")' Processing="@Processing" />
-    </Actions>
-    <ChildContent>
-        <MudGrid>
-            <MudItem xs="8">
-                <MudPaper Class="pa-4">
+    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+        <Actions>
+            <SaveCancelButton OnCancel='() => PageHistoryState.Back("favorites")' Processing="@Processing" />
+        </Actions>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="8">
+                    <MudPaper Class="pa-4">
                         <ObjectGraphDataAnnotationsValidator />
-                        <ValidationSummary />
-                            <Client.Pages.Favorite._ContentEntitySelect @bind-Value="Model.ContentView"  For="@(() => Model.ContentView)"Required="true"/>
-                            <input type="hidden" @bind-value="Model.Id"> 
-                </MudPaper>
-            </MudItem>
-        </MudGrid>
-    </ChildContent>
-</FormContainer>
+                        <Client.Pages.Favorite._ContentEntitySelect @bind-Value="Model.ContentView" For="@(() => Model.ContentView)" Required="true" />
+                        <input type="hidden" @bind-value="Model.Id">
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </FormContainer>
 </EditForm>
 @code {
     [Parameter]
@@ -34,14 +33,14 @@
     [Parameter]
     public bool Processing { get; set; }
 
-    
+
     private async void OnValidSubmit(EditContext context)
     {
         await OnSubmit.InvokeAsync(Model);
     }
-   
+
     string GetTitle()
     {
-      return IsNew ? @L["Create"] : @L["Edit"] ;
+        return IsNew ? @L["Create"] : @L["Edit"];
     }
 }

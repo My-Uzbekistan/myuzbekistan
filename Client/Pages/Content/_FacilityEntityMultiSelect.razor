@@ -6,7 +6,7 @@
     var data = State.ValueOrDefault ?? new TableResponse<FacilityView>();
 }
 
-<MudSelect Label="Label" T="FacilityView" @attributes="Attributes" Required=Required MultiSelection="true" SelectedValues="Value" ToStringFunc="(x)=>x?.Name" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
+<MudSelect Class="@Class" Label="@Label" T="FacilityView" @attributes="Attributes" Required=Required MultiSelection="true" SelectedValues="Value" ToStringFunc="(x)=>x?.Name" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
     @foreach (var item in data.Items)
     {
         <MudSelectItem T="FacilityView" Value="@item">
@@ -17,6 +17,8 @@
 </MudSelect>
 
 @code {
+    [Parameter]
+    public string? Class { get; set; }
     [Parameter]
     public string? Label { get; set; }
 

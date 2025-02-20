@@ -16,4 +16,5 @@ public enum ContentFields
     PriceInDollar,
     Languages,
     Address,
+    Photo,
 }

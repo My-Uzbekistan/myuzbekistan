@@ -133,7 +133,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         Sorting(ref category, options);
 
-        category = category.Include(x => x.Contents);
+        category = category.Include(x => x.Contents).Include(x=>x.Icon);
         var count = await category.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await category.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<CategoryView>() { Items = items.MapToViewList(), TotalItems = count };
@@ -207,7 +207,8 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var category = dbContext.Categories
         .Include(x => x.Contents)
-        .Where(x => x.Id == cat.Id).AsNoTracking().ToList();
+        .Include(x=>x.Icon)
+        .Where(x => x.Id == cat.Id).ToList();
 
         if (category == null) throw new ValidationException("CategoryEntity Not Found");
 
@@ -237,6 +238,10 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         if (category.Contents != null)
             category.Contents = dbContext.Contents
             .Where(x => category.Contents.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
+
+        if (category.Icon != null)
+            category.Icon = dbContext.Files
+            .Where(x => x.Name == category.Icon.Name).First();
 
     }
 

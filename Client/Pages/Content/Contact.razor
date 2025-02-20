@@ -5,7 +5,7 @@
     {
         <MudGrid Class="mb-3" AlignItems="AlignItems.Center">
             <MudItem xs="12" md="2">
-                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="Changed" Label="@L["Contact Type"]" Variant="Variant.Outlined">
+                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="Changed" Label="@L["Contact Type"]" >
                     <MudSelectItem Value="@("telegram.svg")">@L["Telegram"]</MudSelectItem>
                     <MudSelectItem Value="@("phone.svg")">@L["Phone"]</MudSelectItem>
                     <MudSelectItem Value="@("instagram.svg")">@L["Instagram"]</MudSelectItem>
@@ -16,11 +16,15 @@
             <MudItem xs="12" md="4">
                 @if (contact.Icon == "phone.svg" || contact.Icon == "whatsapp.svg" || contact.Icon == "telegram.svg")
                 {
-                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Mask="@(new PatternMask("(00) 000-00-00"))" Label="@L["Phone Number"]" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" 
+                                  Placeholder="(__) ___ __ __"
+                                  Mask="@(new PatternMask("(00) 000-00-00"))"
+                                  Adornment="Adornment.Start"
+                                  AdornmentText="+998" Label="@L["Phone Number"]" />
                 }
                 else
                 {
-                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Username"]" Variant="Variant.Outlined" />
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Username"]"   />
                 }
             </MudItem>
 

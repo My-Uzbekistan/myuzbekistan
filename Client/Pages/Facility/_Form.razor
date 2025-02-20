@@ -2,9 +2,9 @@
 @inject NavigationManager navigation
 @inject PageHistoryState PageHistoryState
 
-@foreach (var Model in Model)
+@foreach (var current in Model)
 {
-    <EditForm hidden="@(!Language.Equals(Model.Locale))" EditContext="@_contexts[Model.Locale]" OnSubmit="HandleSubmit">
+    <EditForm hidden="@(!Language.Equals(current.Locale))" EditContext="@_contexts[current.Locale]" OnSubmit="HandleSubmit">
         <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
             <Actions>
                 <SaveCancelButton OnCancel='() => PageHistoryState.Back("facilities")' Processing="@Processing" />
@@ -14,13 +14,15 @@
                     <MudItem xs="8">
                         <MudPaper Class="pa-4">
                             <ObjectGraphDataAnnotationsValidator />
-                            <ValidationSummary />
-                            <MudTextField  @bind-Value="Model.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Name)"Required="true"/>
-                            <ImageSelectView @bind-Value="Model.IconView" />
-                            <input type="hidden" @bind-value="Model.Id"> 
+                            <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
+
+                            <input type="hidden" @bind-value="current.Id">
                         </MudPaper>
                     </MudItem>
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                        <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
+                            <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => {Model.ForEach(x=>x.IconView = current.IconView);}" />
+                        </MudExpansionPanel>
                         <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
                     </MudItem>
                 </MudGrid>
@@ -47,7 +49,7 @@
     [Parameter]
     public bool Processing { get; set; }
 
-    
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -71,9 +73,9 @@
             OnSubmit.InvokeAsync(Model);
         }
     }
-   
+
     string GetTitle()
     {
-      return IsNew ? @L["Create"] : @L["Edit"] ;
+        return IsNew ? @L["Create"] : @L["Edit"];
     }
 }

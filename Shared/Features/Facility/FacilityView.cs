@@ -1,6 +1,8 @@
 using MemoryPack;
 using ActualLab.Fusion.Blazor;
 using System.Runtime.Serialization;
+using Shared.Localization;
+using System.ComponentModel.DataAnnotations;
 
 namespace myuzbekistan.Shared;
 
@@ -8,10 +10,12 @@ namespace myuzbekistan.Shared;
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class FacilityView
 {
-   [property: DataMember] public string Name { get; set; } = null!;
-   [property: DataMember] public string Locale { get; set; } = null!;
-   [property: DataMember] public FileView? IconView { get; set; } 
-   [property: DataMember] public long Id { get; set; }
+    [Display(ResourceType = typeof(SharedResource), Name = "Name")]
+    [Required(ErrorMessageResourceName = "RequiredError", ErrorMessageResourceType = typeof(SharedResource))]
+    [property: DataMember] public string Name { get; set; } = null!;
+    [property: DataMember] public string Locale { get; set; } = null!;
+    [property: DataMember] public FileView? IconView { get; set; }
+    [property: DataMember] public long Id { get; set; }
 
     public override bool Equals(object? o)
     {

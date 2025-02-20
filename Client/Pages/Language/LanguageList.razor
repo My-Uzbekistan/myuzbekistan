@@ -51,7 +51,7 @@
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
         int count = 1;
         int.TryParse(_initialCount, out count);
-        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en") } };
     }
 
     protected override async Task<TableResponse<LanguageView>> ComputeState(CancellationToken cancellationToken = default)

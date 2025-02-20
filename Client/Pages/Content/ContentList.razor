@@ -16,46 +16,38 @@
     <Actions>
         <MudLink Href="@($"categories/{CategoryId}/contents/create")">
             <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
-            @L["Create"]
+                @L["Create"]
             </MudButton>
         </MudLink>
     </Actions>
     <ChildContent>
-        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="ContentView">
-                <MudTd DataLabel="Title">@context.Title</MudTd>
-                <MudTd DataLabel="Description">@context.Description</MudTd>
-                <MudTd DataLabel="CategoryId">@context.CategoryId</MudTd>
-                <MudTd DataLabel="Category.Name">@context.CategoryView?.Name</MudTd>
-                <MudTd DataLabel="Slug">@context.Slug</MudTd>
-                <MudTd DataLabel="WorkingHours">@context.WorkingHours</MudTd>
-                <MudTd DataLabel="Facilities">@context.Facilities</MudTd>
-                <MudTd DataLabel="Location">@context.Location</MudTd>
-                <MudTd DataLabel="PhoneNumbers">@context.PhoneNumbers</MudTd>
-                <MudTd DataLabel="Files">
-                <ImagesView Files="@context.FilesView?.ToList()"/>
-                </MudTd>
-                <MudTd DataLabel="Photos">
-                <ImagesView Files="@context.PhotosView?.ToList()"/>
-                </MudTd>
-                <MudTd DataLabel=Reviews.Comment>
-                @string.Join(" ",context.ReviewsView?.Select(x=> x.Comment)?.ToList() ?? new List<string>() )
-                </MudTd>
-                <MudTd DataLabel="Languages">@context.Languages</MudTd>
-                <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
-                <MudTd DataLabel="Price">@context.Price</MudTd>
-                <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
-                <MudTd DataLabel="Address">@context.Address</MudTd>
-                <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
-                <MudTd DataLabel="Id">@context.Id</MudTd>
-                       
-                <MudTd Class="d-flex justify-end">
-                    <div style="display:flex; gap:7px;">
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="ContentView">
+            <MudTd DataLabel="Title">@context.Title</MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Photos">
+                <ImagesView Files="@context.PhotosView?.ToList()" />
+            </MudTd>
+            <MudTd DataLabel="Photo">
+                <ImageView fileEntity="@context.PhotoView" />
+            </MudTd>
+            <MudTd DataLabel="Languages">
+                @string.Join(" ", context.Languages?.Select(x => x.Name)?.ToList() ?? new List<string>())
+            </MudTd>
+            <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
+            <MudTd DataLabel="Price">@context.Price</MudTd>
+            <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
+            <MudTd DataLabel="Address">@context.Address</MudTd>
+            <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
                     <MudLink Href=@($"categories/{CategoryId}/contents/{context.Id}")>
-                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
-                        </MudLink>
-                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
-                    </div>
-                </MudTd>
+                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudLink>
+                    <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                </div>
+            </MudTd>
         </UTCTable>
     </ChildContent>
 </ListContainer>
@@ -63,9 +55,9 @@
 @code {
 
     [Parameter] public long CategoryId { get; set; }
-    private TableResponse<ContentView>? Items ;
-    
-    private string[] SortColumns = new string[] {"Title","Description","CategoryId","Category","Slug","WorkingHours","Facilities","Location","PhoneNumbers","Files","Photos","Reviews","Languages","RatingAverage","Price","PriceInDollar","Address","Recommended","Id",};
+    private TableResponse<ContentView>? Items;
+
+    private string[] SortColumns = new string[] { "Title", "Description", "Photos", "Photo", "Languages", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id", };
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -74,7 +66,7 @@
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
         int count = 1;
         int.TryParse(_initialCount, out count);
-        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"),  Search = searchParam } };
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"), Search = searchParam } };
     }
 
     protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken = default)
@@ -92,7 +84,7 @@
         yesText: "Delete!", cancelText: @L["Cancel"]);
         if (result ?? false)
         {
-            await commander.Run(new DeleteContentCommand(Session,Id));
+            await commander.Run(new DeleteContentCommand(Session, Id));
             Snackbar.Add(@L["SuccessDelete"], Severity.Success);
         }
     }

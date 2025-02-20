@@ -60,6 +60,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Files)
         .Include(x => x.Photos)
         .Include(x => x.Reviews)
+        .Include(x => x.Languages)
+        .Include(x => x.Facilities)
         .Where(x => x.Id == Id).ToList();
 
         return content == null ? throw new ValidationException("ContentEntity Not Found") : content.MapToViewList();
@@ -107,6 +109,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Files)
         .Include(x => x.Photos)
         .Include(x => x.Reviews)
+        .Include(x => x.Languages)
+        .Include(x => x.Facilities)
         .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken) ?? throw new ValidationException("ContentEntity Not Found");
         dbContext.Remove(content);
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -127,6 +131,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Files)
         .Include(x => x.Photos)
         .Include(x => x.Reviews)
+        .Include(x => x.Languages)
+        .Include(x => x.Facilities)
         .Where(x => x.Id == con.Id).ToList() ?? throw new ValidationException("ContentEntity Not Found");
 
         foreach (var item in command.Entity)
@@ -159,6 +165,10 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             content.Photos = [.. dbContext.Files.Where(x => content.Photos.Select(tt => tt.Id).ToList().Contains(x.Id))];
         if (content.Reviews != null)
             content.Reviews = [.. dbContext.Reviews.Where(x => content.Reviews.Select(tt => tt.Id).ToList().Contains(x.Id))];
+        if (content.Languages != null)
+            content.Languages = [.. dbContext.Languages.Where(x => content.Languages.Select(tt => tt.Id).ToList().Contains(x.Id))];
+        if (content.Facilities != null)
+            content.Facilities = [.. dbContext.Facilities.Where(x => content.Facilities.Select(tt => tt.Id).ToList().Contains(x.Id))];
 
     }
 
@@ -169,13 +179,10 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         "CategoryId" => content.Ordering(options, o => o.CategoryId),
         "Category" => content.Ordering(options, o => o.Category),
         "WorkingHours" => content.Ordering(options, o => o.WorkingHours),
-        "Facilities" => content.Ordering(options, o => o.Facilities),
         "Location" => content.Ordering(options, o => o.Location),
-        "PhoneNumbers" => content.Ordering(options, o => o.PhoneNumbers),
         "Files" => content.Ordering(options, o => o.Files),
         "Photos" => content.Ordering(options, o => o.Photos),
         "Reviews" => content.Ordering(options, o => o.Reviews),
-        "Languages" => content.Ordering(options, o => o.Languages),
         "RatingAverage" => content.Ordering(options, o => o.RatingAverage),
         "Price" => content.Ordering(options, o => o.Price),
         "PriceInDollar" => content.Ordering(options, o => o.PriceInDollar),

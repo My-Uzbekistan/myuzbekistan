@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +31,15 @@ namespace Server.Infrastructure.ServiceCollection
                         ),
                         RoleClaimType = ClaimTypes.Role
                     };
+                })
+                .AddGoogle(options =>
+                {
+                    options.ClientId = configuration.GetValue<string>("Google:ClientId")!;
+                    options.ClientSecret = configuration.GetValue<string>("Google:ClientSecret")!;
+                    options.CallbackPath = "/signin-google";
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
+                    options.ClaimActions.MapJsonKey("urn:google:profile", "link");
+                    options.ClaimActions.MapJsonKey("urn:google:image", "picture");
                 })
             .AddIdentityCookies();
             return services;

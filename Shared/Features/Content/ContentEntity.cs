@@ -23,6 +23,7 @@ public class ContentEntity : BaseEntity
     [Column(TypeName = "jsonb")]
     public List<CallInformation> PhoneNumbers { get; set; } = [];
     public ICollection<FileEntity>? Files { get; set; } = [];
+    public FileEntity? Photo { get; set; } 
     public ICollection<FileEntity>? Photos { get; set; } = [];
     public ICollection<ReviewEntity>? Reviews { get; set; } = [];
     public ICollection<LanguageEntity>? Languages { get; set; } = [];

@@ -6,13 +6,13 @@
 @inject PageHistoryState PageHistoryState
 @inject ICategoryService categoryService
 
-@foreach (var Model in Model)
+@foreach (var current in Model)
 {
-    <EditForm hidden="@(!Language.Equals(Model.Locale))" EditContext="@_contexts[Model.Locale]" OnSubmit="OnValidSubmit">
+    <EditForm hidden="@(!Language.Equals(current.Locale))" EditContext="@_contexts[current.Locale]" OnSubmit="OnValidSubmit">
         <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
 
             <Actions>
-                <SaveCancelButton OnCancel='() => PageHistoryState.Back("contents")' Processing="@Processing" />
+                <SaveCancelButton OnCancel='() => PageHistoryState.Back($"categories/{CategoryId}/contents")' Processing="@Processing" />
             </Actions>
             <ChildContent>
                 <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -22,34 +22,52 @@
                             <MudItem xs="12">
                                 <MudPaper Class="pa-4">
 
-                                    <MudTextField @bind-Value="Model.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Title)" Required="true" />
+                                    <MudTextField @bind-Value="current.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Title)" Required="true" />
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
                                     {
-                                        <MudTextField @bind-Value="Model.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" Required="true" />
+                                        <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" />
                                     }
-
-                                    @* <MudTextField @bind-Value="Model.Slug" Label="Slug" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Slug)" Required="true" /> *@
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))
                                     {
-                                        <MudTextField @bind-Value="Model.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkingHours)" Required="true" />
+                                        <MudTextField @bind-Value="current.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => current.WorkingHours)" Required="true" />
 
                                     }
-
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
                                     {
-                                        <MudTextField @bind-Value="Model.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
+                                        <MudTextField @bind-Value="current.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Address)" />
                                     }
 
-                                    <input type="hidden" @bind-value="Model.Id">
+                                    <input type="hidden" @bind-value="current.Id">
                                 </MudPaper>
                             </MudItem>
                             <MudItem xs="12">
+
+
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.PhoneNumbers))
                                 {
-                                    <Contact PhoneNumbers="@Model.PhoneNumbers" PhoneNumbersChange="handleModelChanged" />
+                                    <Contact PhoneNumbers="@current.PhoneNumbers" PhoneNumbersChange="handleModelChanged" />
                                 }
+                            </MudItem>
+                            <MudItem xs="12">
+
+                                <MudPaper Class="pa-4">
+                                    <MudText Typo="Typo.h6" Class="mb-4">@L["Manage Attachments"]</MudText>
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
+                                    {
+                                        <ImagesSelectView Label="@L["Conditions"]" @bind-Value="current.FilesView" @bind-Value:after="()=>{ Model.ForEach(x=>x.FilesView = current.FilesView); }" />
+                                    }
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
+                                    {
+                                        <ImagesSelectView Label="@L["Photos"]" @bind-Value="current.PhotosView" @bind-Value:after="()=>{ Model.ForEach(x=>x.PhotosView = current.PhotosView); }" />
+                                    }
+
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Photo))
+                                    {
+                                        <ImageSelectView Label="@L["Photo"]" @bind-Value="current.PhotoView" @bind-Value:after="()=>{ Model.ForEach(x=>x.PhotoView = current.PhotoView); }" />
+                                    }
+                                </MudPaper>
                             </MudItem>
                         </MudGrid>
 
@@ -58,21 +76,67 @@
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
                                 <MudStack Row="true">
-                                    <_PlacesForm @bind-Location="Model.Location" @bind-Address="Model.Address" />
+                                    <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
 
-                                    <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="Model.Recommended" @bind-Checked:after="()=>{UpdateRecommended(Model.Recommended);}" For="@(() => Model.Recommended)" />
+                                    <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="current.Recommended"
+                                               @bind-Checked:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
                                 </MudStack>
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Facilities))
                                 {
-                                    <_FacilityEntityMultiSelect Label="@L["Facilities"]" @bind-Value="Model.Facilities" For="()=> Model.Facilities" />
+                                    <_FacilityEntityMultiSelect Class="mt-4" Label="@L["Facilities"]" @bind-Value="current.Facilities"
+                                                                @bind-Value:after="() =>  Model.ForEach(x=>x.Facilities = current.Facilities )" For="()=> current.Facilities" />
                                 }
-                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
+
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Languages))
                                 {
-                                    <ImagesSelectView Label="@L["Conditions"]" @bind-Value="Model.FilesView" />
+                                    <_LanguageEntityMultiSelect Class="mt-4" Label="@L["Languages"]" @bind-Value="current.Languages"
+                                                                @bind-Value:after="() =>  Model.ForEach(x=>x.Languages = current.Languages )" For="()=> current.Languages"></_LanguageEntityMultiSelect>
+
                                 }
-                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
+
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.AverageCheck))
                                 {
-                                    <ImagesSelectView Label="@L["Photos"]" @bind-Value="Model.PhotosView" />
+                                    <label class="mt-4" style="display: flex;    align-items: center;
+                                ">
+                                        @L["AverageCheck"]
+                                        <MudRating @bind-SelectedValue="current.RatingAverage" @bind-SelectedValue:after="()=> Model.ForEach(x=> {x.RatingAverage = current.RatingAverage;}) "
+                                                   MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
+                                                   FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
+                                    </label>
+
+                                }
+
+
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Price) || Bitwise.Is(categoryView.Fields, ContentFields.PriceInDollar))
+                                {
+                                    <MudGrid Class="mt-4">
+                                        <MudItem md="6" xs="12">
+                                            <MudNumericField @bind-Value="current.Price"
+                                                             @bind-Value:after="() => { Model.ForEach(x=>{x.Price = current.Price;}); }"
+                                                             Label="@L["Price"]"
+                                                             Culture="@(new CultureInfo("ru-RU"))"
+                                                             Format="N0"
+                                                             Adornment="Adornment.End"
+                                                             AdornmentText="So'm"
+                                                             Immediate="true"
+                                                             Placeholder="@L["EnterPrice"]"
+                                                             Required="true"
+                                                             HideSpinButtons="true" />
+                                        </MudItem>
+                                        <MudItem md="6" xs="12">
+                                            <MudNumericField @bind-Value="current.PriceInDollar"
+                                                             @bind-Value:after="() => { Model.ForEach(x=>{x.PriceInDollar = current.PriceInDollar;}); }"
+                                                             Label="@L["PriceInDollar"]"
+                                                             Culture="@(new CultureInfo("ru-RU"))"
+                                                             Format="N0"
+                                                             Adornment="Adornment.End"
+                                                             AdornmentText="$"
+                                                             Immediate="true"
+                                                             Placeholder="@L["EnterPrice"]"
+                                                             Required="true"
+                                                             HideSpinButtons="true" />
+                                        </MudItem>
+                                    </MudGrid>
                                 }
                             </MudExpansionPanel>
                             <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
@@ -88,6 +152,7 @@
 @code {
 
     string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
+
 
     [Parameter]
     public List<ContentView> Model { get; set; } = [new ContentView { Locale = "uz" }, new ContentView { Locale = "ru" }, new ContentView { Locale = "en" },];
