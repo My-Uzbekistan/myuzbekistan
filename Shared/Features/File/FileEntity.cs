@@ -12,4 +12,8 @@ public partial class FileEntity : BaseEntity
     public long Size { get; set; } = 0;
     public UFileTypes Type { get; set; } = UFileTypes.File;
 
+    public ICollection<ContentEntity>? ContentPhotos { get; set; } = new List<ContentEntity>();
+    public ICollection<ContentEntity>? ContentFiles { get; set; } = new List<ContentEntity>();
+    public ContentEntity? ContentPhoto { get; set; } 
+
 }

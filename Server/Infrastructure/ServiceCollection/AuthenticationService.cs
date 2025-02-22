@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
@@ -13,8 +15,8 @@ namespace Server.Infrastructure.ServiceCollection
         {
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultChallengeScheme = IdentityConstants.BearerScheme;
+                options.DefaultScheme = "oidc";
+                options.DefaultChallengeScheme = "oidc";
             })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
@@ -41,6 +43,22 @@ namespace Server.Infrastructure.ServiceCollection
                     options.ClaimActions.MapJsonKey("urn:google:profile", "link");
                     options.ClaimActions.MapJsonKey("urn:google:image", "picture");
                 })
+                .AddPolicyScheme("oidc", "oidc", options =>
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        string? authorization = context.Request.Headers?[HeaderNames.Authorization];
+                        if (string.IsNullOrEmpty(authorization) || !authorization.StartsWith("Bearer "))
+                            return "Identity.Application";
+                        var token = authorization["Bearer ".Length..].Trim();
+                        var jwtHandler = new JwtSecurityTokenHandler();
+
+                        return jwtHandler.CanReadToken(token) && jwtHandler.ReadJwtToken(token).Issuer
+                            .Equals(configuration.GetValue<string>("Identity:Url"))
+                            ? "Bearer"
+                            : "Bearer";
+                    }
+                )
+
             .AddIdentityCookies();
             return services;
         }

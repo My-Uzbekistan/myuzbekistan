@@ -211,6 +211,63 @@ namespace Services.Migrations
                     b.ToTable("_KeyValues");
                 });
 
+            modelBuilder.Entity("ContentEntityFacilityEntity", b =>
+                {
+                    b.Property<long>("ContentsId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ContentsLocale")
+                        .HasColumnType("text");
+
+                    b.Property<long>("FacilitiesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FacilitiesLocale")
+                        .HasColumnType("text");
+
+                    b.HasKey("ContentsId", "ContentsLocale", "FacilitiesId", "FacilitiesLocale");
+
+                    b.HasIndex("FacilitiesId", "FacilitiesLocale");
+
+                    b.ToTable("ContentEntityFacilityEntity");
+                });
+
+            modelBuilder.Entity("ContentEntityFileEntity", b =>
+                {
+                    b.Property<long>("FilesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ContentFilesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ContentFilesLocale")
+                        .HasColumnType("text");
+
+                    b.HasKey("FilesId", "ContentFilesId", "ContentFilesLocale");
+
+                    b.HasIndex("ContentFilesId", "ContentFilesLocale");
+
+                    b.ToTable("ContentEntityFileEntity");
+                });
+
+            modelBuilder.Entity("ContentEntityFileEntity1", b =>
+                {
+                    b.Property<long>("PhotosId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ContentPhotosId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ContentPhotosLocale")
+                        .HasColumnType("text");
+
+                    b.HasKey("PhotosId", "ContentPhotosId", "ContentPhotosLocale");
+
+                    b.HasIndex("ContentPhotosId", "ContentPhotosLocale");
+
+                    b.ToTable("ContentEntityFileEntity1");
+                });
+
             modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -316,7 +373,8 @@ namespace Services.Migrations
 
                     b.HasKey("Id", "Locale");
 
-                    b.HasIndex("PhotoId");
+                    b.HasIndex("PhotoId")
+                        .IsUnique();
 
                     b.HasIndex("CategoryId", "CategoryLocale");
 
@@ -334,16 +392,10 @@ namespace Services.Migrations
                     b.Property<string>("Locale")
                         .HasColumnType("text");
 
-                    b.Property<long?>("ContentEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ContentEntityLocale")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("IconId")
+                    b.Property<long?>("IconId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
@@ -356,8 +408,6 @@ namespace Services.Migrations
                     b.HasKey("Id", "Locale");
 
                     b.HasIndex("IconId");
-
-                    b.HasIndex("ContentEntityId", "ContentEntityLocale");
 
                     b.ToTable("Facilities");
                 });
@@ -401,18 +451,6 @@ namespace Services.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("ContentEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("ContentEntityId1")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ContentEntityLocale")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ContentEntityLocale1")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -439,10 +477,6 @@ namespace Services.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ContentEntityId", "ContentEntityLocale");
-
-                    b.HasIndex("ContentEntityId1", "ContentEntityLocale1");
 
                     b.ToTable("Files");
                 });
@@ -527,6 +561,51 @@ namespace Services.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ContentEntityFacilityEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
+                        .WithMany()
+                        .HasForeignKey("ContentsId", "ContentsLocale")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("myuzbekistan.Shared.FacilityEntity", null)
+                        .WithMany()
+                        .HasForeignKey("FacilitiesId", "FacilitiesLocale")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ContentEntityFileEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.FileEntity", null)
+                        .WithMany()
+                        .HasForeignKey("FilesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
+                        .WithMany()
+                        .HasForeignKey("ContentFilesId", "ContentFilesLocale")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ContentEntityFileEntity1", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.FileEntity", null)
+                        .WithMany()
+                        .HasForeignKey("PhotosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
+                        .WithMany()
+                        .HasForeignKey("ContentPhotosId", "ContentPhotosLocale")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>
                 {
                     b.HasOne("myuzbekistan.Shared.FileEntity", "Icon")
@@ -539,8 +618,8 @@ namespace Services.Migrations
             modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
                 {
                     b.HasOne("myuzbekistan.Shared.FileEntity", "Photo")
-                        .WithMany()
-                        .HasForeignKey("PhotoId");
+                        .WithOne("ContentPhoto")
+                        .HasForeignKey("myuzbekistan.Shared.ContentEntity", "PhotoId");
 
                     b.HasOne("myuzbekistan.Shared.CategoryEntity", "Category")
                         .WithMany("Contents")
@@ -555,13 +634,7 @@ namespace Services.Migrations
                 {
                     b.HasOne("myuzbekistan.Shared.FileEntity", "Icon")
                         .WithMany()
-                        .HasForeignKey("IconId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
-                        .WithMany("Facilities")
-                        .HasForeignKey("ContentEntityId", "ContentEntityLocale");
+                        .HasForeignKey("IconId");
 
                     b.Navigation("Icon");
                 });
@@ -575,17 +648,6 @@ namespace Services.Migrations
                         .IsRequired();
 
                     b.Navigation("Content");
-                });
-
-            modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>
-                {
-                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
-                        .WithMany("Files")
-                        .HasForeignKey("ContentEntityId", "ContentEntityLocale");
-
-                    b.HasOne("myuzbekistan.Shared.ContentEntity", null)
-                        .WithMany("Photos")
-                        .HasForeignKey("ContentEntityId1", "ContentEntityLocale1");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.LanguageEntity", b =>
@@ -614,15 +676,14 @@ namespace Services.Migrations
 
             modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
                 {
-                    b.Navigation("Facilities");
-
-                    b.Navigation("Files");
-
                     b.Navigation("Languages");
 
-                    b.Navigation("Photos");
-
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>
+                {
+                    b.Navigation("ContentPhoto");
                 });
 #pragma warning restore 612, 618
         }

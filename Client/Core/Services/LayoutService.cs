@@ -8,7 +8,7 @@ namespace Client.Core.Services;
 
 public class LayoutService(Session session, IAuth auth, ISandboxedKeyValueStore store)
 {
-    public bool IsDarkMode { get; set; } = false;
+    public bool IsDarkMode { get; set; } = true;
     public MudTheme CurrentTheme { get; set; } = Theme.UtcTheme();
 
     public void SetDarkMode(bool value)

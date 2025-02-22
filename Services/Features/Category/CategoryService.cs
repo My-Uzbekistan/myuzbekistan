@@ -6,97 +6,57 @@ using System.ComponentModel.DataAnnotations;
 using ActualLab.Async;
 using System.Reactive;
 using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Collections;
+using System.Linq;
 namespace myuzbekistan.Services;
-
-public class ContentEntityConverter : JsonConverter<ContentEntity>
-{
-    public override ContentEntity? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        // Используем стандартную десериализацию
-        return JsonSerializer.Deserialize<ContentEntity>(ref reader, options);
-    }
-
-    public override void Write(Utf8JsonWriter writer, ContentEntity value, JsonSerializerOptions options)
-    {
-        writer.WriteStartObject();
-        var properties = value.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-        foreach (var property in properties)
-        {
-            var propValue = property.GetValue(value);
-            if (propValue == null) continue;  // Пропускаем null
-
-            if (propValue is IEnumerable enumerable && !(propValue is string))
-            {
-                var hasElements = enumerable.GetEnumerator().MoveNext();
-                if (!hasElements) continue;  // Пропускаем пустые коллекции
-            }
-
-            // Преобразуем имя свойства в camelCase
-            var namingPolicyValue = options.PropertyNamingPolicy?.ConvertName(property.Name) ?? property.Name;
-
-            writer.WritePropertyName(namingPolicyValue);
-            JsonSerializer.Serialize(writer, propValue, options);
-        }
-
-        writer.WriteEndObject();
-    }
-}
-public class CustomMainPageApiConverter : JsonConverter<MainPageApi>
-{
-    public override MainPageApi? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        // Используем стандартную десериализацию
-        return JsonSerializer.Deserialize<MainPageApi>(ref reader, options);
-    }
-
-    public override void Write(Utf8JsonWriter writer, MainPageApi value, JsonSerializerOptions options)
-    {
-        // Получаем свойства объекта
-        var properties = value.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-
-        writer.WriteStartObject();
-
-        foreach (var property in properties)
-        {
-            var propValue = property.GetValue(value);
-            if (propValue == null) continue;  // Пропускаем null
-
-            if (propValue is IEnumerable enumerable && !(propValue is string))
-            {
-                // Проверяем, пуст ли массив
-                var hasElements = enumerable.GetEnumerator().MoveNext();
-                if (!hasElements) continue;  // Пропускаем пустые коллекции
-            }
-
-            // Преобразуем имя свойства в camelCase
-            var namingPolicyValue = options.PropertyNamingPolicy?.ConvertName(property.Name) ?? property.Name;
-
-            // Сериализуем оставшееся свойство
-            writer.WritePropertyName(namingPolicyValue);
-            JsonSerializer.Serialize(writer, propValue, options);
-        }
-
-        writer.WriteEndObject();
-    }
-}
 
 public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICategoryService
 {
     #region Queries
     //[ComputeMethod]
-    public async Task<List<MainPageApi>> GetMainPageApi(CancellationToken cancellationToken = default)
+    public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options,CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var category = from s in dbContext.Categories.Include(x => x.Icon)
-                       where s.Status == ContentStatus.Active && s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName
-                       join c in dbContext.Contents on new { s.Id, s.Locale } equals new { Id = c.CategoryId, c.Locale }
-                       select new MainPageApi(s.Name, s.Id, s.Contents != null ? s.Contents.Where(x=>x.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName).ToList() : new List<ContentEntity>() { });
-        return [.. category];
+        var query = dbContext.Categories
+    .Where(c => c.Status == ContentStatus.Active &&
+                c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+    .Include(c => c.Icon)
+    .Include(c => c.Contents!)
+        .ThenInclude(content => content.Reviews)
+    .Include(c => c.Contents!)
+        .ThenInclude(content => content.Photos)
+    .Include(c => c.Contents!)
+        .ThenInclude(content => content.Languages)
+    .Include(c => c.Contents!)
+        .ThenInclude(content => content.Files)
+    .Include(c => c.Contents!)
+        .ThenInclude(content => content.Facilities!)
+            .ThenInclude(f => f.Icon);
+
+        // Переключаемся на Client-Side для сложной логики
+        var categories = await query
+     .AsAsyncEnumerable()
+     .Select(c => new MainPageApi(
+         c.Name,
+         c.Id,
+         c.Contents!.FirstOrDefault(x => x.Recommended)?.MapToApi(),
+         c.Contents!
+             .Where(content => string.IsNullOrEmpty(options.Search) ||
+                               content.Title.ToLower().Contains(options.Search.ToLower()) ||
+                               content.Address.ToLower().Contains(options.Search.ToLower()))
+             .Select(x => x.MapToApi())
+             .ToList()
+     ))
+     .Where(s =>
+         string.IsNullOrEmpty(options.Search) ||
+         s.CategoryName.ToLower().Contains(options.Search.ToLower()) ||
+         s.Contents.Any(t => t.Title.ToLower().Contains(options.Search.ToLower())) ||
+         s.Contents.Any(t => t.Address.ToLower().Contains(options.Search.ToLower()))
+     )
+     .ToListAsync(cancellationToken);
+
+
+        return [.. categories];
     }
     //[ComputeMethod]
     public async virtual Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default)
@@ -133,7 +93,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         Sorting(ref category, options);
 
-        category = category.Include(x => x.Contents).Include(x=>x.Icon);
+        category = category.Include(x => x.Contents).Include(x => x.Icon);
         var count = await category.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await category.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<CategoryView>() { Items = items.MapToViewList(), TotalItems = count };
@@ -146,6 +106,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var category = dbContext.Categories
         .Include(x => x.Contents)
+        .Include(x => x.Icon)
         .Where(x => x.Id == Id).ToList();
 
         return category == null ? throw new ValidationException("CategoryEntity Not Found") : category.MapToViewList();
@@ -189,6 +150,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var category = await dbContext.Categories
         .Include(x => x.Contents)
+        .Include(x => x.Icon)
         .FirstOrDefaultAsync(x => x.Id == command.Id);
         if (category == null) throw new ValidationException("CategoryEntity Not Found");
         dbContext.Remove(category);
@@ -207,7 +169,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var category = dbContext.Categories
         .Include(x => x.Contents)
-        .Include(x=>x.Icon)
+        .Include(x => x.Icon)
         .Where(x => x.Id == cat.Id).ToList();
 
         if (category == null) throw new ValidationException("CategoryEntity Not Found");
@@ -255,6 +217,6 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
     };
 
-  
+
     #endregion
 }

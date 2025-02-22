@@ -16,7 +16,7 @@
                         <MudPaper Class="pa-4">
                             <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
                             @* <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" /> *@
-                            
+
                             <input type="hidden" @bind-value="current.Id">
                         </MudPaper>
                     </MudItem>
@@ -37,7 +37,11 @@
                             </MudExpansionPanel>
                         </MudExpansionPanels>
                         <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
-                        <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => {Model.ForEach(x=>x.IconView = current.IconView);} "/>
+                        <MudExpansionPanels Class="mt-3">
+                            <MudExpansionPanel Text="@L["Icon"]" Gutters="true" Expanded="true">
+                            <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => {Model.ForEach(x=>x.IconView = current.IconView);} " />
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
                     </MudItem>
                 </MudGrid>
             </ChildContent>

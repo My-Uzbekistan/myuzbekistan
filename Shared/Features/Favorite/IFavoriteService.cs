@@ -9,6 +9,8 @@ public interface IFavoriteService:IComputeService
     [ComputeMethod]
     Task<TableResponse<FavoriteView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
     [ComputeMethod]
+    Task<List<FavoriteApiView>> GetFavorites(long userId, CancellationToken cancellationToken = default);
+    [ComputeMethod]
     Task<FavoriteView> Get(long Id, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Create(CreateFavoriteCommand command, CancellationToken cancellationToken = default);

@@ -4,6 +4,21 @@ using System.Runtime.Serialization;
 
 namespace myuzbekistan.Shared;
 
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class FavoriteApiView: ContentApiView
+{
+    [property: DataMember] public long FavoriteId { get; set; }
+
+    public override bool Equals(object? o)
+    {
+        var other = o as FavoriteView;
+        return other?.Id == Id;
+    }
+    public override int GetHashCode() => Id.GetHashCode();
+}
+
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class FavoriteView

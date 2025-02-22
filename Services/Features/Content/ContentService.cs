@@ -5,6 +5,7 @@ using ActualLab.Fusion.EntityFramework;
 using System.ComponentModel.DataAnnotations;
 using ActualLab.Async;
 using System.Reactive;
+using System.Globalization;
 namespace myuzbekistan.Services;
 
 public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService
@@ -50,6 +51,61 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         return new TableResponse<ContentView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
+
+    [ComputeMethod]
+    public async virtual Task<List<ContentApiView>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+
+        // Начальный запрос
+        var content = dbContext.Contents.AsQueryable();
+
+        // Фильтрация по поисковому запросу
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            var search = options.Search.ToLower();
+
+            content = content.Where(s =>
+                s.Title.ToLower().Contains(search) ||
+                s.Description.ToLower().Contains(search) ||
+                s.WorkingHours.ToLower().Contains(search) ||
+                s.Facilities.Any(f => f.Name.ToLower().Contains(search)) ||
+                s.Languages.Any(l => l.Name.ToLower().Contains(search)) ||
+                s.Address.ToLower().Contains(search)
+            );
+        }
+
+        // Фильтрация по категории
+        content = content.Where(x => x.CategoryId == CategoryId);
+
+        // Фильтрация по языку
+        content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
+
+        // Применение сортировки
+        Sorting(ref content, options);
+
+        // Включаем связанные сущности с AsSplitQuery для оптимизации
+        content = content
+            .Include(x => x.Category)
+            .Include(x => x.Files)
+            .Include(x => x.Photos)
+            .Include(x => x.Reviews)
+            .Include(x => x.Facilities).ThenInclude(x=>x.Icon)
+            .Include(x => x.Languages)
+            .AsSplitQuery() // Оптимизация запросов
+            .AsNoTracking();
+
+        // Пагинация и выполнение запроса
+        var items = await content.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+
+        // Маппинг данных в API-модель
+        var data = items.Select(x => x.MapToApi()).ToList();
+
+        return data;
+    }
+
+
     [ComputeMethod]
     public async virtual Task<List<ContentView>> Get(long Id, CancellationToken cancellationToken = default)
     {
@@ -79,12 +135,13 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         }
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        maxId = !dbContext.Categories.Any() ? 0 : dbContext.Categories.Max(x => x.Id);
+        maxId = !dbContext.Contents.Any() ? 0 : dbContext.Contents.Max(x => x.Id);
         maxId++;
         foreach (var item in command.Entity)
         {
             ContentEntity content = new ContentEntity();
             Reattach(content, item, dbContext);
+            
             content.Id = maxId;
             dbContext.Add(content);
 
@@ -104,15 +161,22 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var content = await dbContext.Contents
-        .Include(x => x.Category)
+        var contents =  dbContext.Contents
+            .Include(x => x.Category)
         .Include(x => x.Files)
         .Include(x => x.Photos)
+        .Include(x => x.Photo)
         .Include(x => x.Reviews)
         .Include(x => x.Languages)
         .Include(x => x.Facilities)
-        .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken) ?? throw new ValidationException("ContentEntity Not Found");
-        dbContext.Remove(content);
+        .Include(x => x.Reviews)
+        .Where(x => x.Id == command.Id).ToList() ;
+        if(contents.Count == 0)
+        {
+            throw new ValidationException("ContentEntity Not Found");
+        }
+
+        dbContext.RemoveRange(contents);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -158,7 +222,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
         if (content.Category != null)
             content.Category = dbContext.Categories
-            .First(x => x.Id == content.Category.Id);
+            .First(x => x.Id == content.Category.Id && x.Locale == content.Category.Locale);
         if (content.Files != null)
             content.Files = [.. dbContext.Files.Where(x => content.Files.Select(tt => tt.Id).ToList().Contains(x.Id))];
         if (content.Photos != null)
@@ -166,9 +230,9 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         if (content.Reviews != null)
             content.Reviews = [.. dbContext.Reviews.Where(x => content.Reviews.Select(tt => tt.Id).ToList().Contains(x.Id))];
         if (content.Languages != null)
-            content.Languages = [.. dbContext.Languages.Where(x => content.Languages.Select(tt => tt.Id).ToList().Contains(x.Id))];
+            content.Languages = [.. dbContext.Languages.Where(x => content.Languages.Select(tt => tt.Id).ToList().Contains(x.Id) && x.Locale == contentView.Locale)];
         if (content.Facilities != null)
-            content.Facilities = [.. dbContext.Facilities.Where(x => content.Facilities.Select(tt => tt.Id).ToList().Contains(x.Id))];
+            content.Facilities = [.. dbContext.Facilities.Where(x => content.Facilities.Select(tt => tt.Id).ToList().Contains(x.Id) && x.Locale == contentView.Locale)];
 
     }
 

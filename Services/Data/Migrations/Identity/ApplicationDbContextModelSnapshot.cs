@@ -200,6 +200,9 @@ namespace Services.Data.Migrations.Identity
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
 

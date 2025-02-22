@@ -10,6 +10,7 @@
 
 	<!--MICROSOFT-->
 	<ItemGroup>
+		<PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(PacketVersions)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(PacketVersions)" />
@@ -24,6 +25,7 @@
 	<!--OTHERS-->
 	<ItemGroup>
 		<PackageReference Include="IdentityModel" Version="7.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 		<PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
 	</ItemGroup>
 

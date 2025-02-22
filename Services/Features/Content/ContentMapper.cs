@@ -1,5 +1,6 @@
 using Riok.Mapperly.Abstractions;
 using myuzbekistan.Shared;
+using NetTopologySuite.Geometries;
 
 namespace myuzbekistan.Services;
 
@@ -7,12 +8,36 @@ namespace myuzbekistan.Services;
 public static partial class ContentMapper 
 {
     #region Usable
+    public static ContentApiView MapToApi(this ContentEntity src) => src.ToApi();
     public static ContentView MapToView(this ContentEntity src) => src.To();
     public static List<ContentView> MapToViewList(this List<ContentEntity> src)=> src.ToList();
     public static ContentEntity MapFromView(this ContentView src) => src.From();
     #endregion
 
     #region Internal
+
+    private static List<string> MapToListOfString(ICollection<FileEntity> source)
+    {
+        var target = new List<string>(source.Count);
+        foreach (var item in source)
+        {
+            target.Add(item.Path!);
+        }
+        return target;
+    }
+
+    private static string? MapToString(FileEntity? source)
+    {
+        return source?.Path;
+    }
+
+    private static double[] MapToGeometryToInt(NetTopologySuite.Geometries.Point source)
+    {
+        return [source.Coordinate.X, source.Coordinate.Y];
+    }
+
+    private static partial FacilityApiView MapToFacilityView(FacilityEntity source);
+    private static partial ContentApiView ToApi(this ContentEntity src);
 
     [MapProperty("Category", "CategoryView")]
     [MapProperty("Facilities", "Facilities")]
@@ -26,6 +51,7 @@ public static partial class ContentMapper
     private static partial List<ContentView> ToList(this List<ContentEntity> src);
     [MapProperty("CategoryView", "Category")]
     [MapProperty("Facilities", "Facilities")]
+    
     [MapProperty("PhoneNumbers", "PhoneNumbers")]
     [MapProperty("FilesView", "Files")]
     [MapProperty("PhotosView", "Photos")]

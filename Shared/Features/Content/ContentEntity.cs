@@ -22,8 +22,13 @@ public class ContentEntity : BaseEntity
     public Point? Location { get; set; }
     [Column(TypeName = "jsonb")]
     public List<CallInformation>? PhoneNumbers { get; set; } = [];
+    [InverseProperty("ContentFiles")]
     public ICollection<FileEntity>? Files { get; set; } = [];
-    public FileEntity? Photo { get; set; } 
+    [InverseProperty("ContentPhoto")]
+    public FileEntity? Photo { get; set; }
+
+    public long? PhotoId { get; set; }
+    [InverseProperty("ContentPhotos")]
     public ICollection<FileEntity>? Photos { get; set; } = [];
     public ICollection<ReviewEntity>? Reviews { get; set; } = [];
     public ICollection<LanguageEntity>? Languages { get; set; } = [];

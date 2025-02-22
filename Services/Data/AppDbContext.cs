@@ -61,6 +61,8 @@ public partial class AppDbContext : DbContextBase
             entity.Property(e => e.PhoneNumbers)
                   .HasConversion(new JsonbValueConverter<List<CallInformation>>());
         });
+
+        
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

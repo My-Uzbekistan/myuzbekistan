@@ -71,7 +71,6 @@ builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, CustomPasswordHashe
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole<long>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -90,8 +89,10 @@ builder.Services
  .AddJsonOptions(options =>
   {
       options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+      options.JsonSerializerOptions.Converters.Add(new NetTopologySuite.IO.Converters.GeoJsonConverterFactory());
       options.JsonSerializerOptions.Converters.Add(new CustomMainPageApiConverter());
-      options.JsonSerializerOptions.Converters.Add(new ContentEntityConverter());
+      options.JsonSerializerOptions.Converters.Add(new ContentApiViewConverter());
+      options.JsonSerializerOptions.Converters.Add(new FavoriteApiViewConverter());
   });
 builder.Services
     .AddRazorComponents()
@@ -242,9 +243,73 @@ using var dbContext = dbContextFactory.CreateDbContext();
 using var apldbContext = apldbContextFactory.CreateDbContext();
 await dbContext.Database.MigrateAsync();
 await apldbContext.Database.MigrateAsync();
-// await dbContext.Database.EnsureDeletedAsync();
-//dbContext.Database.EnsureCreated();
+// ✅ Инициализация ролей и администратора
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
+
+    await SeedRolesAsync(roleManager);
+    await SeedAdminAsync(userManager);
+}
+
+
+
 app.Run();
+
+
+// ✅ Метод для создания ролей
+async Task SeedRolesAsync(RoleManager<IdentityRole<long>> roleManager)
+{
+    string[] roles = new[] { "User", "Admin" };
+
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole<long>(role));
+        }
+    }
+}
+
+// ✅ Метод для создания администратора
+async Task SeedAdminAsync(UserManager<ApplicationUser> userManager)
+{
+    var adminEmail = "travelAdmin@example.com";
+    var adminUsername = "travelAdmin@example.com";
+    var adminPassword = "1q2w3e4r5t6y!QAZ";
+
+    var existingAdmin = await userManager.FindByNameAsync(adminUsername);
+    if (existingAdmin == null)
+    {
+        var adminUser = new ApplicationUser
+        {
+            UserName = adminUsername,
+            Email = adminEmail,
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+            Console.WriteLine("✅ Администратор travelAdmin успешно создан!");
+        }
+        else
+        {
+            Console.WriteLine("❌ Ошибка при создании администратора:");
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine($"- {error.Description}");
+            }
+        }
+    }
+    else
+    {
+        Console.WriteLine("ℹ️ Администратор travelAdmin уже существует.");
+    }
+}
 
 
 public class CustomPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : class

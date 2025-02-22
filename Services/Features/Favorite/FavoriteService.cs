@@ -5,11 +5,31 @@ using ActualLab.Fusion.EntityFramework;
 using System.ComponentModel.DataAnnotations;
 using ActualLab.Async;
 using System.Reactive;
+
 namespace myuzbekistan.Services;
 
-public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IFavoriteService 
+public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IFavoriteService
 {
     #region Queries
+
+
+    public async virtual Task<List<FavoriteApiView>> GetFavorites(long userId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var favorite = from s in dbContext.Favorites select s;
+
+        favorite = favorite.Include(x => x.Content)
+
+             .ThenInclude(x => x.Category)
+        .Include(x => x.Content).ThenInclude(x => x.Files)
+        .Include(x => x.Content).ThenInclude(x => x.Photos)
+        .Include(x => x.Content).ThenInclude(x => x.Reviews)
+        .Include(x => x.Content).ThenInclude(x => x.Languages)
+        .Include(x => x.Content).ThenInclude(x => x.Facilities).ThenInclude(x => x.Icon)
+            ;
+        return favorite.AsNoTracking().ToList().MapToApiList();
+    }
     [ComputeMethod]
     public async virtual Task<TableResponse<FavoriteView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)
     {
@@ -19,17 +39,18 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         if (!String.IsNullOrEmpty(options.Search))
         {
-            favorite = favorite.Where(s => 
+            favorite = favorite.Where(s =>
                 s.Id.ToString().Contains(options.Search)
             );
         }
 
         Sorting(ref favorite, options);
-        
+
         favorite = favorite.Include(x => x.Content);
+
         var count = await favorite.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await favorite.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-        return new TableResponse<FavoriteView>(){ Items = items.MapToViewList(), TotalItems = count };
+        return new TableResponse<FavoriteView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
     [ComputeMethod]
@@ -40,7 +61,7 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
         var favorite = await dbContext.Favorites
         .Include(x => x.Content)
         .FirstOrDefaultAsync(x => x.Id == Id);
-        
+
         return favorite == null ? throw new ValidationException("FavoriteEntity Not Found") : favorite.MapToView();
     }
 
@@ -53,14 +74,17 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
             _ = await Invalidate();
             return;
         }
-
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        FavoriteEntity favorite=new FavoriteEntity();
-        Reattach(favorite, command.Entity, dbContext); 
-        
-        dbContext.Update(favorite);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        FavoriteEntity favorite = new()
+        {
+            Content = dbContext.Contents
+            
+            .First(x=>x.Id == command.ContentId)!,
+            UserId = command.UserId
+        };
+        dbContext.Add(favorite);
 
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
 
@@ -73,9 +97,8 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var favorite = await dbContext.Favorites
-        .Include(x=>x.Content)
-        .FirstOrDefaultAsync(x => x.Id == command.Id);
-        if (favorite == null) throw  new ValidationException("FavoriteEntity Not Found");
+        .Include(x => x.Content)
+        .FirstOrDefaultAsync(x => x.Id == command.favoriteId && x.UserId == command.UserId) ?? throw new ValidationException("FavoriteEntity Not Found");
         dbContext.Remove(favorite);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -90,18 +113,18 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var favorite = await dbContext.Favorites
-        .Include(x=>x.Content)
+        .Include(x => x.Content)
         .FirstOrDefaultAsync(x => x.Id == command.Entity!.Id);
 
-        if (favorite == null) throw  new ValidationException("FavoriteEntity Not Found"); 
+        if (favorite == null) throw new ValidationException("FavoriteEntity Not Found");
 
         Reattach(favorite, command.Entity, dbContext);
-        
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
     #endregion
 
-    
+
 
     #region Helpers
 
@@ -112,9 +135,9 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
         FavoriteMapper.From(favoriteView, favorite);
 
 
-        if(favorite.Content != null)
-        favorite.Content = dbContext.Contents
-        .First(x => x.Id == favorite.Content.Id);
+        if (favorite.Content != null)
+            favorite.Content = dbContext.Contents
+            .First(x => x.Id == favorite.Content.Id);
 
     }
 
@@ -123,7 +146,9 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
         "Content" => favorite.Ordering(options, o => o.Content),
         "Id" => favorite.Ordering(options, o => o.Id),
         _ => favorite.OrderBy(o => o.Id),
-        
+
     };
+
+
     #endregion
 }

@@ -78,8 +78,8 @@
                                 <MudStack Row="true">
                                     <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
 
-                                    <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Checked="current.Recommended"
-                                               @bind-Checked:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
+                                    <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Value="current.Recommended"
+                                               @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
                                 </MudStack>
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Facilities))
                                 {

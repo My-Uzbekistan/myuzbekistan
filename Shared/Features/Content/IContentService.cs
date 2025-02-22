@@ -17,5 +17,7 @@ public interface IContentService:IComputeService
     [CommandHandler]
     Task Delete(DeleteContentCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
+
+    Task<List<ContentApiView>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default);
 }
     

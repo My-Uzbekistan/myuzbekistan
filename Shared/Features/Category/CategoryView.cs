@@ -7,7 +7,15 @@ using Shared.Localization;
 namespace myuzbekistan.Shared;
 [DataContract, MemoryPackable]
 public partial record CategoryApi([property: DataMember] string Name, [property: DataMember] string Icon, [property: DataMember] long Id);
-public partial record MainPageApi([property: DataMember] string CategoryName, [property: DataMember] long CategoryId, [property: DataMember]  List<ContentEntity> ContentView);
+public partial record MainPageApi(
+    [property: DataMember] string CategoryName,
+    [property: DataMember] long CategoryId,
+    [property: DataMember] ContentApiView? Recommended,
+    [property: DataMember] List<ContentApiView> Contents
+    );
+
+
+
 
 
 [DataContract, MemoryPackable]
@@ -21,7 +29,7 @@ public partial class CategoryView
     [property: DataMember] public string Locale { get; set; } = null!;
     [property: DataMember] public string? Description { get; set; }
     [property: DataMember] public ICollection<ContentView>? ContentsView { get; set; }
-    [property: DataMember]  public FileView? IconView { get; set; }
+    [property: DataMember] public FileView? IconView { get; set; }
     [property: DataMember] public short Order { get; set; } = 0;
     [property: DataMember] public long Id { get; set; }
     [property: DataMember] public int Fields { get; set; }

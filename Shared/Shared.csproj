@@ -21,6 +21,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(PacketVersions)" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="$(PacketVersions)" />
 		<PackageReference Include="EF.Audit.Core" Version="1.0.7" />
+		<PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
+		<PackageReference Include="NetTopologySuite.IO.GeoJSON4Stj" Version="4.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="$(PacketVersions)" />
 	</ItemGroup>
 	<ItemGroup>

@@ -8,6 +8,17 @@ namespace myuzbekistan.Shared;
 
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class FacilityApiView
+{
+    [property: DataMember] public string Name { get; set; } = null!;
+    [property: DataMember] public string Locale { get; set; } = null!;
+    [property: DataMember] public string? Icon { get; set; }
+    [property: DataMember] public long Id { get; set; }
+
+}
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class FacilityView
 {
     [Display(ResourceType = typeof(SharedResource), Name = "Name")]
