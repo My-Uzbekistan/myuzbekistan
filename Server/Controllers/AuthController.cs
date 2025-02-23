@@ -198,9 +198,26 @@ public class AuthController : ControllerBase
         }
 
         // Генерация JWT с ролями
-        var token =  GenerateJwtToken(user);
+        var accessToken =  GenerateJwtToken(user);
 
-        return Ok(new { token });
+        var refreshToken = GenerateRefreshToken();
+        // Сохраняем refresh-токен в БД
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+        try
+        {
+            return Ok(new
+            {
+                access_token = accessToken,
+                refresh_token = refreshToken,
+                expires = DateTime.Now.AddMinutes(30).Millisecond
+            });
+        }
+        finally
+        {
+            await _userManager.UpdateAsync(user);
+        }
     }
 
     [HttpPost("refresh")]

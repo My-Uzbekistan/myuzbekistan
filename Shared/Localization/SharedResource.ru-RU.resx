@@ -289,7 +289,7 @@
     <value>Икона</value>
   </data>
   <data name="Order" xml:space="preserve">
-    <value>Заказ</value>
+    <value>Приоритет</value>
   </data>
   <data name="Action" xml:space="preserve">
     <value>Действие</value>
