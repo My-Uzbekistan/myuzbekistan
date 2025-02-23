@@ -33,6 +33,7 @@ public class ContentEntity : BaseEntity
     public ICollection<ReviewEntity>? Reviews { get; set; } = [];
     public ICollection<LanguageEntity>? Languages { get; set; } = [];
     public int RatingAverage { get; set; } 
+    public int AverageCheck { get; set; } 
     public decimal Price { get; set; }
     public decimal PriceInDollar { get; set; }
     public string? Address { get; set; } = null!;

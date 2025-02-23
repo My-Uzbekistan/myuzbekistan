@@ -6,6 +6,7 @@
 @inject IDialogService _dialogService
 @inject UInjector UInjector
 @inject IContentService ContentService
+@inject ICategoryService CategoryService
 
 @inherits MixedStateComponent<TableResponse<ContentView>,TableOptions>
 @{
@@ -22,24 +23,65 @@
     </Actions>
     <ChildContent>
         <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="ContentView">
-            <MudTd DataLabel="Title">@context.Title</MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel="Photos">
-                <ImagesView Files="@context.PhotosView?.ToList()" />
-            </MudTd>
-            <MudTd DataLabel="Photo">
-                <ImageView fileEntity="@context.PhotoView" />
-            </MudTd>
-            <MudTd DataLabel="Languages">
-                @string.Join(" ", context.Languages?.Select(x => x.Name)?.ToList() ?? new List<string>())
-            </MudTd>
-            <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
-            <MudTd DataLabel="Price">@context.Price</MudTd>
-            <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
-            <MudTd DataLabel="Address">@context.Address</MudTd>
-            <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
-            <MudTd DataLabel="Id">@context.Id</MudTd>
-
+            @if (SortColumns.Contains("Title"))
+            {
+                <MudTd DataLabel="Title">@context.Title</MudTd>
+            }
+            @if (SortColumns.Contains("Description"))
+            {
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+            }
+            @if (SortColumns.Contains("Photos"))
+            {
+                <MudTd DataLabel="Photos">
+                    <ImagesView Files="@context.PhotosView?.ToList()" />
+                </MudTd>
+            }
+            @if (SortColumns.Contains("Photo"))
+            {
+                <MudTd DataLabel="Photo">
+                    <ImageView fileEntity="@context.PhotoView" />
+                </MudTd>
+            }
+            @if (SortColumns.Contains("Languages"))
+            {
+                <MudTd DataLabel="Languages">
+                    @string.Join(" ", context.Languages?.Select(x => x.Name)?.ToList() ?? new List<string>())
+                </MudTd>
+            }
+            @if (SortColumns.Contains("AverageCheck"))
+            {
+                <MudTd DataLabel="AverageCheck">
+                    <MudRating SelectedValue="context.AverageCheck"
+                    ReadOnly="true"
+                               MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
+                               FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
+                    </MudTd>
+            }
+            @if (SortColumns.Contains("RatingAverage"))
+            {
+                <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
+            }
+            @if (SortColumns.Contains("Price"))
+            {
+                <MudTd DataLabel="Price">@context.Price</MudTd>
+            }
+            @if (SortColumns.Contains("PriceInDollar"))
+            {
+                <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
+            }
+            @if (SortColumns.Contains("Address"))
+            {
+                <MudTd DataLabel="Address">@context.Address</MudTd>
+            }
+            @if (SortColumns.Contains("Recommended"))
+            {
+                <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
+            }
+            @if (SortColumns.Contains("Id"))
+            {
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+            }
             <MudTd Class="d-flex justify-end">
                 <div style="display:flex; gap:7px;">
                     <MudLink Href=@($"categories/{CategoryId}/contents/{context.Id}")>
@@ -57,7 +99,14 @@
     [Parameter] public long CategoryId { get; set; }
     private TableResponse<ContentView>? Items;
 
-    private string[] SortColumns = new string[] { "Title", "Description", "Photos", "Photo", "Languages", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id", };
+
+
+    private string[] SortColumns = new string[] { "Title", "Description", "Photos", "Photo", "Languages", "AverageCheck" , "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -71,7 +120,13 @@
 
     protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken = default)
     {
+        var category = await CategoryService.Get(CategoryId, cancellationToken);
         var contents = await ContentService.GetAll(CategoryId, MutableState.Value);
+        var catField = category.First().Fields;
+        string[] constatnFields = ["Title", "Id", "RatingAverage", "Recommended"];
+        SortColumns = SortColumns.Where(x => constatnFields.Contains(x) || Bitwise.Is(catField, (ContentFields)Enum.Parse(typeof(ContentFields), x))).ToArray();
+
+
         return contents;
 
     }

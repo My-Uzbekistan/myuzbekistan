@@ -25,18 +25,18 @@
                                     <MudTextField @bind-Value="current.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Title)" Required="true" />
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
                                     {
-                                        <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" />
+                                        <MudTextField @bind-Value="current.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)"  />
                                     }
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))
                                     {
-                                        <MudTextField @bind-Value="current.WorkingHours" Label="WorkingHours" AutoFocus="false" Variant="Variant.Text" For="@(() => current.WorkingHours)" Required="true" />
+                                        <MudTextField @bind-Value="current.WorkingHours" Label="@L["WorkingHours"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.WorkingHours)" Required="true" />
 
                                     }
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
                                     {
-                                        <MudTextField @bind-Value="current.Address" Label="Address" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Address)" />
+                                        <MudTextField @bind-Value="current.Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Address)" />
                                     }
 
                                     <input type="hidden" @bind-value="current.Id">
@@ -53,7 +53,7 @@
                             <MudItem xs="12">
 
                                 <MudPaper Class="pa-4">
-                                    <MudText Typo="Typo.h6" Class="mb-4">@L["Manage Attachments"]</MudText>
+                                    <MudText Typo="Typo.h6" Class="mb-4">@L[@Shared.Localization.SharedResource.ManageAttachments]</MudText>
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
                                     {
                                         <ImagesSelectView Label="@L["Conditions"]" @bind-Value="current.FilesView" @bind-Value:after="()=>{ Model.ForEach(x=>x.FilesView = current.FilesView); }" />
@@ -96,16 +96,22 @@
 
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.AverageCheck))
                                 {
-                                    <label class="mt-4" style="display: flex;    align-items: center;
-                                ">
+                                    <label class="mt-4 mb-2" style="display: flex;    align-items: center;
+                                        ">
                                         @L["AverageCheck"]
-                                        <MudRating @bind-SelectedValue="current.RatingAverage" @bind-SelectedValue:after="()=> Model.ForEach(x=> {x.RatingAverage = current.RatingAverage;}) "
-                                                   MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
-                                                   FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
+                                        @current.AverageCheck
+                                       
                                     </label>
+                                    <MudRating SelectedValue="current.AverageCheck"
+                                               SelectedValueChanged="(int val)=>{
+
+                                                    Console.WriteLine(val);
+                                                    current.AverageCheck = val;
+                                                    }"
+                                               MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
+                                               FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
 
                                 }
-
 
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Price) || Bitwise.Is(categoryView.Fields, ContentFields.PriceInDollar))
                                 {

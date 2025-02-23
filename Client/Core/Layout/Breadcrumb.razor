@@ -2,31 +2,34 @@
 @namespace Client.Core.Layout
 @implements IDisposable
 
-<MudHidden Class="pl-6 pa-1" Breakpoint="Breakpoint.Xs" Invert="false">
-    <MudBreadcrumbs Class="relative" Items="Items">
+<MudHidden Class="pl-6 " Breakpoint="Breakpoint.Xs" Invert="false">
+    <MudBreadcrumbs Class="pa-1 relative" Items="Items">
 
     </MudBreadcrumbs>
 </MudHidden>
 
 @code {
 
-    private List<BreadcrumbItem> Items = new List<BreadcrumbItem>
-{
-new BreadcrumbItem("Home", href: "/"),
-};
+    private List<BreadcrumbItem> Items;
+
     protected override void OnInitialized()
     {
+        Items = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem(L["Home"], href: "/"),
+        };
         ReMakeBreadCrumb();
         NavigationManager.LocationChanged += NavigationManager_LocationChanged;
     }
+
     private void ReMakeBreadCrumb()
     {
         Items.RemoveRange(1, Items.Count - 1);
         var index = 0;
-        var url =NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         if (url.Contains('?'))
         {
-             url = url.Substring(0, url.IndexOf("?"));
+            url = url.Substring(0, url.IndexOf("?"));
         }
         var path = url.Split("/").ToList();
         path.ForEach(x =>
@@ -34,17 +37,16 @@ new BreadcrumbItem("Home", href: "/"),
             if (x.Length > 0)
             {
                 var str = index >= 1 ? string.Join("/", path.GetRange(0, index + 1)) : x;
-                Items.Add(new BreadcrumbItem(x, href: $"/{str}", path.Last() == x ? true : false));
+                Items.Add(new BreadcrumbItem(L[x], href: $"/{str}", path.Last() == x ? true : false));
             }
             index++;
         });
         StateHasChanged();
     }
+
     protected void NavigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
     {
         ReMakeBreadCrumb();
-
-
     }
 
     public void Dispose()

@@ -3,7 +3,7 @@
 @foreach (var item in Columns)
 {
     <MudTh>
-        <MudTableSortLabel SortLabel="@item" SortDirectionChanged='(SortDirection dir) => SortTable(dir, item)' T="T"> @item.Replace("_field","")</MudTableSortLabel>
+        <MudTableSortLabel SortLabel="@item" SortDirectionChanged='(SortDirection dir) => SortTable(dir, item)' T="T"> @L[@item.Replace("_field","")]</MudTableSortLabel>
     </MudTh>
 }
 

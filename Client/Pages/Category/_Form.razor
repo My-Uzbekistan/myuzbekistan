@@ -30,9 +30,9 @@
                                 <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="()=>{ Model.ForEach(x=>{ x.Order = current.Order; });  }"></MudNumericField>
                             </MudExpansionPanel>
                             <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
-                                @foreach (ContentFields field in (ContentFields[])Enum.GetValues(typeof(ContentFields)))
+                                @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x=>x != ContentFields.None))
                                 {
-                                    <FlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => {PopulateFlags(current.Fields);}" BitWise=(int)field Label="@L[field.ToString()]" />
+                                    <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => {PopulateFlags(current.Fields);}" BitWise=field Label="@L[field.ToString()]" />
                                 }
                             </MudExpansionPanel>
                         </MudExpansionPanels>

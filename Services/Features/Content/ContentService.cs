@@ -91,7 +91,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             .Include(x => x.Files)
             .Include(x => x.Photos)
             .Include(x => x.Reviews)
-            .Include(x => x.Facilities).ThenInclude(x=>x.Icon)
+            .Include(x => x.Facilities!).ThenInclude(x=>x.Icon)
             .Include(x => x.Languages)
             .AsSplitQuery() // Оптимизация запросов
             .AsNoTracking();
@@ -145,6 +145,11 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             content.Id = maxId;
             dbContext.Add(content);
 
+        }
+        var fContent = command.Entity.First();
+        if (command.Entity.First().Recommended)
+        {
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {fContent.CategoryId};");
         }
 
 

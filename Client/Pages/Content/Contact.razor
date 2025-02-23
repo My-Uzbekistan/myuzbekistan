@@ -1,11 +1,11 @@
 ﻿<MudPaper Class="pa-4">
-    <MudText Typo="Typo.h6" Class="mb-4">@L["Manage Contacts"]</MudText>
+    <MudText Typo="Typo.h6" Class="mb-4">@L["Contact_ManageContacts"]</MudText>
 
     @foreach (var contact in PhoneNumbers)
     {
         <MudGrid Class="mb-3" AlignItems="AlignItems.Center">
             <MudItem xs="12" md="2">
-                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="Changed" Label="@L["Contact Type"]" >
+                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="Changed" Label="@L["Contact_ContactType"]" >
                     <MudSelectItem Value="@("telegram.svg")">@L["Telegram"]</MudSelectItem>
                     <MudSelectItem Value="@("phone.svg")">@L["Phone"]</MudSelectItem>
                     <MudSelectItem Value="@("instagram.svg")">@L["Instagram"]</MudSelectItem>
@@ -20,11 +20,11 @@
                                   Placeholder="(__) ___ __ __"
                                   Mask="@(new PatternMask("(00) 000-00-00"))"
                                   Adornment="Adornment.Start"
-                                  AdornmentText="+998" Label="@L["Phone Number"]" />
+                                  AdornmentText="+998" Label="@L["Contact_PhoneNumber"]" />
                 }
                 else
                 {
-                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Username"]"   />
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Username"]"   />
                 }
             </MudItem>
 
@@ -35,7 +35,7 @@
     }
 
     <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddContact">
-        @L["Add Contact"]
+        @L["Contact_AddContact"]
     </MudButton>
 </MudPaper>
 

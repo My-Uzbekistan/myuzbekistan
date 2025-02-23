@@ -1,35 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace myuzbekistan.Shared;
-
-public static class Bitwise
+namespace myuzbekistan.Shared
 {
-    public static bool IsSetKthBit(int n, int k)
+    public static class Bitwise
     {
-        return ((1 << k) & n) != 0;
-    }
+        // Проверяет, установлен ли K-й бит
+        public static bool IsSetKthBit(int n, int k)
+        {
+            return ((1 << k) & n) != 0;
+        }
 
-    public static int SetKthBit(int n, int k)
-    {
-        return (n | (1 << k));
-    }
+        // Устанавливает K-й бит
+        public static int SetKthBit(int n, int k)
+        {
+            return n | (1 << k);
+        }
 
-    public static int UnSetKthBit(int n, int k)
-    {
-        return (n & ~(1 << k));
-    }
+        // Сбрасывает K-й бит
+        public static int UnSetKthBit(int n, int k)
+        {
+            return n & ~(1 << k);
+        }
 
-    public static bool IsMenu(int n)
-    {
-        return IsSetKthBit(n, (int)ContentFields.Menu);
-    }
-    public static bool Is(int n,ContentFields contentFields)
-    {
-        return IsSetKthBit(n, (int)contentFields);
+        // Проверяет, установлен ли флаг ContentFields
+        public static bool Is(int n, ContentFields contentFields)
+        {
+            return ((ContentFields)n & contentFields) == contentFields;
+        }
+
+        // Устанавливает флаг ContentFields
+        public static int Set(int n, ContentFields contentFields)
+        {
+            return n | (int)contentFields;
+        }
+
+        // Убирает флаг ContentFields
+        public static int UnSet(int n, ContentFields contentFields)
+        {
+            return n & ~(int)contentFields;
+        }
     }
 }

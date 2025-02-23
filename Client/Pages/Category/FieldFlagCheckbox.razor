@@ -1,0 +1,42 @@
+﻿<MudCheckBox @bind-Value="IsChecked"
+             Label="@Label"
+             Color="Color.Primary"
+             @bind-Value:after=" async () => await  ChangeFlag(IsChecked)">
+</MudCheckBox>
+
+@code {
+    [Parameter]
+    public int Flag { get; set; }
+
+    [Parameter]
+    public EventCallback<int> FlagChanged { get; set; }
+
+    [Parameter]
+    public ContentFields BitWise { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    private bool IsChecked { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        // Проверка, установлен ли бит
+        IsChecked = Bitwise.Is(Flag, BitWise);
+    }
+
+    private async Task ChangeFlag(bool isChecked)
+    {
+        if (isChecked)
+        {
+            Flag = Bitwise.Set(Flag, BitWise);
+        }
+        else
+        {
+            Flag = Bitwise.UnSet(Flag, BitWise);
+        }
+
+        // Обновление родительского компонента
+        await FlagChanged.InvokeAsync(Flag);
+    }
+}

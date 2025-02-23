@@ -162,9 +162,6 @@
   <data name="Wait" xml:space="preserve">
     <value>Kuting</value>
   </data>
-  <data name="NameError" xml:space="preserve">
-    <value>NameErroruz</value>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>Ism</value>
   </data>
@@ -185,5 +182,140 @@
   </data>
   <data name="Title" xml:space="preserve">
     <value>Sarlavha</value>
+  </data>
+  <data name="NameError" xml:space="preserve">
+    <value>Ism xato</value>
+  </data>
+  <data name="Contact_ManageContacts" xml:space="preserve">
+    <value>Kontaktlarni boshqarish</value>
+  </data>
+  <data name="Contact_ContactType" xml:space="preserve">
+    <value>Kontakt turi</value>
+  </data>
+  <data name="Contact_PhoneNumber" xml:space="preserve">
+    <value>Telefon raqami</value>
+  </data>
+  <data name="Contact_Username" xml:space="preserve">
+    <value>Foydalanuvchi nomi</value>
+  </data>
+  <data name="Contact_AddContact" xml:space="preserve">
+    <value>Kontakt qo'shing</value>
+  </data>
+  <data name="Photos" xml:space="preserve">
+    <value>Rasmlar</value>
+  </data>
+  <data name="Photo" xml:space="preserve">
+    <value>Surat</value>
+  </data>
+  <data name="Languages" xml:space="preserve">
+    <value>Tillar</value>
+  </data>
+  <data name="RatingAverage" xml:space="preserve">
+    <value>Reyting o'rtacha</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Narx</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Manzil</value>
+  </data>
+  <data name="Recommended" xml:space="preserve">
+    <value>Tavsiya etilgan</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Sozlash</value>
+  </data>
+  <data name="Facilities" xml:space="preserve">
+    <value>Muvofiqliklar</value>
+  </data>
+  <data name="AverageCheck" xml:space="preserve">
+    <value>O'rtacha tekshirish</value>
+  </data>
+  <data name="EnterPrice" xml:space="preserve">
+    <value>Ishlamoq</value>
+  </data>
+  <data name="PriceInDollar" xml:space="preserve">
+    <value>Dollar narxi</value>
+  </data>
+  <data name="ManageAttachments" xml:space="preserve">
+    <value>Mashg'ulotlarni boshqarish</value>
+  </data>
+  <data name="Conditions" xml:space="preserve">
+    <value>Shartlar</value>
+  </data>
+  <data name="PickLocation" xml:space="preserve">
+    <value>Joyni tanlang</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Tasdiqlamoq</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Asosiy sahifa</value>
+  </data>
+  <data name="Add something" xml:space="preserve">
+    <value>Biror narsa qo'shing</value>
+  </data>
+  <data name="LanguageVersions" xml:space="preserve">
+    <value>Til versiyalari</value>
+  </data>
+  <data name="WorkingHours" xml:space="preserve">
+    <value>Ish vaqti</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Tili</value>
+  </data>
+  <data name="Facility" xml:space="preserve">
+    <value>Muassasa</value>
+  </data>
+  <data name="Favorite" xml:space="preserve">
+    <value>Tanlangan</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>Fayli</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Til</value>
+  </data>
+  <data name="Review" xml:space="preserve">
+    <value>Ko'rib chiqmoq</value>
+  </data>
+  <data name="categories" xml:space="preserve">
+    <value>toifalar</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Ikonka</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Tartib</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Harakat</value>
+  </data>
+  <data name="contents" xml:space="preserve">
+    <value>tarkibi</value>
+  </data>
+  <data name="favorites" xml:space="preserve">
+    <value>Sevimlilar</value>
+  </data>
+  <data name="files" xml:space="preserve">
+    <value>fayllar</value>
+  </data>
+  <data name="reviews" xml:space="preserve">
+    <value>Sharhlar</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Holat</value>
+  </data>
+  <data name="PhoneNumbers" xml:space="preserve">
+    <value>Telefon raqamlari</value>
+  </data>
+  <data name="Menu" xml:space="preserve">
+    <value>Menyu</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Joylashuv</value>
   </data>
 </root>
