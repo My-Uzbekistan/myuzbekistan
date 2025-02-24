@@ -43,6 +43,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         content = content.Include(x => x.Category);
         content = content.Include(x => x.Files);
         content = content.Include(x => x.Photos);
+        content = content.Include(x => x.Photo);
         content = content.Include(x => x.Reviews);
         content = content.Include(x => x.Facilities);
         content = content.Include(x => x.Languages);
@@ -90,8 +91,9 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             .Include(x => x.Category)
             .Include(x => x.Files)
             .Include(x => x.Photos)
+            .Include(x => x.Photo)
             .Include(x => x.Reviews)
-            .Include(x => x.Facilities!).ThenInclude(x=>x.Icon)
+            .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
             .Include(x => x.Languages)
             .AsSplitQuery() // Оптимизация запросов
             .AsNoTracking();
@@ -115,9 +117,10 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Category)
         .Include(x => x.Files)
         .Include(x => x.Photos)
+        .Include(x => x.Photo)
         .Include(x => x.Reviews)
         .Include(x => x.Languages)
-        .Include(x => x.Facilities)
+        .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
         .Where(x => x.Id == Id).ToList();
 
         return content == null ? throw new ValidationException("ContentEntity Not Found") : content.MapToViewList();
@@ -141,7 +144,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         {
             ContentEntity content = new ContentEntity();
             Reattach(content, item, dbContext);
-            
+
             content.Id = maxId;
             dbContext.Add(content);
 
@@ -166,7 +169,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var contents =  dbContext.Contents
+        var contents = dbContext.Contents
             .Include(x => x.Category)
         .Include(x => x.Files)
         .Include(x => x.Photos)
@@ -175,8 +178,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Languages)
         .Include(x => x.Facilities)
         .Include(x => x.Reviews)
-        .Where(x => x.Id == command.Id).ToList() ;
-        if(contents.Count == 0)
+        .Where(x => x.Id == command.Id).ToList();
+        if (contents.Count == 0)
         {
             throw new ValidationException("ContentEntity Not Found");
         }
@@ -199,6 +202,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Category)
         .Include(x => x.Files)
         .Include(x => x.Photos)
+        .Include(x => x.Photo)
         .Include(x => x.Reviews)
         .Include(x => x.Languages)
         .Include(x => x.Facilities)
@@ -206,11 +210,16 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
         foreach (var item in command.Entity)
         {
-            Reattach(content.First(x => x.Locale == item.Locale), item, dbContext);
-            dbContext.Update(content.First(x => x.Locale == item.Locale));
+            var cont = content.First(x => x.Locale == item.Locale);
+            Reattach(cont, item, dbContext);
+            dbContext.Entry(cont).State = EntityState.Modified;
         }
 
+       
+
         await dbContext.SaveChangesAsync(cancellationToken);
+        if (con.PhotoView != null)
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"PhotoId\" = {con.PhotoView.Id} where \"Id\" = {con.Id};");
     }
     #endregion
 
@@ -230,6 +239,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             .First(x => x.Id == content.Category.Id && x.Locale == content.Category.Locale);
         if (content.Files != null)
             content.Files = [.. dbContext.Files.Where(x => content.Files.Select(tt => tt.Id).ToList().Contains(x.Id))];
+        var photo = contentView.PhotoView == null ? null : dbContext.Files.First(x => x.Id == contentView.PhotoView.Id);
+        content.Photo = photo;
         if (content.Photos != null)
             content.Photos = [.. dbContext.Files.Where(x => content.Photos.Select(tt => tt.Id).ToList().Contains(x.Id))];
         if (content.Reviews != null)

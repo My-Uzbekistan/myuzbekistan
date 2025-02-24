@@ -34,7 +34,7 @@
 
                                     }
 
-                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Address))
                                     {
                                         <MudTextField @bind-Value="current.Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Address)" />
                                     }

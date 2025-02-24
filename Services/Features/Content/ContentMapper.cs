@@ -31,6 +31,18 @@ public static partial class ContentMapper
         return source?.Path;
     }
 
+ 
+
+    private static List<string> MapToLanguage(ICollection<LanguageEntity> source)
+    {
+        var target = new List<string>(source.Count);
+        foreach (var item in source)
+        {
+            target.Add(item.Name);
+        }
+        return target;
+    }
+
     private static double[] MapToGeometryToInt(NetTopologySuite.Geometries.Point source)
     {
         return [source.Coordinate.X, source.Coordinate.Y];
@@ -44,6 +56,7 @@ public static partial class ContentMapper
     [MapProperty("PhoneNumbers", "PhoneNumbers")]
     [MapProperty("Files", "FilesView")]
     [MapProperty("Photos", "PhotosView")]
+    [MapProperty("Photo", "PhotoView")]
     [MapProperty("Reviews", "ReviewsView")]
     [MapProperty("Languages", "Languages")]
     private static partial ContentView To(this ContentEntity src);
@@ -63,6 +76,7 @@ public static partial class ContentMapper
     [MapProperty("PhoneNumbers", "PhoneNumbers")]
     [MapProperty("FilesView", "Files")]
     [MapProperty("PhotosView", "Photos")]
+    [MapProperty("PhotoView", "Photo")]
     [MapProperty("ReviewsView", "Reviews")]
     [MapProperty("Languages", "Languages")]
     public static partial void From(ContentView personView, ContentEntity personEntity);

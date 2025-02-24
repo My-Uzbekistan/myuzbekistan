@@ -26,7 +26,6 @@ public class ContentEntity : BaseEntity
     public ICollection<FileEntity>? Files { get; set; } = [];
     [InverseProperty("ContentPhoto")]
     public FileEntity? Photo { get; set; }
-
     public long? PhotoId { get; set; }
     [InverseProperty("ContentPhotos")]
     public ICollection<FileEntity>? Photos { get; set; } = [];

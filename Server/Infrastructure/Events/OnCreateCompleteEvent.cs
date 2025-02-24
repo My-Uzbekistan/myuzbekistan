@@ -2,13 +2,16 @@ using ActualLab.CommandR;
 using UFile.Server;
 using UFile.Shared;
 using myuzbekistan.Shared;
+using tusdotnet.Interfaces;
+using Client.Core.Layout;
+using tusdotnet.Models;
 
 namespace Server;
 public class OnCreateCompleteEvent : IOnCreateCompleteEvent
 {
     private readonly ICommander _commander;
     private readonly UserContext _userContext;
-
+    
     public OnCreateCompleteEvent(ICommander commander,UserContext userContext)
     {
         _commander = commander;
@@ -17,6 +20,7 @@ public class OnCreateCompleteEvent : IOnCreateCompleteEvent
     public async Task InvokeAsync(UCreateCompleteContext ctx)
     {
         string fileName = ctx.Metadata!.GetMetadataValue("fileName");
+  
         FileView fileView = new()
         {
             Name = fileName,

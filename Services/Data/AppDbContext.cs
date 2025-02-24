@@ -62,7 +62,12 @@ public partial class AppDbContext : DbContextBase
                   .HasConversion(new JsonbValueConverter<List<CallInformation>>());
         });
 
-        
+
+        modelBuilder.Entity<ContentEntity>()
+            .HasIndex(c => c.PhotoId) // Индекс без уникальности
+            .IsUnique(false);
+
+
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
