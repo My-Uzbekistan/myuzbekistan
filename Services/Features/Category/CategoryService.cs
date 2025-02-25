@@ -33,13 +33,14 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         .ThenInclude(content => content.Facilities!)
             .ThenInclude(f => f.Icon);
 
-        // Переключаемся на Client-Side для сложной логики
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Client-Side пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         var categories = await query
      .AsAsyncEnumerable()
      .Select(c => new MainPageApi(
          c.Name,
          c.Id,
          c.Contents!.FirstOrDefault(x => x.Recommended)?.MapToApi(),
+         c.ViewType,
          c.Contents!
              .Where(content => string.IsNullOrEmpty(options.Search) ||
                                content.Title.ToLower().Contains(options.Search.ToLower()) ||

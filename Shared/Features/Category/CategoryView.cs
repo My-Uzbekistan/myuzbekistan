@@ -11,6 +11,7 @@ public partial record MainPageApi(
     [property: DataMember] string CategoryName,
     [property: DataMember] long CategoryId,
     [property: DataMember] ContentApiView? Recommended,
+    [property: DataMember] ViewType ViewType ,
     [property: DataMember] List<ContentApiView> Contents
     );
 
@@ -33,6 +34,8 @@ public partial class CategoryView
     [property: DataMember] public short Order { get; set; } = 0;
     [property: DataMember] public long Id { get; set; }
     [property: DataMember] public int Fields { get; set; }
+
+    [property: DataMember] public ViewType ViewType { get; set; } = ViewType.Default;
     [property: DataMember] public ContentStatus Status { get; set; } = ContentStatus.Active;
 
     public override bool Equals(object? o)
