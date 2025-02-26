@@ -1,39 +1,39 @@
-﻿using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
-using myuzbekistan.Services;
-using EF.Audit.Core.Extensions;
+﻿using ActualLab.CommandR.Configuration;
 using ActualLab.Fusion;
-using MudBlazor.Services;
-using Blazored.LocalStorage;
-using MudBlazor;
+using ActualLab.Fusion.Client.Caching;
 using ActualLab.Fusion.Extensions;
+using ActualLab.Fusion.Server;
+using ActualLab.Rpc;
+using ActualLab.Rpc.Server;
+using Blazored.LocalStorage;
+using Client;
 using Client.Core.Services;
-using myuzbekistan.Shared;
+using EF.Audit.Core.Extensions;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
-using ActualLab.Fusion.Server;
-using ActualLab.Rpc.Server;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using MudBlazor;
+using MudBlazor.Services;
+using MudBlazorWebApp1.Components.Account;
+using myuzbekistan.Services;
+using myuzbekistan.Shared;
+using Server;
+using Server.Components;
 using Server.Infrastructure;
 using Server.Infrastructure.ServiceCollection;
-using Server;
-using ActualLab.Fusion.Client.Caching;
-using ActualLab.Rpc;
-using ActualLab.CommandR.Configuration;
-using Client;
-using Server.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using MudBlazorWebApp1.Components.Account;
-using Microsoft.AspNetCore.Identity;
+using System.Reflection;
 using System.Text;
-
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using tusdotnet.Stores;
 using UFile.Server;
 using UFile.Shared;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
-using Microsoft.Extensions.FileProviders;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Text.Json;
 
 
 #region Builder And Logging
@@ -173,6 +173,19 @@ services.AddScoped<UInjector>();
 #region File
 //FileServiceCollection.AddFileServer(services, UploadType.Minio, cfg);
 services.AddFileServer(UploadType.Tus, cfg);
+services.AddSingleton(delegate
+{
+    char sep = Path.DirectorySeparatorChar;
+    string currentDirectory = Directory.GetCurrentDirectory();
+    string path = $"wwwroot{sep}files";
+    string text = Path.Combine(currentDirectory, path);
+    if (!Directory.Exists(text))
+    {
+        Directory.CreateDirectory(text);
+    }
+
+    return new TusDiskStore(text);
+});
 services.AddSingleton<IOnCreateCompleteEvent, OnCreateCompleteEvent>();
 services.AddSingleton<IOnAuthorizeEvent, OnAuthorizeEvent>();
 services.AddSingleton<IOnFileCompleteEvent, OnFileCompleteEvent>();

@@ -23,23 +23,26 @@
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
-                                <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status);}" Class="pa-4" Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
+                                <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status); }" Class="pa-4" Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
                                     <MudSelectItem T="ContentStatus" Value="ContentStatus.Active">@L["Active"]</MudSelectItem>
                                     <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
                                 </MudSelect>
-                                <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="()=>{ Model.ForEach(x=>{ x.Order = current.Order; });  }"></MudNumericField>
+                                <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
+                                <MudCheckBox ValueChanged="async (bool ev) => { OnChangeViewType(ev == true ? ViewType.Profile : ViewType.Default); current.ViewType = ev == true ? ViewType.Profile : ViewType.Default; }" Value="current.ViewType == ViewType.Default ? false : true" Label="@L["ViewType"]" Color="Color.Primary"></MudCheckBox>
                             </MudExpansionPanel>
                             <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
-                                @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x=>x != ContentFields.None))
+                                @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
                                 {
-                                    <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => {PopulateFlags(current.Fields);}" BitWise=field Label="@L[field.ToString()]" />
+                                    <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => { PopulateFlags(current.Fields); }" BitWise=field Label="@L[field.ToString()]" />
                                 }
                             </MudExpansionPanel>
+
+
                         </MudExpansionPanels>
                         <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
                         <MudExpansionPanels Class="mt-3">
                             <MudExpansionPanel Text="@L["Icon"]" Gutters="true" Expanded="true">
-                            <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => {Model.ForEach(x=>x.IconView = current.IconView);} " />
+                                <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => { Model.ForEach(x => x.IconView = current.IconView); }" />
                             </MudExpansionPanel>
                         </MudExpansionPanels>
                     </MudItem>
@@ -89,6 +92,14 @@
         {
             OnSubmit.InvokeAsync(Model);
         }
+    }
+
+    void OnChangeViewType(ViewType viewType)
+    {
+        Model.ForEach(s =>
+        {
+            s.ViewType = viewType;
+        });
     }
 
     void OnChangeStatus(ContentStatus status)
