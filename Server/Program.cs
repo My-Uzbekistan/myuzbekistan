@@ -175,8 +175,9 @@ services.AddScoped<UInjector>();
 services.AddFileServer(UploadType.Tus, cfg);
 services.AddSingleton(delegate
 {
+    char sep = Path.DirectorySeparatorChar;
     string currentDirectory = Directory.GetCurrentDirectory();
-    string path = "wwwroot\\files";
+    string path = $"wwwroot{sep}files";
     string text = Path.Combine(currentDirectory, path);
     if (!Directory.Exists(text))
     {
