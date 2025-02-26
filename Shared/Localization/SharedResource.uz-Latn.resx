@@ -318,4 +318,10 @@
   <data name="Location" xml:space="preserve">
     <value>Joylashuv</value>
   </data>
+  <data name="User" xml:space="preserve">
+    <value>Foydalanuvchi</value>
+  </data>
+  <data name="users" xml:space="preserve">
+    <value>Foydalanuvchilar</value>
+  </data>
 </root>

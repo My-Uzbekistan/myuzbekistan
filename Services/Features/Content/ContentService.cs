@@ -1,11 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using ActualLab.Fusion;
-using myuzbekistan.Shared;
-using ActualLab.Fusion.EntityFramework;
-using System.ComponentModel.DataAnnotations;
 using ActualLab.Async;
-using System.Reactive;
+using ActualLab.Fusion;
+using ActualLab.Fusion.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using myuzbekistan.Shared;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Reactive;
 namespace myuzbekistan.Services;
 
 public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService
@@ -215,7 +215,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             dbContext.Entry(cont).State = EntityState.Modified;
         }
 
-       
+
 
         await dbContext.SaveChangesAsync(cancellationToken);
         if (con.PhotoView != null)

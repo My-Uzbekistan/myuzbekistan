@@ -14,8 +14,7 @@ public static class AddDB
     public static IServiceCollection AddDataBase<TContext>(this IServiceCollection services, IWebHostEnvironment env,
     ConfigurationManager cfg, DataBaseType dataBaseType) where TContext : DbContext
     {
-        services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseNpgsql(cfg.GetValue<string>("Identity:Connection")));
+        
         services.AddTransient(_ => new DbOperationScope<TContext>.Options
         {
             IsolationLevel = IsolationLevel.RepeatableRead
@@ -61,7 +60,18 @@ public static class AddDB
 
                 if (env.IsDevelopment()) db.EnableSensitiveDataLogging();
             });
+
+            
+
         });
+
+        services.AddDbContextServices<ApplicationDbContext>(ctx =>
+        {
+            ctx.Services.AddDbContextFactory<ApplicationDbContext>(options => options
+         .UseNpgsql(cfg.GetValue<string>("Identity:Connection")));
+        });
+
+         
 
         return services;
     }

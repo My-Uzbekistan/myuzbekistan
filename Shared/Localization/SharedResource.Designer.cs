@@ -646,6 +646,24 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User.
+        /// </summary>
+        public static string User {
+            get {
+                return ResourceManager.GetString("User", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to users.
+        /// </summary>
+        public static string users {
+            get {
+                return ResourceManager.GetString("users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wait.
         /// </summary>
         public static string Wait {
