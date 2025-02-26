@@ -10,7 +10,7 @@ services:
     #   - 7100
     volumes:
           - traefik-public-certificates:/certificates
-          - "/mnt/nfs/shared/myuzbekistan/:/app/wwwroot/files/"
+          - "/mnt/nfs/shared/myuzbekistan/files:/app/wwwroot/files/"
     deploy:
       replicas: 1
       placement:
