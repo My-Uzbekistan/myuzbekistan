@@ -32,9 +32,6 @@
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Features\Category\" />
-	</ItemGroup>
-	<ItemGroup>
 	  <Compile Update="Localization\SharedResource.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>

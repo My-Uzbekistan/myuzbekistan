@@ -13,12 +13,29 @@
             <ChildContent>
                 <MudGrid>
                     <MudItem lg="8" xs="12">
-                        <MudPaper Class="pa-4">
-                            <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
-                            @* <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" /> *@
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudPaper Class="pa-4">
+                                    <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
+                                    @* <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" /> *@
 
-                            <input type="hidden" @bind-value="current.Id">
-                        </MudPaper>
+                                    <input type="hidden" @bind-value="current.Id">
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudPaper Class="pa-4">
+                                    @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
+                                    {
+                                        @if (Bitwise.Is(current.Fields, field))
+                                        {
+                                            <MudTextField Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text"  />
+                                        }
+
+                                    }
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+
                     </MudItem>
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
                         <MudExpansionPanels Class="mb-3">
@@ -28,12 +45,12 @@
                                     <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
                                 </MudSelect>
                                 <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
-                                <MudCheckBox ValueChanged="async (bool ev) => { OnChangeViewType(ev == true ? ViewType.Profile : ViewType.Default); current.ViewType = ev == true ? ViewType.Profile : ViewType.Default; }" Value="current.ViewType == ViewType.Default ? false : true" Label="@L["ViewType"]" Color="Color.Primary"></MudCheckBox>
+                                <MudCheckBox ValueChanged="async (bool ev) => { OnChangeViewType(ev == true ? ViewType.Profile : ViewType.Restaurant); current.ViewType = ev == true ? ViewType.Profile : ViewType.Restaurant; }" Value="current.ViewType == ViewType.Restaurant ? false : true" Label="@L["ViewType"]" Color="Color.Primary"></MudCheckBox>
                             </MudExpansionPanel>
                             <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
                                 @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
                                 {
-                                    <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => { PopulateFlags(current.Fields); }" BitWise=field Label="@L[field.ToString()]" />
+                                    <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => { PopulateFlags(current.Fields,field); }" BitWise=field Label="@L[field.ToString()]" />
                                 }
                             </MudExpansionPanel>
 
@@ -75,6 +92,20 @@
         base.OnInitialized();
         foreach (var item in Model)
         {
+            if (item.FieldNames is null || item.FieldNames.Count == 0)
+            {
+                item.FieldNames = [];
+
+                @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
+                {
+                    if(Bitwise.Is(item.Fields, field))
+                    {
+                        item.FieldNames.Add(field, L[field.ToString()]);
+                    }
+                }
+
+            }
+
             _contexts[item.Locale] = new(item);
         }
     }
@@ -110,10 +141,18 @@
         });
     }
 
-    void PopulateFlags(int flag)
+    void PopulateFlags(int flag,ContentFields field)
     {
         Model.ForEach(x =>
         {
+            if(Bitwise.Is(flag, field))
+            {
+                x.FieldNames.Add(field, L[field.ToString()]);
+            }
+            else
+            {
+                x.FieldNames.Remove(field);
+            }
             x.Fields = flag;
         });
     }

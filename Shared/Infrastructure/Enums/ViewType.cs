@@ -2,6 +2,7 @@
 
 public enum ViewType
 {
-    Default = 0,
-    Profile = 1
+    Restaurant = 0,
+    Profile = 1,
+    Card = 2
 }

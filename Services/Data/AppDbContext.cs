@@ -22,8 +22,8 @@ public class JsonbValueConverter<T> : ValueConverter<T, string>
 {
     public JsonbValueConverter()
         : base(
-            v => JsonConvert.SerializeObject(v),   // Преобразование из объекта в строку (сохранение)
-            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  // Преобразование из строки в объект (чтение)
+            v => JsonConvert.SerializeObject(v),   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ)
     { }
 }
 public partial class AppDbContext : DbContextBase
@@ -64,7 +64,7 @@ public partial class AppDbContext : DbContextBase
 
 
         modelBuilder.Entity<ContentEntity>()
-            .HasIndex(c => c.PhotoId) // Индекс без уникальности
+            .HasIndex(c => c.PhotoId) // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
             .IsUnique(false);
 
 
