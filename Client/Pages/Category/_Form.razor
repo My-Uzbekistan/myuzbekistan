@@ -30,7 +30,8 @@
                                     {
                                         @if (Bitwise.Is(current.Fields, field))
                                         {
-                                            <MudTextField Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text" />
+                                            @current.FieldNames[field]
+                                            <MudTextField @bind-Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text" />
                                         }
 
                                     }

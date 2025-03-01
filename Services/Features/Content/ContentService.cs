@@ -55,29 +55,87 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
 
     [ComputeMethod]
-    public async virtual Task<List<ContentDto>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<ContentApiView>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
-        var content =  dbContext.Database.SqlQueryRaw<string>($"""
-                SELECT jsonb_agg(jsonb_build_object(
-                    'Id', jsonb_build_object('Name', 'Id', 'Value', c."Id"),
-                    'Title', jsonb_build_object('Name', 'Title', 'Value', c."Title"),
-                    'Description', jsonb_build_object('Name', 'Description', 'Value', c."Description"),
-                    'Photo', jsonb_build_object('Name', 'Photo', 'Value', f."Path"),
-                    'Facilities', jsonb_build_object('Name', 'Facilities', 'Value',
+        // Íà÷àëüíûé çàïðîñ
+        var content = dbContext.Contents.AsQueryable();
+
+        // Ôèëüòðàöèÿ ïî ïîèñêîâîìó çàïðîñó
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            var search = options.Search.ToLower();
+
+            content = content.Where(s =>
+                s.Title.ToLower().Contains(search) ||
+                s.Description.ToLower().Contains(search) ||
+                s.WorkingHours.ToLower().Contains(search) ||
+                s.Facilities.Any(f => f.Name.ToLower().Contains(search)) ||
+                s.Languages.Any(l => l.Name.ToLower().Contains(search)) ||
+                s.Address.ToLower().Contains(search)
+            );
+        }
+
+        // Ôèëüòðàöèÿ ïî êàòåãîðèè
+        content = content.Where(x => x.CategoryId == CategoryId);
+
+        // Ôèëüòðàöèÿ ïî ÿçûêó
+        content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
+
+        // Ïðèìåíåíèå ñîðòèðîâêè
+        Sorting(ref content, options);
+
+        // Âêëþ÷àåì ñâÿçàííûå ñóùíîñòè ñ AsSplitQuery äëÿ îïòèìèçàöèè
+        content = content
+            .Include(x => x.Category)
+            .Include(x => x.Files)
+            .Include(x => x.Photos)
+            .Include(x => x.Photo)
+            .Include(x => x.Reviews)
+            .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
+            .Include(x => x.Languages)
+            .AsSplitQuery() // Îïòèìèçàöèÿ çàïðîñîâ
+            .AsNoTracking();
+
+        // Ïàãèíàöèÿ è âûïîëíåíèå çàïðîñà
+        var items = await content.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+
+        // Ìàïïèíã äàííûõ â API-ìîäåëü
+        var data = items.Select(x => x.MapToApi()).ToList();
+
+        return data;
+    }
+
+
+
+    public async virtual Task<ContentDto> GetContent(long ContentId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+
+        var contentQuery = dbContext.Database.SqlQueryRaw<string>($"""
+                SELECT jsonb_build_object(
+                    'Id', c."Id",
+                    'Title',  c."Title",
+                    'Description',  c."Description",
+                    'CategoryId',  c."CategoryId",
+                    'CategoryName', cat."Name",
+                    'WorkingHours', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'WorkingHours', 'WorkingHours') , 'Value', c."WorkingHours"),
+                    'Location', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Location', 'Location'), 'Value', (ST_AsGeoJSON(c."Location")::jsonb)->'coordinates'),
+                    'Facilities', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Facilities', 'Facilities')  , 'Value',
                         (SELECT jsonb_agg(jsonb_build_object(
                             'Id', fac."Id",
                             'Name', fac."Name",
                             'Icon', F2."Path"
                         ))
                         FROM "ContentEntityFacilityEntity" cf
-                        JOIN "Facilities" fac ON fac."Id" = cf."FacilitiesId" AND cf."FacilitiesLocale" = fac."Locale"
+                        JOIN "Facilities" fac ON fac."Id" = cf."FacilitiesId" AND cf."FacilitiesLocale" = c."Locale"
                         LEFT JOIN "Files" F2 ON F2."Id" = fac."IconId"
                         WHERE cf."ContentsId" = c."Id" AND c."Locale" = fac."Locale")
                     ),
-                    'Languages', jsonb_build_object('Name', 'Languages', 'Value', 
+                    'Languages', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Languages', 'Languages') , 'Value',
                         (SELECT jsonb_agg(jsonb_build_object(
                             'Id', jsonb_build_object('Name', 'LanguageId', 'Value', l."Id"),
                             'Name', jsonb_build_object('Name', 'LanguageName', 'Value', l."Name")
@@ -86,31 +144,47 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                         JOIN "Languages" l ON l."Id" = cl."LanguagesId"
                         WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale")
                     ),
-                    'Files', jsonb_build_object('Name', 'Files', 'Value',
+                    'Files', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Files', 'Files'), 'Value',
                         (SELECT jsonb_agg(fil."Path")
                         FROM "ContentEntityFileEntity" cfe
                         JOIN "Files" fil ON fil."Id" = cfe."FilesId"
-                        WHERE cfe."ContentFilesId" = c."Id")
+                        WHERE cfe."ContentFilesId" = c."Id" and cfe."ContentFilesLocale" = c."Locale")
                     ),
-                    'Photos', jsonb_build_object('Name', 'Photos', 'Value', 
+                    'Photos',
                         (SELECT jsonb_agg(fil."Path")
                         FROM "ContentEntityFileEntity1" cfp
                         JOIN "Files" fil ON fil."Id" = cfp."PhotosId"
-                        WHERE cfp."ContentPhotosId" = c."Id")
+                        WHERE cfp."ContentPhotosId" = c."Id" and cfp."ContentPhotosLocale" = c."Locale"
                     ),
-                    'PhoneNumbers', jsonb_build_object('Name', 'PhoneNumbers', 'Value', c."PhoneNumbers")
-                )) AS "Value"
+                    'Photo',  f."Path",
+                    'PhoneNumbers', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'PhoneNumbers', 'PhoneNumbers') , 'Value', c."PhoneNumbers"),
+                    'ReviewsView', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'ReviewsView', 'ReviewsView') , 'Value',
+                        (SELECT jsonb_agg(jsonb_build_object(
+                            'Id', r."Id",
+                            'UserId', r."UserId",
+                            'Comment', r."Comment",
+                            'Rating', r."Rating",
+                            'CreatedAt', r."CreatedAt"
+                        ))
+                        FROM "Reviews" r
+                        WHERE r."ContentEntityId" = c."Id" AND r."ContentEntityLocale" = c."Locale")
+                    ),
+                    'RatingAverage', c."RatingAverage",
+                    'AverageCheck', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'AverageCheck', 'AverageCheck')  , 'Value', c."AverageCheck"),
+                    'Price',  c."Price",
+                    'PriceInDollar',  c."PriceInDollar",
+                    'Address',  c."Address"
+                ) AS "Value"
                 FROM "Contents" c
                 LEFT JOIN "Categories" cat ON cat."Id" = c."CategoryId" AND cat."Locale" = c."Locale"
                 LEFT JOIN "Files" f ON f."Id" = c."PhotoId"
-                WHERE c."CategoryId" = {CategoryId} AND c."Locale" = '{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}'
+                WHERE c."Id" = {ContentId} AND c."Locale" = '{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}'
                 """);
 
+        var str = await contentQuery.FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        var content = JsonSerializer.Deserialize<ContentDto>(str!)!; 
 
-        var str = content.FirstOrDefault();
-
-
-        return JsonSerializer.Deserialize<List<ContentDto>>(str);
+        return content;
     }
 
 

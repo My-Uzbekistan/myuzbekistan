@@ -50,16 +50,27 @@ public partial class ContentView
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class ContentDto
 {
-    [property: DataMember] public FieldDto<long> Id { get; set; } = null!;
-    [property: DataMember] public FieldDto<string> Title { get; set; } = null!;
-    [property: DataMember] public FieldDto<string?> Description { get; set; } = null!;
-    [property: DataMember] public FieldDto<string?> Photo { get; set; } = null!;
-    [property: DataMember] public FieldDto<List<string>> Files { get; set; } = null!;
-    [property: DataMember] public FieldDto<List<string>> Photos { get; set; } = null!;
-    [property: DataMember] public FieldDto<List<PhoneNumberDto>> PhoneNumbers { get; set; } = null!;
+    [property: DataMember] public long Id { get; set; } // Теперь простое число, как в SQL
+    [property: DataMember] public string Title { get; set; } = null!;
+    [property: DataMember] public string? Description { get; set; } // Обычное поле, без FieldDto
+    [property: DataMember] public long CategoryId { get; set; } // Простое число, без FieldDto
+    [property: DataMember] public string CategoryName { get; set; } = null!; // Обычная строка
+    [property: DataMember] public FieldDto<string?> WorkingHours { get; set; } = null!;
+    [property: DataMember] public FieldDto<List<double>?> Location { get; set; } = null!; // Просто координаты, без FieldDto
     [property: DataMember] public FieldDto<List<FacilityItemDto>> Facilities { get; set; } = null!;
     [property: DataMember] public FieldDto<List<LanguageItemDto>> Languages { get; set; } = null!;
+    [property: DataMember] public FieldDto<List<string>> Files { get; set; } = null!;
+    [property: DataMember] public List<string>? Photos { get; set; } // Просто массив путей, без FieldDto
+    [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
+    [property: DataMember] public FieldDto<List<PhoneNumberDto>> PhoneNumbers { get; set; } = null!;
+    [property: DataMember] public FieldDto<List<ReviewDto>> ReviewsView { get; set; } = null!;
+    [property: DataMember] public int RatingAverage { get; set; } // Простое число, без FieldDto
+    [property: DataMember] public FieldDto<int> AverageCheck { get; set; } = null!;
+    [property: DataMember] public decimal Price { get; set; } // Простое число, без FieldDto
+    [property: DataMember] public decimal PriceInDollar { get; set; } // Простое число, без FieldDto
+    [property: DataMember] public string? Address { get; set; } = null!;
 }
+
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class FieldDto<T>
@@ -67,6 +78,7 @@ public partial class FieldDto<T>
     [property: DataMember] public string Name { get; set; } = null!;
     [property: DataMember] public T Value { get; set; } = default!;
 }
+
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class FacilitiesDto
@@ -104,4 +116,15 @@ public partial class PhoneNumberDto
     [property: DataMember] public string Icon { get; set; } = "phone.svg"; // По умолчанию иконка телефона
     [property: DataMember] public string Name { get; set; } = "";
     [property: DataMember] public string Contact { get; set; } = null!;
+}
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class ReviewDto
+{
+    [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public long UserId { get; set; }
+    [property: DataMember] public string Comment { get; set; } = null!;
+    [property: DataMember] public int Rating { get; set; }
+    [property: DataMember] public DateTime CreatedAt { get; set; }
 }
