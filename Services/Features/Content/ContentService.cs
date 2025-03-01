@@ -6,6 +6,7 @@ using myuzbekistan.Shared;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reactive;
+using System.Text.Json;
 namespace myuzbekistan.Services;
 
 public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService
@@ -54,57 +55,62 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
 
     [ComputeMethod]
-    public async virtual Task<List<ContentApiView>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<ContentDto>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
-        // Начальный запрос
-        var content = dbContext.Contents.AsQueryable();
+        var content =  dbContext.Database.SqlQueryRaw<string>($"""
+                SELECT jsonb_agg(jsonb_build_object(
+                    'Id', jsonb_build_object('Name', 'Id', 'Value', c."Id"),
+                    'Title', jsonb_build_object('Name', 'Title', 'Value', c."Title"),
+                    'Description', jsonb_build_object('Name', 'Description', 'Value', c."Description"),
+                    'Photo', jsonb_build_object('Name', 'Photo', 'Value', f."Path"),
+                    'Facilities', jsonb_build_object('Name', 'Facilities', 'Value',
+                        (SELECT jsonb_agg(jsonb_build_object(
+                            'Id', fac."Id",
+                            'Name', fac."Name",
+                            'Icon', F2."Path"
+                        ))
+                        FROM "ContentEntityFacilityEntity" cf
+                        JOIN "Facilities" fac ON fac."Id" = cf."FacilitiesId" AND cf."FacilitiesLocale" = fac."Locale"
+                        LEFT JOIN "Files" F2 ON F2."Id" = fac."IconId"
+                        WHERE cf."ContentsId" = c."Id" AND c."Locale" = fac."Locale")
+                    ),
+                    'Languages', jsonb_build_object('Name', 'Languages', 'Value', 
+                        (SELECT jsonb_agg(jsonb_build_object(
+                            'Id', jsonb_build_object('Name', 'LanguageId', 'Value', l."Id"),
+                            'Name', jsonb_build_object('Name', 'LanguageName', 'Value', l."Name")
+                        ))
+                        FROM "ContentEntityLanguageEntity" cl
+                        JOIN "Languages" l ON l."Id" = cl."LanguagesId"
+                        WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale")
+                    ),
+                    'Files', jsonb_build_object('Name', 'Files', 'Value',
+                        (SELECT jsonb_agg(fil."Path")
+                        FROM "ContentEntityFileEntity" cfe
+                        JOIN "Files" fil ON fil."Id" = cfe."FilesId"
+                        WHERE cfe."ContentFilesId" = c."Id")
+                    ),
+                    'Photos', jsonb_build_object('Name', 'Photos', 'Value', 
+                        (SELECT jsonb_agg(fil."Path")
+                        FROM "ContentEntityFileEntity1" cfp
+                        JOIN "Files" fil ON fil."Id" = cfp."PhotosId"
+                        WHERE cfp."ContentPhotosId" = c."Id")
+                    ),
+                    'PhoneNumbers', jsonb_build_object('Name', 'PhoneNumbers', 'Value', c."PhoneNumbers")
+                )) AS "Value"
+                FROM "Contents" c
+                LEFT JOIN "Categories" cat ON cat."Id" = c."CategoryId" AND cat."Locale" = c."Locale"
+                LEFT JOIN "Files" f ON f."Id" = c."PhotoId"
+                WHERE c."CategoryId" = {CategoryId} AND c."Locale" = '{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}'
+                """);
 
-        // Фильтрация по поисковому запросу
-        if (!string.IsNullOrEmpty(options.Search))
-        {
-            var search = options.Search.ToLower();
 
-            content = content.Where(s =>
-                s.Title.ToLower().Contains(search) ||
-                s.Description.ToLower().Contains(search) ||
-                s.WorkingHours.ToLower().Contains(search) ||
-                s.Facilities.Any(f => f.Name.ToLower().Contains(search)) ||
-                s.Languages.Any(l => l.Name.ToLower().Contains(search)) ||
-                s.Address.ToLower().Contains(search)
-            );
-        }
+        var str = content.FirstOrDefault();
 
-        // Фильтрация по категории
-        content = content.Where(x => x.CategoryId == CategoryId);
 
-        // Фильтрация по языку
-        content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
-
-        // Применение сортировки
-        Sorting(ref content, options);
-
-        // Включаем связанные сущности с AsSplitQuery для оптимизации
-        content = content
-            .Include(x => x.Category)
-            .Include(x => x.Files)
-            .Include(x => x.Photos)
-            .Include(x => x.Photo)
-            .Include(x => x.Reviews)
-            .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
-            .Include(x => x.Languages)
-            .AsSplitQuery() // Оптимизация запросов
-            .AsNoTracking();
-
-        // Пагинация и выполнение запроса
-        var items = await content.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-
-        // Маппинг данных в API-модель
-        var data = items.Select(x => x.MapToApi()).ToList();
-
-        return data;
+        return JsonSerializer.Deserialize<List<ContentDto>>(str);
     }
 
 

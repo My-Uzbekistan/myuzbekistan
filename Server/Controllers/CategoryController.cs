@@ -24,7 +24,7 @@ public class CategoryController(ICategoryService categoryService, IContentServic
     }
 
     [HttpGet("{id}/contents")]
-    public async Task<List<ContentApiView>> GetMainPage(long id, [FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
+    public async Task<List<ContentDto>> GetContents(long id, [FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
     {
         return await _contentService.GetContents(id, tableOptions, cancellationToken);
     }

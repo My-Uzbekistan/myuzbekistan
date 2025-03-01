@@ -6,15 +6,7 @@ namespace Services.Features.User
 {
     public class UserService(IServiceProvider services) : DbServiceBase<ApplicationDbContext>(services), IUserService
     {
-        public async virtual Task Create(CreateCategoryCommand command, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async virtual Task Delete(DeleteCategoryCommand command, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async virtual Task<List<ApplicationUser>> Get(long Id, CancellationToken cancellationToken)
         {
@@ -29,9 +21,6 @@ namespace Services.Features.User
             return new TableResponse<ApplicationUser>() { Items = items, TotalItems = count };
         }
 
-        public async virtual Task Update(UpdateCategoryCommand command, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

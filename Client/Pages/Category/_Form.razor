@@ -1,5 +1,7 @@
 @using System.Globalization
+@using Shared.Localization
 @inject ISnackbar Snackbar
+@inject IStringLocalizerFactory localizerFactory
 @inject NavigationManager navigation
 @inject PageHistoryState PageHistoryState
 
@@ -28,7 +30,7 @@
                                     {
                                         @if (Bitwise.Is(current.Fields, field))
                                         {
-                                            <MudTextField Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text"  />
+                                            <MudTextField Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text" />
                                         }
 
                                     }
@@ -96,16 +98,17 @@
             {
                 item.FieldNames = [];
 
+                var currentCulture = new CultureInfo(LangHelper.Locale[item.Locale]);
+
                 @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
                 {
-                    if(Bitwise.Is(item.Fields, field))
+                    if (Bitwise.Is(item.Fields, field))
                     {
-                        item.FieldNames.Add(field, L[field.ToString()]);
+                        item.FieldNames.Add(field, SharedResource.ResourceManager.GetString(field!.ToString()!,currentCulture!)!);
                     }
                 }
 
             }
-
             _contexts[item.Locale] = new(item);
         }
     }
@@ -141,13 +144,16 @@
         });
     }
 
-    void PopulateFlags(int flag,ContentFields field)
+    void PopulateFlags(int flag, ContentFields field)
     {
+
         Model.ForEach(x =>
         {
-            if(Bitwise.Is(flag, field))
+            var currentCulture = new CultureInfo(LangHelper.Locale[x.Locale]);
+            
+            if (Bitwise.Is(flag, field))
             {
-                x.FieldNames.Add(field, L[field.ToString()]);
+                x.FieldNames.Add(field, SharedResource.ResourceManager.GetString(field!.ToString()!, currentCulture!)!);
             }
             else
             {

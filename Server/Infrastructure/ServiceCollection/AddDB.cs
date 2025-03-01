@@ -6,6 +6,7 @@ using ActualLab.Fusion.EntityFramework.Npgsql;
 using ActualLab.Fusion.EntityFramework.Operations;
 using ActualLab.Fusion.EntityFramework.Operations.LogProcessing;
 using myuzbekistan.Services;
+using Npgsql;
 
 namespace Server.Infrastructure.ServiceCollection;
 
@@ -14,7 +15,8 @@ public static class AddDB
     public static IServiceCollection AddDataBase<TContext>(this IServiceCollection services, IWebHostEnvironment env,
     ConfigurationManager cfg, DataBaseType dataBaseType) where TContext : DbContext
     {
-        
+        NpgsqlConnection.GlobalTypeMapper.EnableDynamicJson();
+
         services.AddTransient(_ => new DbOperationScope<TContext>.Options
         {
             IsolationLevel = IsolationLevel.RepeatableRead

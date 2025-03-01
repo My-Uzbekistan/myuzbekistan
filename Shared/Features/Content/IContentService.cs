@@ -18,6 +18,6 @@ public interface IContentService:IComputeService
     Task Delete(DeleteContentCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
 
-    Task<List<ContentApiView>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default);
+    Task<List<ContentDto>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default);
 }
     

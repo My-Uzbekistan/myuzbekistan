@@ -18,10 +18,5 @@ public interface IUserService:IComputeService
     [ComputeMethod]
     Task<List<ApplicationUser>> Get(long Id, CancellationToken cancellationToken = default);
     [CommandHandler]
-    Task Create(CreateCategoryCommand command, CancellationToken cancellationToken = default);
-    [CommandHandler]
-    Task Update(UpdateCategoryCommand command, CancellationToken cancellationToken = default);
-    [CommandHandler]
-    Task Delete(DeleteCategoryCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }

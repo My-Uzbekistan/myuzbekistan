@@ -33,3 +33,10 @@ public partial class ContentApiView
     }
     public override int GetHashCode() => Id.GetHashCode();
 }
+
+
+public class FieldWrapper<T>
+{
+    public string Name { get; set; } = null!;
+    public T Value { get; set; } = default!;
+}
