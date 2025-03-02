@@ -67,7 +67,6 @@ public partial class AppDbContext : DbContextBase
             .HasIndex(c => c.PhotoId) // ������ ��� ������������
             .IsUnique(false);
 
-
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -15,7 +15,7 @@
             List of Images
         </MudText>
         <MudSpacer />
-        <FileUpload />
+        <FileUpload Accept="@Accept" />
     </TitleContent>
     <DialogContent>
         <MudGrid Justify="Justify.SpaceEvenly" Spacing="2" Style="max-height: 520px; overflow-x:hidden; overflow-y:scroll; min-height: 200px">
@@ -45,6 +45,8 @@
 </MudDialog>
 
 @code {
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
     [Parameter]
     public bool IsImageSelect { get; set; }
     [Parameter] public EventCallback<bool> IsImageSelectChanged { get; set; }

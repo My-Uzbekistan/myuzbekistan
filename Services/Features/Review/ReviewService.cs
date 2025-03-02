@@ -59,6 +59,15 @@ public class ReviewService(IServiceProvider services) : DbServiceBase<AppDbConte
         dbContext.Update(review);
         await dbContext.SaveChangesAsync(cancellationToken);
 
+        var avg = dbContext.Reviews.Where(x=>x.ContentEntityId == command.Entity.ContentEntityId).Average(x => x.Rating);
+        var contents = dbContext.Contents.Where(x => x.Id == command.Entity.ContentEntityId).ToList();
+        foreach (var item in contents)
+        {
+            item.RatingAverage = Math.Round(avg,2);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
     }
 
 
@@ -107,6 +116,7 @@ public class ReviewService(IServiceProvider services) : DbServiceBase<AppDbConte
     {
         ReviewMapper.From(reviewView, review);
 
+        review.ContentEntityLocale = "en";
 
 
     }

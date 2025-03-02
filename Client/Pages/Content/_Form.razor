@@ -56,7 +56,7 @@
                                     <MudText Typo="Typo.h6" Class="mb-4">@L[@Shared.Localization.SharedResource.ManageAttachments]</MudText>
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Conditions))
                                     {
-                                        <ImagesSelectView Label="@L["Conditions"]" @bind-Value="current.FilesView" @bind-Value:after="()=>{ Model.ForEach(x=>x.FilesView = current.FilesView); }" />
+                                        <ImagesSelectView Accept=".pdf" Label="@L["Conditions"]" @bind-Value="current.FilesView" @bind-Value:after="()=>{ Model.ForEach(x=>x.FilesView = current.FilesView); }" />
                                     }
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Photos))
                                     {
@@ -112,6 +112,10 @@
                                                FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
 
                                 }
+
+                                <_RegionEntitySelect Label="@L["Region"]" @bind-Value="current.RegionView" For="@(() => current.RegionView)" Required="true" @bind-Value:after="()=>{
+                                    Model.ForEach(x=>x.RegionView = current.RegionView);
+                                }" />
 
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Price) || Bitwise.Is(categoryView.Fields, ContentFields.PriceInDollar))
                                 {

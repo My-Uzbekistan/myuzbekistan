@@ -1,5 +1,8 @@
 ﻿namespace myuzbekistan.Shared;
 
-public class NotFoundException : SystemException
+public class NotFoundException : Exception
 {
+    public NotFoundException(string message) : base(message)
+    {
+    }
 }

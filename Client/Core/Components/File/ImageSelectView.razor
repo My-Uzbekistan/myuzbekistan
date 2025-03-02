@@ -18,7 +18,7 @@
 </MudGrid>
 
 
-<ImageSelect @bind-Value="@Value" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" />
+<ImageSelect @bind-Value="@Value" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" Accept="@Accept" />
 
 <MudDialog @bind-IsVisible="@isImageShow" Options="dialogOptions" Style="min-width:600px; height:auto">
   <DialogContent>
@@ -30,6 +30,9 @@
 </MudDialog>
 
 @code {
+
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
     [Parameter]
     public string? Label { get; set; }
 

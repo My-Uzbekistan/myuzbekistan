@@ -11,5 +11,6 @@ public partial class AppDbContext : DbContextBase
     public DbSet<FavoriteEntity> Favorites { get; protected set; } = null!;
     public DbSet<FileEntity> Files { get; protected set; } = null!;
     public DbSet<LanguageEntity> Languages { get; protected set; } = null!;
+    public DbSet<RegionEntity> Regions { get; protected set; } = null!;
     public DbSet<ReviewEntity> Reviews { get; protected set; } = null!;
 }

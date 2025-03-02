@@ -75,16 +75,24 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        FavoriteEntity favorite = new()
+        if (dbContext.Favorites.Any(x => x.Content.Id == command.ContentId && x.UserId == command.UserId))
         {
-            Content = dbContext.Contents
-            
-            .First(x=>x.Id == command.ContentId)!,
-            UserId = command.UserId
-        };
-        dbContext.Add(favorite);
+            FavoriteEntity favorite = new()
+            {
+                Content = dbContext.Contents
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+            .First(x => x.Id == command.ContentId)!,
+                UserId = command.UserId
+            };
+            dbContext.Add(favorite);
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        else
+        {
+            throw new NotFoundException("Content not found");
+        }
+        
     }
 
 

@@ -5,10 +5,15 @@ using NetTopologySuite.Geometries;
 namespace myuzbekistan.Services;
 
 [Mapper]
-public static partial class ContentMapper 
+public static partial class ContentMapper
 {
     #region Usable
-    public static ContentApiView MapToApi(this ContentEntity src) => src.ToApi();
+
+    public static MainPageContent MapToApi(this ContentEntity src) {
+        var source = src.ToApi();
+        source.Caption = src.Category.Caption;
+        return source;
+}
     public static ContentView MapToView(this ContentEntity src) => src.To();
     public static List<ContentView> MapToViewList(this List<ContentEntity> src)=> src.ToList();
     public static ContentEntity MapFromView(this ContentView src) => src.From();
@@ -26,9 +31,18 @@ public static partial class ContentMapper
         return target;
     }
 
-    private static string? MapToString(FileEntity? source)
+    private static string MapToStringOfRegion(RegionEntity source)
     {
-        return source?.Path;
+        return source.Name;
+    }
+
+    private static string MapToFacilitiesOfString(List<FacilityEntity> source)
+    {
+        return string.Join(", ", source.Select(x => x.Name).ToList());
+    }
+    private static string MapToString(FileEntity source)
+    {
+        return source?.Path!;
     }
 
  
@@ -49,9 +63,11 @@ public static partial class ContentMapper
     }
 
     private static partial FacilityApiView MapToFacilityView(FacilityEntity source);
-    private static partial ContentApiView ToApi(this ContentEntity src);
+    [MapProperty("Id", "ContentId")]
+    private static partial MainPageContent ToApi(this ContentEntity src);
 
     [MapProperty("Category", "CategoryView")]
+    [MapProperty("Region", "RegionView")]
     [MapProperty("Facilities", "Facilities")]
     [MapProperty("PhoneNumbers", "PhoneNumbers")]
     [MapProperty("Files", "FilesView")]
@@ -64,7 +80,7 @@ public static partial class ContentMapper
     private static partial List<ContentView> ToList(this List<ContentEntity> src);
     [MapProperty("CategoryView", "Category")]
     [MapProperty("Facilities", "Facilities")]
-    
+    [MapProperty("RegionView", "Region")]
     [MapProperty("PhoneNumbers", "PhoneNumbers")]
     [MapProperty("FilesView", "Files")]
     [MapProperty("PhotosView", "Photos")]
@@ -72,6 +88,7 @@ public static partial class ContentMapper
     [MapProperty("Languages", "Languages")]
     private static partial ContentEntity From(this ContentView ContentView);
     [MapProperty("CategoryView", "Category")]
+    [MapProperty("RegionView", "Region")]
     [MapProperty("Facilities", "Facilities")]
     [MapProperty("PhoneNumbers", "PhoneNumbers")]
     [MapProperty("FilesView", "Files")]

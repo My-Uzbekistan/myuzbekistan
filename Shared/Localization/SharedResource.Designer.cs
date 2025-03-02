@@ -24,9 +24,9 @@ namespace Shared.Localization {
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class SharedResource {
         
-        public static global::System.Resources.ResourceManager resourceMan;
-
-        public static global::System.Globalization.CultureInfo resourceCulture;
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal SharedResource() {
@@ -111,6 +111,15 @@ namespace Shared.Localization {
         public static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Car.
+        /// </summary>
+        public static string Car {
+            get {
+                return ResourceManager.GetString("Car", resourceCulture);
             }
         }
         
@@ -457,6 +466,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Parent Region.
+        /// </summary>
+        public static string ParentRegion {
+            get {
+                return ResourceManager.GetString("ParentRegion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Phone Numbers.
         /// </summary>
         public static string PhoneNumbers {
@@ -511,6 +529,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profile.
+        /// </summary>
+        public static string Profile {
+            get {
+                return ResourceManager.GetString("Profile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rating Average.
         /// </summary>
         public static string RatingAverage {
@@ -529,11 +556,29 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Region.
+        /// </summary>
+        public static string Region {
+            get {
+                return ResourceManager.GetString("Region", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} field is required..
         /// </summary>
         public static string RequiredError {
             get {
                 return ResourceManager.GetString("RequiredError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restaurant.
+        /// </summary>
+        public static string Restaurant {
+            get {
+                return ResourceManager.GetString("Restaurant", resourceCulture);
             }
         }
         
@@ -570,6 +615,15 @@ namespace Shared.Localization {
         public static string Search {
             get {
                 return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select View Type.
+        /// </summary>
+        public static string SelectViewType {
+            get {
+                return ResourceManager.GetString("SelectViewType", resourceCulture);
             }
         }
         
@@ -669,6 +723,15 @@ namespace Shared.Localization {
         public static string Wait {
             get {
                 return ResourceManager.GetString("Wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We recommended {0}.
+        /// </summary>
+        public static string WeRecommended {
+            get {
+                return ResourceManager.GetString("WeRecommended", resourceCulture);
             }
         }
         

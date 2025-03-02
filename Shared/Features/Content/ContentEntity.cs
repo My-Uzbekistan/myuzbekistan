@@ -31,7 +31,8 @@ public class ContentEntity : BaseEntity
     public ICollection<FileEntity>? Photos { get; set; } = [];
     public ICollection<ReviewEntity>? Reviews { get; set; } = [];
     public ICollection<LanguageEntity>? Languages { get; set; } = [];
-    public int RatingAverage { get; set; } 
+    public RegionEntity? Region { get; set; } = null!;
+    public double RatingAverage { get; set; } 
     public int AverageCheck { get; set; } 
     public decimal Price { get; set; }
     public decimal PriceInDollar { get; set; }

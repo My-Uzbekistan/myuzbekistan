@@ -17,6 +17,7 @@ public static class FusionServerExtension
         fusion.AddService<IReviewService, ReviewService>();
         fusion.AddService<IAuditLogsService, AuditLogService>();
         fusion.AddService<IUserService, UserService>();
+        fusion.AddService<IRegionService, RegionService>();
         
         return fusion;
     }

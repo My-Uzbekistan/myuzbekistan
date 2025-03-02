@@ -1,0 +1,59 @@
+@using System.Linq.Expressions
+@inherits MixedStateComponent<TableResponse<RegionView>,string>
+@inject IRegionService RegionService
+
+@{
+    var data = State.ValueOrDefault ?? new TableResponse<RegionView>();
+}
+<MudAutocomplete T="RegionView" 
+                 @attributes="Attributes"
+                 Label="@Label"
+                 Value="Value"
+                 Immediate="true"
+                 Required=Required
+                 For="For"
+                 ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" SearchFunc="Search"  />
+
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+    [Parameter]
+    public RegionView? Value { get; set; }
+    [Parameter]
+    public EventCallback<RegionView> ValueChanged { get; set; }
+    [Parameter]
+    public bool Required { get; set; }=false;
+    [Parameter]
+    public Expression<Func<RegionView>>? For { get; set; }
+    
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Attributes { get; set; }
+
+    async Task UpdateValue(RegionView value)
+    {
+        Value = value;
+
+        await ValueChanged.InvokeAsync(Value);
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    protected override MutableState<string?>.Options GetMutableStateOptions()
+        => new() { InitialValue = null };
+
+    protected override async Task<TableResponse<RegionView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await RegionService.GetAll(new() { Search = MutableState.Value }, cancellationToken);
+    }
+
+    private async Task<IEnumerable<RegionView>> Search(string value, CancellationToken cancellationToken)
+    {
+        MutableState.Set(value);
+        MutableState.Invalidate();
+
+        await Task.Delay(30);
+
+        return  State?.ValueOrDefault?.Items?.ToList() ?? new List<RegionView>();
+    }
+
+
+}

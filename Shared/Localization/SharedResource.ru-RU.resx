@@ -324,4 +324,25 @@
   <data name="users" xml:space="preserve">
     <value>пользователи</value>
   </data>
+  <data name="SelectViewType" xml:space="preserve">
+    <value>Выберите тип просмотра</value>
+  </data>
+  <data name="Restaurant" xml:space="preserve">
+    <value>Ресторан</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Профиль</value>
+  </data>
+  <data name="Car" xml:space="preserve">
+    <value>Машина</value>
+  </data>
+  <data name="ParentRegion" xml:space="preserve">
+    <value>Родительский регион</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Регион</value>
+  </data>
+  <data name="WeRecommended" xml:space="preserve">
+    <value>Мы рекомендуем {0}</value>
+  </data>
 </root>

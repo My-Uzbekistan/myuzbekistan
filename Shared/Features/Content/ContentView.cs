@@ -27,7 +27,8 @@ public partial class ContentView
     [property: DataMember] public FileView? PhotoView { get; set; }
     [property: DataMember] public ICollection<ReviewView>? ReviewsView { get; set; }
     [property: DataMember] public ICollection<LanguageView>? Languages { get; set; }
-    [property: DataMember] public int RatingAverage { get; set; }
+    [property: DataMember] public RegionView? RegionView { get; set; } = null!;
+    [property: DataMember] public double RatingAverage { get; set; }
     [property: DataMember] public int AverageCheck { get; set; }
     [property: DataMember] public Decimal Price { get; set; }
     [property: DataMember] public Decimal PriceInDollar { get; set; }
@@ -63,8 +64,7 @@ public partial class ContentDto
     [property: DataMember] public List<string>? Photos { get; set; } // Просто массив путей, без FieldDto
     [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
     [property: DataMember] public FieldDto<List<PhoneNumberDto>> PhoneNumbers { get; set; } = null!;
-    [property: DataMember] public FieldDto<List<ReviewDto>> ReviewsView { get; set; } = null!;
-    [property: DataMember] public int RatingAverage { get; set; } // Простое число, без FieldDto
+    [property: DataMember] public double RatingAverage { get; set; } // Простое число, без FieldDto
     [property: DataMember] public FieldDto<int> AverageCheck { get; set; } = null!;
     [property: DataMember] public decimal Price { get; set; } // Простое число, без FieldDto
     [property: DataMember] public decimal PriceInDollar { get; set; } // Простое число, без FieldDto

@@ -48,6 +48,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         content = content.Include(x => x.Reviews);
         content = content.Include(x => x.Facilities);
         content = content.Include(x => x.Languages);
+        content = content.Include(x => x.Region);
+
         var count = await content.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await content.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<ContentView>() { Items = items.MapToViewList(), TotalItems = count };
@@ -55,7 +57,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
 
     [ComputeMethod]
-    public async virtual Task<List<ContentApiView>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -94,6 +96,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             .Include(x => x.Photos)
             .Include(x => x.Photo)
             .Include(x => x.Reviews)
+            .Include(x => x.Region)
             .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
             .Include(x => x.Languages)
             .AsSplitQuery() // Îïòèìèçàöèÿ çàïðîñîâ
@@ -158,17 +161,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     ),
                     'Photo',  f."Path",
                     'PhoneNumbers', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'PhoneNumbers', 'PhoneNumbers') , 'Value', c."PhoneNumbers"),
-                    'ReviewsView', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'ReviewsView', 'ReviewsView') , 'Value',
-                        (SELECT jsonb_agg(jsonb_build_object(
-                            'Id', r."Id",
-                            'UserId', r."UserId",
-                            'Comment', r."Comment",
-                            'Rating', r."Rating",
-                            'CreatedAt', r."CreatedAt"
-                        ))
-                        FROM "Reviews" r
-                        WHERE r."ContentEntityId" = c."Id" AND r."ContentEntityLocale" = c."Locale")
-                    ),
+                    
                     'RatingAverage', c."RatingAverage",
                     'AverageCheck', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'AverageCheck', 'AverageCheck')  , 'Value', c."AverageCheck"),
                     'Price',  c."Price",
@@ -200,10 +193,11 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Photo)
         .Include(x => x.Reviews)
         .Include(x => x.Languages)
+        .Include(x => x.Region)
         .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
-        .Where(x => x.Id == Id).ToList();
-
-        return content == null ? throw new ValidationException("ContentEntity Not Found") : content.MapToViewList();
+        
+        .Where(x => x.Id == Id);
+        return content == null ? throw new ValidationException("ContentEntity Not Found") : content.ToList().MapToViewList();
     }
 
     #endregion
@@ -258,6 +252,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Languages)
         .Include(x => x.Facilities)
         .Include(x => x.Reviews)
+        .Include(x => x.Region)
         .Where(x => x.Id == command.Id).ToList();
         if (contents.Count == 0)
         {
@@ -286,6 +281,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Reviews)
         .Include(x => x.Languages)
         .Include(x => x.Facilities)
+        .Include(x => x.Region)
         .Where(x => x.Id == con.Id).ToList() ?? throw new ValidationException("ContentEntity Not Found");
 
         foreach (var item in command.Entity)
@@ -314,6 +310,8 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         ContentMapper.From(contentView, content);
 
 
+
+        content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView() ;
         if (content.Category != null)
             content.Category = dbContext.Categories
             .First(x => x.Id == content.Category.Id && x.Locale == content.Category.Locale);

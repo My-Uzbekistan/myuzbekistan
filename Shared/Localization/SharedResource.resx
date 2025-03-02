@@ -324,4 +324,25 @@
   <data name="users" xml:space="preserve">
     <value>users</value>
   </data>
+  <data name="SelectViewType" xml:space="preserve">
+    <value>Select View Type</value>
+  </data>
+  <data name="Restaurant" xml:space="preserve">
+    <value>Restaurant</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Car" xml:space="preserve">
+    <value>Car</value>
+  </data>
+  <data name="ParentRegion" xml:space="preserve">
+    <value>Parent Region</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="WeRecommended" xml:space="preserve">
+    <value>We recommended {0}</value>
+  </data>
 </root>

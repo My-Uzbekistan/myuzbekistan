@@ -5,7 +5,12 @@
     {
         <MudGrid Class="mb-3" AlignItems="AlignItems.Center">
             <MudItem xs="12" md="2">
-                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="Changed" Label="@L["Contact_ContactType"]" >
+ 
+                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="@(async ()=> {
+                    contact.Name = contact.Icon.Replace(".svg","");
+                    await Changed();
+
+})" Label="@L["Contact_ContactType"]">
                     <MudSelectItem Value="@("telegram.svg")">@L["Telegram"]</MudSelectItem>
                     <MudSelectItem Value="@("phone.svg")">@L["Phone"]</MudSelectItem>
                     <MudSelectItem Value="@("instagram.svg")">@L["Instagram"]</MudSelectItem>

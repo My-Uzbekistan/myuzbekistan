@@ -90,9 +90,9 @@ builder.Services
   {
       options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
       options.JsonSerializerOptions.Converters.Add(new NetTopologySuite.IO.Converters.GeoJsonConverterFactory());
-      options.JsonSerializerOptions.Converters.Add(new TrimNullableConverter<MainPageApi>());
-      options.JsonSerializerOptions.Converters.Add(new TrimNullableConverter<ContentApiView>());
-      options.JsonSerializerOptions.Converters.Add(new TrimNullableConverter<FavoriteApiView>());
+      //options.JsonSerializerOptions.Converters.Add(new TrimNullableConverter<MainPageApi>());
+      //options.JsonSerializerOptions.Converters.Add(new TrimNullableConverter<ContentApiView>());
+      //options.JsonSerializerOptions.Converters.Add(new TrimNullableConverter<FavoriteApiView>());
   });
 builder.Services
     .AddRazorComponents()

@@ -10,7 +10,7 @@
                     @if (item != null)
                     {
 
-                        <MudImage @onclick="() => ShowImage(item)" ObjectFit="ObjectFit.Contain" Fluid="true" Src="@(url + item.Path)" Alt="@item.Name" Style="max-width:250px; max-height:130px;" />
+                        <MudImage  @onclick="() => ShowImage(item)" ObjectFit="ObjectFit.Contain" Fluid="true" Src="@(url + item.Path)" Alt="@item.Name" Style="max-width:250px; max-height:130px;" />
                     }
                     else
                     {
@@ -30,7 +30,7 @@
 </MudGrid>
 
 
-<ImageSelect @bind-Value="@ImageToAdd" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" />
+<ImageSelect @bind-Value="@ImageToAdd" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" Accept="@Accept" />
 
 <MudDialog @bind-IsVisible="@isImageShow" Options="dialogOptions" Style="min-width:600px; height:auto">
 
@@ -41,6 +41,9 @@
 </MudDialog>
 
 @code {
+
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
     [Parameter]
     public ICollection<FileView>? Value { get; set; }
 

@@ -3,13 +3,13 @@
 @namespace Client.Core.Components
 
 
-<InputFile id="fileInput112" OnChange="OnChanged" hidden multiple accept=".jpg, .jpeg, .png" />
+<InputFile id="fileInput112" OnChange="OnChanged" hidden multiple accept="@Accept" />
 
 <MudButton HtmlTag="label"
-           Variant="Variant.Filled"
-           Color="Color.Primary"
-           StartIcon="@Icons.Material.Filled.CloudUpload"
-           for="fileInput112">
+Variant="Variant.Filled"
+Color="Color.Primary"
+StartIcon="@Icons.Material.Filled.CloudUpload"
+for="fileInput112">
     Upload image
 </MudButton>
 @_percent
@@ -38,6 +38,9 @@
 
     [Parameter]
     public EventCallback<string> LinkChanged { get; set; }
+
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
 
     readonly CancellationTokenSource _cancelTokenSource = new();
 

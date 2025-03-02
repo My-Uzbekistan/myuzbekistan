@@ -23,8 +23,17 @@ namespace Server.Controllers
         {
             var userId = long.Parse(HttpContext.User.Identities.First().Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
             var session = await sessionResolver.GetSession();
-            await commander.Call(new CreateFavoriteCommand(session, contentId, userId));
-            return Ok();
+            try
+            {
+                await commander.Call(new CreateFavoriteCommand(session, contentId, userId));
+                return Ok();
+            }
+            catch (NotFoundException)
+            {
+
+                return NotFound();
+            }
+            
         }
 
         [HttpDelete]

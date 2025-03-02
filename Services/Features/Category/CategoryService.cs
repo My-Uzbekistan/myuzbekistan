@@ -13,25 +13,35 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 {
     #region Queries
     //[ComputeMethod]
-    public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options,CancellationToken cancellationToken = default)
+    public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var query = dbContext.Categories
-    .Where(c => c.Status == ContentStatus.Active &&
-                c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
-    .Include(c => c.Icon)
-    .Include(c => c.Contents!)
-        .ThenInclude(content => content.Reviews)
-    .Include(c => c.Contents!)
-        .ThenInclude(content => content.Photos)
-    .Include(c => c.Contents!)
-        .ThenInclude(content => content.Languages)
-    .Include(c => c.Contents!)
-        .ThenInclude(content => content.Files)
-    .Include(c => c.Contents!)
-        .ThenInclude(content => content.Facilities!)
-            .ThenInclude(f => f.Icon);
+            .Where(c => c.Status == ContentStatus.Active &&
+                        c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+            
+            .Include(c => c.Icon)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Reviews)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Photos)
+                .Include(c => c.Contents!)
+                .ThenInclude(content => content.Photo)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Languages)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Files)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Region)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Facilities!)
+                    .ThenInclude(f => f.Icon).AsQueryable();
+
+        if(options.RegionId != null)
+        {
+            query = query.Where(x => x.Contents.Any(x=>x.Region.Id == options.RegionId));
+        }
 
         // ������������� �� Client-Side ��� ������� ������
         var categories = await query
@@ -51,8 +61,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
      .Where(s =>
          string.IsNullOrEmpty(options.Search) ||
          s.CategoryName.ToLower().Contains(options.Search.ToLower()) ||
-         s.Contents.Any(t => t.Title.ToLower().Contains(options.Search.ToLower())) ||
-         s.Contents.Any(t => t.Address.ToLower().Contains(options.Search.ToLower()))
+         s.Contents.Any(t => t.Region.ToLower().Contains(options.Search.ToLower()))
      )
      .ToListAsync(cancellationToken);
 
@@ -149,12 +158,14 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var category = await dbContext.Categories
+        var category = dbContext.Categories
         .Include(x => x.Contents)
         .Include(x => x.Icon)
-        .FirstOrDefaultAsync(x => x.Id == command.Id);
+        .Where(x => x.Id == command.Id)
+        .ToList();
+        ;
         if (category == null) throw new ValidationException("CategoryEntity Not Found");
-        dbContext.Remove(category);
+        dbContext.RemoveRange(category);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 

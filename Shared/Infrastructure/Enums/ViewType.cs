@@ -4,5 +4,5 @@ public enum ViewType
 {
     Restaurant = 0,
     Profile = 1,
-    Card = 2
+    Car = 2
 }

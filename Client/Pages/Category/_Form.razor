@@ -18,7 +18,8 @@
                         <MudGrid>
                             <MudItem xs="12">
                                 <MudPaper Class="pa-4">
-                                    <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
+                                    <MudTextField @bind-Value="current.Name" @bind-Value:after="() => handleChangeName(current)" Label="@L["Name"]" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
+                                    <MudTextField @bind-Value="current.Caption" Label="@L["Caption"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Caption)" Required="true" />
                                     @* <MudTextField @bind-Value="current.Description" Label="Description" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" Required="true" /> *@
 
                                     <input type="hidden" @bind-value="current.Id">
@@ -30,7 +31,6 @@
                                     {
                                         @if (Bitwise.Is(current.Fields, field))
                                         {
-                                            @current.FieldNames[field]
                                             <MudTextField @bind-Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text" />
                                         }
 
@@ -48,7 +48,13 @@
                                     <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
                                 </MudSelect>
                                 <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
-                                <MudCheckBox ValueChanged="async (bool ev) => { OnChangeViewType(ev == true ? ViewType.Profile : ViewType.Restaurant); current.ViewType = ev == true ? ViewType.Profile : ViewType.Restaurant; }" Value="current.ViewType == ViewType.Restaurant ? false : true" Label="@L["ViewType"]" Color="Color.Primary"></MudCheckBox>
+                                <MudSelect class="mt-3" Label="@L["SelectViewType"]" ValueChanged="async (ViewType ev) => { OnChangeViewType(ev); }">
+                                    @foreach (ViewType viewType in ((ViewType[])Enum.GetValues(typeof(ViewType))))
+                                    {
+                                        <MudSelectItem Value="@viewType"> @L[viewType.ToString()]</MudSelectItem>
+                                    }
+
+                                </MudSelect>
                             </MudExpansionPanel>
                             <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
                                 @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
@@ -90,6 +96,15 @@
 
     private Dictionary<string, bool> Errors { get; set; } = new() { { "en", false }, { "uz", false }, { "ru", false } };
 
+    public virtual void handleChangeName(CategoryView current)
+    {
+        if (string.IsNullOrEmpty(current.Caption))
+        {
+            var culture = new CultureInfo(LangHelper.Locale[current.Locale]);
+            current.Caption = SharedResource.ResourceManager.GetString("WeRecommended", culture)!.Replace("{0}", current.Name.ToLower()).TrimEnd();
+        }
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -105,7 +120,7 @@
                 {
                     if (Bitwise.Is(item.Fields, field))
                     {
-                        item.FieldNames.Add(field, SharedResource.ResourceManager.GetString(field!.ToString()!,currentCulture!)!);
+                        item.FieldNames.Add(field, SharedResource.ResourceManager.GetString(field!.ToString()!, currentCulture!)!);
                     }
                 }
 
@@ -151,7 +166,7 @@
         Model.ForEach(x =>
         {
             var currentCulture = new CultureInfo(LangHelper.Locale[x.Locale]);
-            
+
             if (Bitwise.Is(flag, field))
             {
                 x.FieldNames.Add(field, SharedResource.ResourceManager.GetString(field!.ToString()!, currentCulture!)!);
