@@ -2,7 +2,7 @@
 
 public enum ViewType
 {
-    Restaurant = 0,
+    Place = 0,
     Profile = 1,
-    Car = 2
+    Rent = 2
 }
