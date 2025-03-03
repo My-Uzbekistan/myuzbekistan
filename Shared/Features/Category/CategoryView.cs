@@ -53,7 +53,7 @@ public partial class CategoryView
     [property: DataMember] public int Fields { get; set; }
     [property: DataMember] public Dictionary<ContentFields, string> FieldNames { get; set; } = [];
 
-    [property: DataMember] public ViewType ViewType { get; set; } = ViewType.Restaurant;
+    [property: DataMember] public ViewType ViewType { get; set; } = ViewType.Place;
     [property: DataMember] public ContentStatus Status { get; set; } = ContentStatus.Active;
 
     public override bool Equals(object? o)
