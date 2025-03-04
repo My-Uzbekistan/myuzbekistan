@@ -45,9 +45,9 @@
                             <MudItem xs="12">
 
 
-                                @if (Bitwise.Is(categoryView.Fields, ContentFields.PhoneNumbers))
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Contacts))
                                 {
-                                    <Contact PhoneNumbers="@current.PhoneNumbers" PhoneNumbersChange="handleModelChanged" />
+                                    <Contact Contacts="@current.Contacts" ContactsChange="handleModelChanged" />
                                 }
                             </MudItem>
                             <MudItem xs="12">
@@ -194,7 +194,7 @@
     {
         Model.ForEach(i =>
         {
-            i.PhoneNumbers = callInformation;
+            i.Contacts = callInformation;
         });
     }
 

@@ -160,7 +160,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                         WHERE cfp."ContentPhotosId" = c."Id" and cfp."ContentPhotosLocale" = c."Locale"
                     ),
                     'Photo',  f."Path",
-                    'PhoneNumbers', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'PhoneNumbers', 'PhoneNumbers') , 'Value', c."PhoneNumbers"),
+                    'Contacts', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Contacts', 'Contacts') , 'Value', c."Contacts"),
                     
                     'RatingAverage', c."RatingAverage",
                     'AverageCheck', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'AverageCheck', 'AverageCheck')  , 'Value', c."AverageCheck"),

@@ -58,7 +58,7 @@ public partial class AppDbContext : DbContextBase
     {
         modelBuilder.Entity<ContentEntity>(entity =>
         {
-            entity.Property(e => e.PhoneNumbers)
+            entity.Property(e => e.Contacts)
                   .HasConversion(new JsonbValueConverter<List<CallInformation>>());
         });
 

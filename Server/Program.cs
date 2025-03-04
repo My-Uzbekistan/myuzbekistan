@@ -5,6 +5,7 @@ using ActualLab.Fusion.Extensions;
 using ActualLab.Fusion.Server;
 using ActualLab.Rpc;
 using ActualLab.Rpc.Server;
+using BackuptaGram;
 using Blazored.LocalStorage;
 using Client;
 using Client.Core.Services;
@@ -34,6 +35,7 @@ using System.Text.RegularExpressions;
 using tusdotnet.Stores;
 using UFile.Server;
 using UFile.Shared;
+using UTC.Minio;
 
 
 #region Builder And Logging
@@ -55,6 +57,9 @@ services.AddHttpLogging(logging =>
 #region DATABASE
 var dbType = cfg.GetValue<string>("DatabaseProviderConfiguration:ProviderType");
 services.AddDataBase<AppDbContext>(env, cfg, (DataBaseType)Enum.Parse(typeof(DataBaseType), dbType!, true));
+services.AddMinio(cfg);
+services.AddAlertaGram(cfg);
+services.AddBackuptaGram();
 #endregion
 #region AUTH
 services.AddAuth(env, cfg);

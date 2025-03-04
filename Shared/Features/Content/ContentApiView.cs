@@ -14,7 +14,7 @@ public partial class ContentApiView
     [property: DataMember] public string? WorkingHours { get; set; }
     [property: DataMember] public ICollection<FacilityApiView> Facilities { get; set; } = [];
     [property: DataMember] public double[]? Location { get; set; }
-    [property: DataMember] public List<CallInformation>? PhoneNumbers { get; set; } = [];
+    [property: DataMember] public List<CallInformation>? Contacts { get; set; } = [];
     [property: DataMember] public List<string>? Files { get; set; }
     [property: DataMember] public ICollection<string>? Photos { get; set; }
     [property: DataMember] public string? Photo { get; set; }

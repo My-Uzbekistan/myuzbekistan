@@ -38,7 +38,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                 .ThenInclude(content => content.Facilities!)
                     .ThenInclude(f => f.Icon).AsQueryable();
 
-        if(options.RegionId != null)
+        if(options.RegionId != null && options.RegionId != 1)
         {
             query = query.Where(x => x.Contents.Any(x=>x.Region.Id == options.RegionId));
         }

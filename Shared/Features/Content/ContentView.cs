@@ -21,7 +21,7 @@ public partial class ContentView
     [property: DataMember] public string? WorkingHours { get; set; }
     [property: DataMember] public ICollection<FacilityView> Facilities { get; set; } = [];
     [property: DataMember, MemoryPackAllowSerialize, JsonConverter(typeof(NetTopologySuite.IO.Converters.GeometryConverter))] public Point? Location { get; set; }
-    [property: DataMember] public List<CallInformation>? PhoneNumbers { get; set; } = [];
+    [property: DataMember] public List<CallInformation>? Contacts { get; set; } = [];
     [property: DataMember] public ICollection<FileView>? FilesView { get; set; }
     [property: DataMember] public ICollection<FileView>? PhotosView { get; set; }
     [property: DataMember] public FileView? PhotoView { get; set; }
@@ -63,7 +63,7 @@ public partial class ContentDto
     [property: DataMember] public FieldDto<List<string>> Files { get; set; } = null!;
     [property: DataMember] public List<string>? Photos { get; set; } // Просто массив путей, без FieldDto
     [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
-    [property: DataMember] public FieldDto<List<PhoneNumberDto>> PhoneNumbers { get; set; } = null!;
+    [property: DataMember] public FieldDto<List<ContactDto>> Contacts { get; set; } = null!;
     [property: DataMember] public double RatingAverage { get; set; } // Простое число, без FieldDto
     [property: DataMember] public FieldDto<int> AverageCheck { get; set; } = null!;
     [property: DataMember] public decimal Price { get; set; } // Простое число, без FieldDto
@@ -111,7 +111,7 @@ public partial class LanguageItemDto
 
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
-public partial class PhoneNumberDto
+public partial class ContactDto
 {
     [property: DataMember] public string Icon { get; set; } = "phone.svg"; // По умолчанию иконка телефона
     [property: DataMember] public string Name { get; set; } = "";

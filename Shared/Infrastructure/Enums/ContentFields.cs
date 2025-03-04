@@ -5,7 +5,7 @@ public enum ContentFields
 {
     None = 0,               // Обязательно для "пустого" состояния
     Photos = 1 << 0,        // 1
-    PhoneNumbers = 1 << 1,  // 2
+    Contacts = 1 << 1,  // 2
     AverageCheck = 1 << 2,  // 4
     Conditions = 1 << 3,    // 8
     Description = 1 << 4,   // 16

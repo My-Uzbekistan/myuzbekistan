@@ -53,8 +53,8 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var region = (from s in dbContext.Regions
-                      join r in dbContext.Regions
-                          on new { ParentRegionId = s.ParentRegionId ?? 0, s.Locale } equals new { ParentRegionId = r.Id, r.Locale }
+                      //join r in dbContext.Regions
+                      //    on new { ParentRegionId = s.ParentRegionId ?? 0, s.Locale } equals new { ParentRegionId = r.Id, r.Locale }
                       where s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName
                       select new RegionEntity
                       {
@@ -62,7 +62,7 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
                           Name = s.Name,
                           Locale = s.Locale,
                           ParentRegionId = s.ParentRegionId,
-                          ParentRegion = r
+                          //ParentRegion = r
                       });
 
        

@@ -1,13 +1,13 @@
 ﻿<MudPaper Class="pa-4">
     <MudText Typo="Typo.h6" Class="mb-4">@L["Contact_ManageContacts"]</MudText>
 
-    @foreach (var contact in PhoneNumbers)
+    @foreach (var contact in Contacts)
     {
         <MudGrid Class="mb-3" AlignItems="AlignItems.Center">
             <MudItem xs="12" md="2">
  
                 <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="@(async ()=> {
-                    contact.Name = contact.Icon.Replace(".svg","");
+                    contact.Name = L[contact.Icon.Replace(".svg","")];
                     await Changed();
 
 })" Label="@L["Contact_ContactType"]">
@@ -46,31 +46,31 @@
 
 @code {
     [Parameter]
-    public List<CallInformation> PhoneNumbers { get; set; } = new();
+    public List<CallInformation> Contacts { get; set; } = new();
     [Parameter]
-    public EventCallback<List<CallInformation>> PhoneNumbersChange { get; set; }
+    public EventCallback<List<CallInformation>> ContactsChange { get; set; }
 
     private async Task AddContact()
     {
-        PhoneNumbers.Add(new CallInformation
+        Contacts.Add(new CallInformation
             {
                 Contact = string.Empty,
-                Name = string.Empty,
+                Name = L["Phone"],
                 Icon = "phone.svg" // Значение по умолчанию
             });
 
-        await PhoneNumbersChange.InvokeAsync(PhoneNumbers);
+        await ContactsChange.InvokeAsync(Contacts);
 
     }
 
     private async Task Changed()
     {
-        await PhoneNumbersChange.InvokeAsync(PhoneNumbers);
+        await ContactsChange.InvokeAsync(Contacts);
     }
 
     private async Task RemoveContact(CallInformation contact)
     {
-        PhoneNumbers.Remove(contact);
-        await PhoneNumbersChange.InvokeAsync(PhoneNumbers);
+        Contacts.Remove(contact);
+        await ContactsChange.InvokeAsync(Contacts);
     }
 }

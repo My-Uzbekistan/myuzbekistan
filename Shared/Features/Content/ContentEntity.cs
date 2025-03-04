@@ -22,7 +22,7 @@ public class ContentEntity : BaseEntity
     public List<FacilityEntity>? Facilities { get; set; } = [];
     public Point? Location { get; set; }
     [Column(TypeName = "jsonb")]
-    public List<CallInformation>? PhoneNumbers { get; set; } = [];
+    public List<CallInformation>? Contacts { get; set; } = [];
     [InverseProperty("ContentFiles")]
     public ICollection<FileEntity>? Files { get; set; } = [];
     [InverseProperty("ContentPhoto")]
