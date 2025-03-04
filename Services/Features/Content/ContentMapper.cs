@@ -12,6 +12,7 @@ public static partial class ContentMapper
     public static MainPageContent MapToApi(this ContentEntity src) {
         var source = src.ToApi();
         source.Caption = src.Category.Caption;
+        source.viewType = src.Category.ViewType;
         return source;
 }
     public static ContentView MapToView(this ContentEntity src) => src.To();
@@ -36,9 +37,9 @@ public static partial class ContentMapper
         return source.Name;
     }
 
-    private static string MapToFacilitiesOfString(List<FacilityEntity> source)
+    private static List<FacilityItemDto> MapToFacilitiesOfString(List<FacilityEntity> source)
     {
-        return string.Join(", ", source.Select(x => x.Name).ToList());
+        return source.Select(x => new FacilityItemDto { Name = x.Name, Icon = x.Icon.Path, Id = x.Id }).ToList();
     }
     private static string MapToString(FileEntity source)
     {

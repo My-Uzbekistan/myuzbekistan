@@ -313,8 +313,14 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
         content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView() ;
         if (content.Category != null)
-            content.Category = dbContext.Categories
+        {
+            var cat = dbContext.Categories
             .First(x => x.Id == content.Category.Id && x.Locale == content.Category.Locale);
+            content.Category = cat;
+            content.CategoryId = cat.Id;
+            content.CategoryLocale = cat.Locale;
+        }
+            
         if (content.Files != null)
             content.Files = [.. dbContext.Files.Where(x => content.Files.Select(tt => tt.Id).ToList().Contains(x.Id))];
         var photo = contentView.PhotoView == null ? null : dbContext.Files.First(x => x.Id == contentView.PhotoView.Id);

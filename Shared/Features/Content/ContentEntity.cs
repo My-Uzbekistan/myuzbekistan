@@ -15,7 +15,8 @@ public class ContentEntity : BaseEntity
     
     public string Title { get; set; } = null!;
     public string? Description { get; set; } 
-    public long CategoryId { get; set; } 
+    public long CategoryId { get; set; }
+    public string CategoryLocale { get; set; } = null!;
     public CategoryEntity Category { get; set; } = null!;
     public string? WorkingHours { get; set; } 
     public List<FacilityEntity>? Facilities { get; set; } = [];

@@ -25,11 +25,13 @@ public partial class MainPageContent
     [property: DataMember] public List<string> Photos { get; set; } = [];
     [property: DataMember] public string Photo { get; set; } = string.Empty;
     [property: DataMember] public string Region { get; set; } = string.Empty;
-    [property: DataMember] public string Facilities { get; set; } = string.Empty;
-    [property: DataMember] public int RatingAverage { get; set; }
+    [property: DataMember] public List<FacilityItemDto> Facilities { get; set; } = [];
+    [property: DataMember] public double RatingAverage { get; set; }
     [property: DataMember] public int AverageCheck { get; set; }
     [property: DataMember] public decimal Price { get; set; }
     [property: DataMember] public decimal PriceInDollar { get; set; }
+    [property: DataMember] public ViewType viewType { get; set; }
+
 }
 
 
