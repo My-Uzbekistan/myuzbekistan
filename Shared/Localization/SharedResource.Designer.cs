@@ -196,6 +196,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Web site.
+        /// </summary>
+        public static string Contact_Site {
+            get {
+                return ResourceManager.GetString("Contact_Site", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Username.
         /// </summary>
         public static string Contact_Username {

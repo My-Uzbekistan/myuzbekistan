@@ -351,4 +351,7 @@
   <data name="Phone" xml:space="preserve">
     <value>Телефон</value>
   </data>
+  <data name="Contact_Site" xml:space="preserve">
+    <value>Веб Cайт</value>
+  </data>
 </root>

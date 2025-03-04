@@ -28,6 +28,10 @@
                                   Adornment="Adornment.Start"
                                   AdornmentText="+998" Label="@L["Contact_PhoneNumber"]" />
                 }
+                else if (contact.Icon == "site.svg")
+                {
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Site"]" />
+                }
                 else
                 {
                     <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Username"]"   />
