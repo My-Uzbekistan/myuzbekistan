@@ -125,6 +125,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     'Description',  c."Description",
                     'CategoryId',  c."CategoryId",
                     'CategoryName', cat."Name",
+                    'ViewType', cat."ViewType",
                     'WorkingHours', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'WorkingHours', 'WorkingHours') , 'Value', c."WorkingHours"),
                     'Location', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Location', 'Location'), 'Value', (ST_AsGeoJSON(c."Location")::jsonb)->'coordinates'),
                     'Facilities', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Facilities', 'Facilities')  , 'Value',

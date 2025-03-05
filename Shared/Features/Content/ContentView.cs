@@ -56,6 +56,7 @@ public partial class ContentDto
     [property: DataMember] public string? Description { get; set; } // Обычное поле, без FieldDto
     [property: DataMember] public long CategoryId { get; set; } // Простое число, без FieldDto
     [property: DataMember] public string CategoryName { get; set; } = null!; // Обычная строка
+    [property: DataMember] public ViewType ViewType { get; set; } 
     [property: DataMember] public FieldDto<string?> WorkingHours { get; set; } = null!;
     [property: DataMember] public FieldDto<List<double>?> Location { get; set; } = null!; // Просто координаты, без FieldDto
     [property: DataMember] public FieldDto<List<FacilityItemDto>> Facilities { get; set; } = null!;
