@@ -345,4 +345,13 @@
   <data name="WeRecommended" xml:space="preserve">
     <value>Biz {0} tavsiya qildik</value>
   </data>
+  <data name="Site" xml:space="preserve">
+    <value>Sayt</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Contact_Site" xml:space="preserve">
+    <value>Web sahifa</value>
+  </data>
 </root>

@@ -345,4 +345,13 @@
   <data name="WeRecommended" xml:space="preserve">
     <value>Мы рекомендуем {0}</value>
   </data>
+  <data name="Site" xml:space="preserve">
+    <value>Сайт</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Телефон</value>
+  </data>
+  <data name="Contact_Site" xml:space="preserve">
+    <value>Веб Cайт</value>
+  </data>
 </root>
