@@ -66,7 +66,7 @@ public partial class ContentDto
     [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
     [property: DataMember] public FieldDto<List<ContactDto>> Contacts { get; set; } = null!;
     [property: DataMember] public double RatingAverage { get; set; } // Простое число, без FieldDto
-    [property: DataMember] public FieldDto<int> AverageCheck { get; set; } = null!;
+    [property: DataMember] public int AverageCheck { get; set; } 
     [property: DataMember] public decimal Price { get; set; } // Простое число, без FieldDto
     [property: DataMember] public decimal PriceInDollar { get; set; } // Простое число, без FieldDto
     [property: DataMember] public string? Address { get; set; } = null!;

@@ -11,16 +11,16 @@
                     await Changed();
 
 })" Label="@L["Contact_ContactType"]">
-                    <MudSelectItem Value="@("telegram.svg")">@L["Telegram"]</MudSelectItem>
-                    <MudSelectItem Value="@("phone.svg")">@L["Phone"]</MudSelectItem>
-                    <MudSelectItem Value="@("instagram.svg")">@L["Instagram"]</MudSelectItem>
-                    <MudSelectItem Value="@("whatsapp.svg")">@L["WhatsApp"]</MudSelectItem>
-                    <MudSelectItem Value="@("site.svg")">@L["Site"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/telegram.svg")">@L["Telegram"]</MudSelectItem>
+                <MudSelectItem Value="@("/Images/phone.svg")">@L["Phone"]</MudSelectItem>
+                <MudSelectItem Value="@("/Images/instagram.svg")">@L["Instagram"]</MudSelectItem>
+                <MudSelectItem Value="@("/Images/whatsapp.svg")">@L["WhatsApp"]</MudSelectItem>
+                <MudSelectItem Value="@("/Images/site.svg")">@L["Site"]</MudSelectItem>
                 </MudSelect>
             </MudItem>
 
             <MudItem xs="12" md="4">
-                @if (contact.Icon == "phone.svg" || contact.Icon == "whatsapp.svg" || contact.Icon == "telegram.svg")
+            @if (contact.Icon == "/Images/phone.svg" || contact.Icon == "/Images/whatsapp.svg" || contact.Icon == "/Images/telegram.svg")
                 {
                     <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" 
                                   Placeholder="(__) ___ __ __"
@@ -28,7 +28,7 @@
                                   Adornment="Adornment.Start"
                                   AdornmentText="+998" Label="@L["Contact_PhoneNumber"]" />
                 }
-                else if (contact.Icon == "site.svg")
+            else if (contact.Icon == "/Images/site.svg")
                 {
                     <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Site"]" />
                 }
@@ -61,7 +61,7 @@
             {
                 Contact = string.Empty,
                 Name = L["Phone"],
-                Icon = "phone.svg" // Значение по умолчанию
+            Icon = "/Images/phone.svg" // Значение по умолчанию
             });
 
         await ContactsChange.InvokeAsync(Contacts);

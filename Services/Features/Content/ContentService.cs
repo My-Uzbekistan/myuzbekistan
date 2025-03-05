@@ -164,7 +164,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     'Contacts', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Contacts', 'Contacts') , 'Value', c."Contacts"),
                     
                     'RatingAverage', c."RatingAverage",
-                    'AverageCheck', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'AverageCheck', 'AverageCheck')  , 'Value', c."AverageCheck"),
+                    'AverageCheck', c."AverageCheck",
                     'Price',  c."Price",
                     'PriceInDollar',  c."PriceInDollar",
                     'Address',  c."Address"
