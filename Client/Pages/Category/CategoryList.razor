@@ -37,9 +37,7 @@
                 </MudLink>
             </MudTd>
             <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel=Contents.Title>
-                @string.Join(" ", context.ContentsView?.Select(x => x.Title)?.ToList() ?? new List<string>())
-            </MudTd>
+            <MudTd DataLabel="Order">@context.Order</MudTd>
             
             <MudTd DataLabel="Id">@context.Id</MudTd>
 
