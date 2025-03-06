@@ -56,6 +56,7 @@ public partial class ContentDto
     [property: DataMember] public string? Description { get; set; } // Обычное поле, без FieldDto
     [property: DataMember] public long CategoryId { get; set; } // Простое число, без FieldDto
     [property: DataMember] public string CategoryName { get; set; } = null!; // Обычная строка
+    [property: DataMember] public ViewType ViewType { get; set; } 
     [property: DataMember] public FieldDto<string?> WorkingHours { get; set; } = null!;
     [property: DataMember] public FieldDto<List<double>?> Location { get; set; } = null!; // Просто координаты, без FieldDto
     [property: DataMember] public FieldDto<List<FacilityItemDto>> Facilities { get; set; } = null!;
@@ -65,7 +66,7 @@ public partial class ContentDto
     [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
     [property: DataMember] public FieldDto<List<ContactDto>> Contacts { get; set; } = null!;
     [property: DataMember] public double RatingAverage { get; set; } // Простое число, без FieldDto
-    [property: DataMember] public FieldDto<int> AverageCheck { get; set; } = null!;
+    [property: DataMember] public int AverageCheck { get; set; } 
     [property: DataMember] public decimal Price { get; set; } // Простое число, без FieldDto
     [property: DataMember] public decimal PriceInDollar { get; set; } // Простое число, без FieldDto
     [property: DataMember] public string? Address { get; set; } = null!;

@@ -125,6 +125,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     'Description',  c."Description",
                     'CategoryId',  c."CategoryId",
                     'CategoryName', cat."Name",
+                    'ViewType', cat."ViewType",
                     'WorkingHours', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'WorkingHours', 'WorkingHours') , 'Value', c."WorkingHours"),
                     'Location', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Location', 'Location'), 'Value', (ST_AsGeoJSON(c."Location")::jsonb)->'coordinates'),
                     'Facilities', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Facilities', 'Facilities')  , 'Value',
@@ -163,7 +164,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     'Contacts', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Contacts', 'Contacts') , 'Value', c."Contacts"),
                     
                     'RatingAverage', c."RatingAverage",
-                    'AverageCheck', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'AverageCheck', 'AverageCheck')  , 'Value', c."AverageCheck"),
+                    'AverageCheck', c."AverageCheck",
                     'Price',  c."Price",
                     'PriceInDollar',  c."PriceInDollar",
                     'Address',  c."Address"

@@ -75,7 +75,7 @@ public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbCon
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        if (dbContext.Favorites.Any(x => x.Content.Id == command.ContentId && x.UserId == command.UserId))
+        if (dbContext.Contents.Any(x => x.Id == command.ContentId))
         {
             FavoriteEntity favorite = new()
             {
