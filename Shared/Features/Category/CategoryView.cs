@@ -26,6 +26,7 @@ public partial class MainPageContent
     [property: DataMember] public string Photo { get; set; } = string.Empty;
     [property: DataMember] public string Region { get; set; } = string.Empty;
     [property: DataMember] public List<FacilityItemDto> Facilities { get; set; } = [];
+    [property: DataMember] public List<string> Languages { get; set; } = [];
     [property: DataMember] public double RatingAverage { get; set; }
     [property: DataMember] public int AverageCheck { get; set; }
     [property: DataMember] public decimal Price { get; set; }

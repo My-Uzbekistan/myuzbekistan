@@ -13,6 +13,11 @@ public static partial class ContentMapper
         var source = src.ToApi();
         source.Caption = src.Category.Caption;
         source.viewType = src.Category.ViewType;
+        if (src.Languages != null)
+        {
+            source.Languages = [.. src.Languages.Select(x => x.Name)];
+        }
+        
         return source;
 }
     public static ContentView MapToView(this ContentEntity src) => src.To();

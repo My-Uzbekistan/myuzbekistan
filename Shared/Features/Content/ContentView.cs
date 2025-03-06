@@ -105,7 +105,7 @@ public partial class LanguagesDto
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class LanguageItemDto
 {
-    [property: DataMember] public FieldDto<string?> Id { get; set; } = null!;
+    [property: DataMember] public FieldDto<long?> Id { get; set; } = null!;
     [property: DataMember] public FieldDto<string?> Name { get; set; } = null!;
 }
 
