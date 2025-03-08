@@ -140,10 +140,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                         WHERE cf."ContentsId" = c."Id" AND c."Locale" = fac."Locale")
                     ),
                     'Languages', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Languages', 'Languages') , 'Value',
-                        (SELECT jsonb_agg(jsonb_build_object(
-                            'Id', jsonb_build_object('Name', 'LanguageId', 'Value', l."Id"),
-                            'Name', jsonb_build_object('Name', 'LanguageName', 'Value', l."Name")
-                        ))
+                        (SELECT jsonb_agg(l."Name")
                         FROM "ContentEntityLanguageEntity" cl
                         JOIN "Languages" l ON l."Id" = cl."LanguagesId"
                         WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale")

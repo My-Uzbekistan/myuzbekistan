@@ -213,9 +213,9 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
             category.Contents = dbContext.Contents
             .Where(x => category.Contents.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
 
-        if (category.Icon != null)
+        if (categoryView.IconView != null || category.Icon?.Path != categoryView.IconView?.Path)
             category.Icon = dbContext.Files
-            .Where(x => x.Name == category.Icon.Name).First();
+            .Where(x => x.Path == categoryView.IconView.Path).First();
 
     }
 

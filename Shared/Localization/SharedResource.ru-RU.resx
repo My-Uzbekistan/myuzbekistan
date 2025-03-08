@@ -354,4 +354,7 @@
   <data name="Contact_Site" xml:space="preserve">
     <value>Веб Cайт</value>
   </data>
+  <data name="ContentCount" xml:space="preserve">
+    <value>Количество контента</value>
+  </data>
 </root>

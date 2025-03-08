@@ -354,4 +354,7 @@
   <data name="Contact_Site" xml:space="preserve">
     <value>Web sahifa</value>
   </data>
+  <data name="ContentCount" xml:space="preserve">
+    <value>Kontent soni</value>
+  </data>
 </root>

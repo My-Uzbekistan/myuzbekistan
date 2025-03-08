@@ -60,7 +60,7 @@ public partial class ContentDto
     [property: DataMember] public FieldDto<string?> WorkingHours { get; set; } = null!;
     [property: DataMember] public FieldDto<List<double>?> Location { get; set; } = null!; // Просто координаты, без FieldDto
     [property: DataMember] public FieldDto<List<FacilityItemDto>> Facilities { get; set; } = null!;
-    [property: DataMember] public FieldDto<List<LanguageItemDto>> Languages { get; set; } = null!;
+    [property: DataMember] public FieldDto<List<string>> Languages { get; set; } = null!;
     [property: DataMember] public FieldDto<List<string>> Files { get; set; } = null!;
     [property: DataMember] public List<string>? Photos { get; set; } // Просто массив путей, без FieldDto
     [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
