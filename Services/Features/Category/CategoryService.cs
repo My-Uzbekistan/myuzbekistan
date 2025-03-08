@@ -210,12 +210,11 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
 
         if (category.Contents != null)
-            category.Contents = dbContext.Contents
-            .Where(x => category.Contents.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
+            category.Contents = dbContext.Contents.Where(x=>x.CategoryId == category.Id && x.Locale == categoryView.Locale).ToList();
 
         if (categoryView.IconView != null || category.Icon?.Path != categoryView.IconView?.Path)
             category.Icon = dbContext.Files
-            .Where(x => x.Path == categoryView.IconView.Path).First();
+            .Where(x => x.Path == categoryView.IconView!.Path).First();
 
     }
 

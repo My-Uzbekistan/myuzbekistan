@@ -309,7 +309,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
 
 
-        content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView() ;
+        content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView();
         if (content.Category != null)
         {
             var cat = dbContext.Categories
