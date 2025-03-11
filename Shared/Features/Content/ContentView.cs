@@ -5,6 +5,7 @@ using Point = NetTopologySuite.Geometries.Point;
 using Shared.Localization;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 namespace myuzbekistan.Shared;
 
 [DataContract, MemoryPackable]
@@ -117,6 +118,15 @@ public partial class ContactDto
     [property: DataMember] public string Icon { get; set; } = "phone.svg"; // По умолчанию иконка телефона
     [property: DataMember] public string Name { get; set; } = "";
     [property: DataMember] public string Contact { get; set; } = null!;
+    [property: DataMember]
+    public string Action => Icon switch
+    {
+        "/Images/phone.svg" => "tel:" + Contact,
+        "/Images/telegram.svg" => "https://t.me/" + Contact.Replace("@", ""),
+        "/Images/instagram.svg" => "https://instagram.com/" + Contact.Replace("@", ""),
+        "/Images/whatsapp.svg" => "https://wa.me/" + Regex.Replace(Contact, @"\D", ""),
+        _ => Contact
+    };
 }
 
 [DataContract, MemoryPackable]

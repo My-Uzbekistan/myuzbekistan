@@ -139,12 +139,15 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                         LEFT JOIN "Files" F2 ON F2."Id" = fac."IconId"
                         WHERE cf."ContentsId" = c."Id" AND c."Locale" = fac."Locale")
                     ),
-                    'Languages', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Languages', 'Languages') , 'Value',
-                        (SELECT jsonb_agg(l."Name")
+                    'Languages', jsonb_build_object(
+                    'Name', COALESCE(cat."FieldNames"->>'Languages', 'Languages'),
+                    'Value', (
+                        SELECT jsonb_agg(DISTINCT l."Name")  -- Добавляем DISTINCT
                         FROM "ContentEntityLanguageEntity" cl
                         JOIN "Languages" l ON l."Id" = cl."LanguagesId"
-                        WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale")
-                    ),
+                        WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale"
+                    )
+                ),
                     'Files', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Files', 'Files'), 'Value',
                         (SELECT jsonb_agg(fil."Path")
                         FROM "ContentEntityFileEntity" cfe
@@ -159,7 +162,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     ),
                     'Photo',  f."Path",
                     'Contacts', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Contacts', 'Contacts') , 'Value', c."Contacts"),
-                    
+
                     'RatingAverage', c."RatingAverage",
                     'AverageCheck', c."AverageCheck",
                     'Price',  c."Price",
