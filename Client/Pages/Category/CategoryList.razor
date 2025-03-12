@@ -36,15 +36,13 @@
                     </MudButton>
                 </MudLink>
             </MudTd>
-            <MudTd DataLabel="Description">@context.Description</MudTd>
-            <MudTd DataLabel=Contents.Title>
-                @string.Join(" ", context.ContentsView?.Select(x => x.Title)?.ToList() ?? new List<string>())
-            </MudTd>
+            <MudTd DataLabel="ContentCount">@context.ContentsView.Count</MudTd>
+            <MudTd DataLabel="Order">@context.Order</MudTd>
             
             <MudTd DataLabel="Id">@context.Id</MudTd>
 
-            <MudTd Class="d-flex justify-end">
-                <div style="display:flex; gap:7px;">
+            <MudTd >
+                <div style="display:flex; gap:7px; " class="d-flex justify-end">
                     <MudLink Href=@($"/categories/{context.Id }")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>
@@ -59,7 +57,7 @@
 
     private TableResponse<CategoryView>? Items;
 
-    private string[] SortColumns = new string[] { "Icon","Name", "Description", "Order",   "Id", };
+    private string[] SortColumns = new string[] { "Icon", "Name", "ContentCount", "Order", "Id", };
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {

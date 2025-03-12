@@ -214,6 +214,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Count.
+        /// </summary>
+        public static string ContentCount {
+            get {
+                return ResourceManager.GetString("ContentCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to contents.
         /// </summary>
         public static string contents {

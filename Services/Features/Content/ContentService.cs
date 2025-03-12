@@ -139,15 +139,15 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                         LEFT JOIN "Files" F2 ON F2."Id" = fac."IconId"
                         WHERE cf."ContentsId" = c."Id" AND c."Locale" = fac."Locale")
                     ),
-                    'Languages', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Languages', 'Languages') , 'Value',
-                        (SELECT jsonb_agg(jsonb_build_object(
-                            'Id', jsonb_build_object('Name', 'LanguageId', 'Value', l."Id"),
-                            'Name', jsonb_build_object('Name', 'LanguageName', 'Value', l."Name")
-                        ))
+                    'Languages', jsonb_build_object(
+                    'Name', COALESCE(cat."FieldNames"->>'Languages', 'Languages'),
+                    'Value', (
+                        SELECT jsonb_agg(DISTINCT l."Name")  -- Добавляем DISTINCT
                         FROM "ContentEntityLanguageEntity" cl
                         JOIN "Languages" l ON l."Id" = cl."LanguagesId"
-                        WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale")
-                    ),
+                        WHERE cl."ContentsId" = c."Id" AND l."Locale" = c."Locale"
+                    )
+                ),
                     'Files', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Files', 'Files'), 'Value',
                         (SELECT jsonb_agg(fil."Path")
                         FROM "ContentEntityFileEntity" cfe
@@ -162,7 +162,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                     ),
                     'Photo',  f."Path",
                     'Contacts', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Contacts', 'Contacts') , 'Value', c."Contacts"),
-                    
+
                     'RatingAverage', c."RatingAverage",
                     'AverageCheck', c."AverageCheck",
                     'Price',  c."Price",
@@ -312,7 +312,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
 
 
-        content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView() ;
+        content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView();
         if (content.Category != null)
         {
             var cat = dbContext.Categories

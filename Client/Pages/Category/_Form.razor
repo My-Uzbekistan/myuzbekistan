@@ -48,7 +48,7 @@
                                     <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
                                 </MudSelect>
                                 <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
-                                <MudSelect class="mt-3" Label="@L["SelectViewType"]" ValueChanged="async (ViewType ev) => { OnChangeViewType(ev); }">
+                                <MudSelect Value="current.ViewType"  class="mt-3" Label="@L["SelectViewType"]" ValueChanged="async (ViewType ev) => { OnChangeViewType(ev); }">
                                     @foreach (ViewType viewType in ((ViewType[])Enum.GetValues(typeof(ViewType))))
                                     {
                                         <MudSelectItem Value="@viewType"> @L[viewType.ToString()]</MudSelectItem>
