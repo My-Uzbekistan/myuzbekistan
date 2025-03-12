@@ -82,8 +82,8 @@
             {
                 <MudTd DataLabel="Id">@context.Id</MudTd>
             }
-            <MudTd Class="d-flex justify-end">
-                <div style="display:flex; gap:7px;">
+            <MudTd >
+                <div style="display:flex; gap:7px; " class="d-flex justify-end">
                     <MudLink Href=@($"categories/{CategoryId}/contents/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>

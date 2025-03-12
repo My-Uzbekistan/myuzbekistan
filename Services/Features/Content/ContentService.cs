@@ -176,9 +176,14 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
                 """);
 
         var str = await contentQuery.FirstOrDefaultAsync(cancellationToken: cancellationToken);
-        var content = JsonSerializer.Deserialize<ContentDto>(str!)!; 
 
-        return content;
+        if (str != null)
+        {
+            var content = JsonSerializer.Deserialize<ContentDto>(str!)!;
+
+            return content;
+        }
+        throw new NotFoundException("not found");
     }
 
 

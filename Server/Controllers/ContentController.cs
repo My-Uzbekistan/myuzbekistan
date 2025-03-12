@@ -12,9 +12,18 @@ public class ContentController(ICategoryService categoryService, IContentService
     private readonly IContentService _contentService = contentService;
 
     [HttpGet("{contentId}")]
-    public async Task<ContentDto> GetContent(long contentId, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetContent(long contentId, CancellationToken cancellationToken)
     {
-        return await _contentService.GetContent(contentId, cancellationToken);
+        try
+        {
+            return Ok(await _contentService.GetContent(contentId, cancellationToken));
+        }
+        catch (NotFoundException)
+        {
+
+            return NotFound();
+        }
+        
     }
 }
 
