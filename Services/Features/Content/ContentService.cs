@@ -13,7 +13,6 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 {
     #region Queries
 
-    [ComputeMethod]
     public async virtual Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default)
     {
         await Invalidate();
