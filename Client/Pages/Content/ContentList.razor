@@ -1,4 +1,5 @@
 @page "/categories/{CategoryId:long}/contents"
+@page "/more/{CategoryId:long}/contents"
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -15,7 +16,7 @@
 
 <ListContainer Title="Content">
     <Actions>
-        <MudLink Href="@($"categories/{CategoryId}/contents/create")">
+        <MudLink Href="@($"{routePath}/{CategoryId}/contents/create")">
             <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
                 @L["Create"]
             </MudButton>
@@ -53,10 +54,10 @@
             {
                 <MudTd DataLabel="AverageCheck">
                     <MudRating SelectedValue="context.AverageCheck"
-                    ReadOnly="true"
+                               ReadOnly="true"
                                MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
                                FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
-                    </MudTd>
+                </MudTd>
             }
             @if (SortColumns.Contains("RatingAverage"))
             {
@@ -82,9 +83,9 @@
             {
                 <MudTd DataLabel="Id">@context.Id</MudTd>
             }
-            <MudTd >
+            <MudTd>
                 <div style="display:flex; gap:7px; " class="d-flex justify-end">
-                    <MudLink Href=@($"categories/{CategoryId}/contents/{context.Id}")>
+                    <MudLink Href=@($"{routePath}/{CategoryId}/contents/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>
                     <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
@@ -95,17 +96,43 @@
 </ListContainer>
 
 @code {
-
+    private string? routePath;
     [Parameter] public long CategoryId { get; set; }
     private TableResponse<ContentView>? Items;
 
 
 
-    private string[] SortColumns = new string[] { "Title", "Description", "Photos", "Photo", "Languages", "AverageCheck" , "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
+    private string[] SortColumns = new string[] { "Title", "Description", "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
 
     protected override void OnInitialized()
     {
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        if (routePath == "more")
+        {
+            SortColumns = ["Title", "Description", "Photo", "Id"];
+        }
+        else
+        {
+            SortColumns = ["Title", "Description", "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
+        }
+        navigation.LocationChanged += Navigation_LocationChanged;
         base.OnInitialized();
+    }
+
+    private void Navigation_LocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        MutableState.Value.IsMore = e.Location.Contains("/more");
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        if (routePath == "more")
+        {
+            SortColumns = ["Title", "Description", "Photo", "Id"];
+        }
+        else
+        {
+            SortColumns = ["Title", "Description", "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
+        }
+        StateHasChanged();
+        MutableState.Invalidate();
     }
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()

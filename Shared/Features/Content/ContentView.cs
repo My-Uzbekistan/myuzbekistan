@@ -139,3 +139,23 @@ public partial class ReviewDto
     [property: DataMember] public int Rating { get; set; }
     [property: DataMember] public DateTime CreatedAt { get; set; }
 }
+
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class Currency
+{
+    [property: DataMember] public int Id { get; set; }
+    [property: DataMember] public string Ccy { get; set; } = null!;
+    [property: DataMember] public string Rate { get; set; } = null!;
+}
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class ContentShort
+{
+    [property: DataMember] public int Id { get; set; }
+    [property: DataMember] public string Title { get; set; } = null!;
+    [property: DataMember] public string Description { get; set; } = null!;
+    [property: DataMember] public string Photo { get; set; } = null!;
+}

@@ -9,7 +9,14 @@ public static partial class ContentMapper
 {
     #region Usable
 
-    public static MainPageContent MapToApi(this ContentEntity src) {
+    public static ContentShort MapToShortApi(this ContentEntity src)
+    {
+        var source = src.ToShortApi();
+
+        return source;
+    }
+    public static MainPageContent MapToApi(this ContentEntity src)
+    {
         var source = src.ToApi();
         source.Caption = src.Category.Caption;
         source.viewType = src.Category.ViewType;
@@ -17,11 +24,11 @@ public static partial class ContentMapper
         {
             source.Languages = [.. src.Languages.Select(x => x.Name)];
         }
-        
+
         return source;
-}
+    }
     public static ContentView MapToView(this ContentEntity src) => src.To();
-    public static List<ContentView> MapToViewList(this List<ContentEntity> src)=> src.ToList();
+    public static List<ContentView> MapToViewList(this List<ContentEntity> src) => src.ToList();
     public static ContentEntity MapFromView(this ContentView src) => src.From();
     #endregion
 
@@ -51,7 +58,7 @@ public static partial class ContentMapper
         return source?.Path!;
     }
 
- 
+
 
     private static List<string> MapToLanguage(ICollection<LanguageEntity> source)
     {
@@ -68,6 +75,8 @@ public static partial class ContentMapper
         return [source.Coordinate.X, source.Coordinate.Y];
     }
 
+    private static partial ContentShort ToShortApi(this ContentEntity src);
+
     private static partial FacilityApiView MapToFacilityView(FacilityEntity source);
     [MapProperty("Id", "ContentId")]
     private static partial MainPageContent ToApi(this ContentEntity src);
@@ -82,7 +91,7 @@ public static partial class ContentMapper
     [MapProperty("Reviews", "ReviewsView")]
     [MapProperty("Languages", "Languages")]
     private static partial ContentView To(this ContentEntity src);
- 
+
     private static partial List<ContentView> ToList(this List<ContentEntity> src);
     [MapProperty("CategoryView", "Category")]
     [MapProperty("Facilities", "Facilities")]

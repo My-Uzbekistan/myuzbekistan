@@ -7,6 +7,7 @@ using ActualLab.Async;
 using System.Reactive;
 using System.Globalization;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace myuzbekistan.Services;
 
 public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICategoryService
@@ -20,7 +21,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         var query = dbContext.Categories
             .Where(c => c.Status == ContentStatus.Active &&
                         c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
-            
+
             .Include(c => c.Icon)
             .Include(c => c.Contents!)
                 .ThenInclude(content => content.Reviews)
@@ -38,12 +39,22 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                 .ThenInclude(content => content.Facilities!)
                     .ThenInclude(f => f.Icon).AsQueryable();
 
-        if(options.RegionId != null && options.RegionId != 1)
+        if (options.RegionId != null && options.RegionId != 1)
         {
-            query = query.Where(x => x.Contents.Any(x=>x.Region.Id == options.RegionId));
+
+            query = query.Where(x => x.Contents != null && x.Contents.Any(content => content.Region != null && content.Region.Id == options.RegionId));
+
         }
 
-        // ������������� �� Client-Side ��� ������� ������
+        if (options.IsMore.HasValue && options.IsMore.Value)
+        {
+            query = query.Where(x => x.ViewType == ViewType.More);
+        }
+        else
+        {
+            query = query.Where(x => x.ViewType != ViewType.More);
+        }
+
         var categories = await query
      .AsAsyncEnumerable()
      .Select(c => new MainPageApi(
@@ -74,8 +85,9 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var category = from s in dbContext.Categories.Include(x => x.Icon)
-                       where s.Status == ContentStatus.Active && s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName
+                       where s.Status == ContentStatus.Active && s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName && s.ViewType != ViewType.More
                        select new CategoryApi(s.Name, s.Icon!.Path!, s.Id);
+
         return [.. category];
     }
 
@@ -103,6 +115,15 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         Sorting(ref category, options);
 
+        if (options.IsMore.HasValue && options.IsMore.Value)
+        {
+            category = category.Where(x => x.ViewType == ViewType.More);
+        }
+        else
+        {
+            category = category.Where(x => x.ViewType != ViewType.More);
+        }
+
         category = category.Include(x => x.Contents).Include(x => x.Icon);
         var count = await category.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await category.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
@@ -118,6 +139,8 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         .Include(x => x.Contents)
         .Include(x => x.Icon)
         .Where(x => x.Id == Id).ToList();
+
+
 
         return category == null ? throw new ValidationException("CategoryEntity Not Found") : category.MapToViewList();
     }
@@ -210,7 +233,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
 
         if (category.Contents != null)
-            category.Contents = dbContext.Contents.Where(x=>x.CategoryId == category.Id && x.Locale == categoryView.Locale).ToList();
+            category.Contents = dbContext.Contents.Where(x => x.CategoryId == category.Id && x.Locale == categoryView.Locale).ToList();
 
         if (categoryView.IconView != null || category.Icon?.Path != categoryView.IconView?.Path)
             category.Icon = dbContext.Files

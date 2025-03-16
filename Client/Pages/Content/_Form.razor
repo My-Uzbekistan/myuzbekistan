@@ -25,7 +25,7 @@
                                     <MudTextField @bind-Value="current.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Title)" Required="true" />
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
                                     {
-                                        <MudTextField @bind-Value="current.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)"  />
+                                        <MudTextField @bind-Value="current.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" />
                                     }
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))
@@ -75,12 +75,15 @@
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
-                                <MudStack Row="true">
-                                    <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
+                                {
+                                    <MudStack Row="true">
+                                        <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
 
-                                    <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Value="current.Recommended"
-                                               @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
-                                </MudStack>
+                                        <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Value="current.Recommended"
+                                                   @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
+                                    </MudStack>
+                                }
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Facilities))
                                 {
                                     <_FacilityEntityMultiSelect Class="mt-4" Label="@L["Facilities"]" @bind-Value="current.Facilities"
@@ -97,10 +100,10 @@
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.AverageCheck))
                                 {
                                     <label class="mt-4 mb-2" style="display: flex;    align-items: center;
-                                        ">
+                                            ">
                                         @L["AverageCheck"]
                                         @current.AverageCheck
-                                       
+
                                     </label>
                                     <MudRating SelectedValue="current.AverageCheck"
                                                SelectedValueChanged="(int val)=>{
@@ -112,10 +115,13 @@
                                                FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
 
                                 }
-
-                                <_RegionEntitySelect Label="@L["Region"]" @bind-Value="current.RegionView" For="@(() => current.RegionView)" Required="true" @bind-Value:after="()=>{
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
+                                {
+                                    <_RegionEntitySelect Label="@L["Region"]" @bind-Value="current.RegionView" For="@(() => current.RegionView)" Required="true" @bind-Value:after="()=>{
                                     Model.ForEach(x=>x.RegionView = current.RegionView);
                                 }" />
+                                }
+
 
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Price) || Bitwise.Is(categoryView.Fields, ContentFields.PriceInDollar))
                                 {

@@ -357,4 +357,7 @@
   <data name="ContentCount" xml:space="preserve">
     <value>Количество контента</value>
   </data>
+  <data name="More" xml:space="preserve">
+    <value>Более</value>
+  </data>
 </root>

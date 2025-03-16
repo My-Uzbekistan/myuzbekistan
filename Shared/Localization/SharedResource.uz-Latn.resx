@@ -357,4 +357,7 @@
   <data name="ContentCount" xml:space="preserve">
     <value>Kontent soni</value>
   </data>
+  <data name="More" xml:space="preserve">
+    <value>Ko'proq</value>
+  </data>
 </root>

@@ -12,6 +12,36 @@ namespace myuzbekistan.Services;
 public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
+
+    [ComputeMethod]
+    public async virtual Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var content = from s in dbContext.Contents select s;
+
+
+        #region CategoryId
+        content = content.Where(x => x.Category.Name == CategoryName);
+        #endregion
+
+        content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
+
+
+        content = content.Include(x => x.Category);
+        content = content.Include(x => x.Files);
+        content = content.Include(x => x.Photos);
+        content = content.Include(x => x.Photo);
+        content = content.Include(x => x.Reviews);
+        content = content.Include(x => x.Facilities);
+        content = content.Include(x => x.Languages);
+        content = content.Include(x => x.Region);
+
+
+        var items = await content.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
+        return [.. items.Select(x=>x.MapToShortApi())];
+    }
+
     [ComputeMethod]
     public async virtual Task<TableResponse<ContentView>> GetAll(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
@@ -56,16 +86,16 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
     }
 
 
+
+
     [ComputeMethod]
     public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
-        // Íà÷àëüíûé çàïðîñ
         var content = dbContext.Contents.AsQueryable();
 
-        // Ôèëüòðàöèÿ ïî ïîèñêîâîìó çàïðîñó
         if (!string.IsNullOrEmpty(options.Search))
         {
             var search = options.Search.ToLower();
@@ -80,16 +110,12 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             );
         }
 
-        // Ôèëüòðàöèÿ ïî êàòåãîðèè
         content = content.Where(x => x.CategoryId == CategoryId);
 
-        // Ôèëüòðàöèÿ ïî ÿçûêó
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
 
-        // Ïðèìåíåíèå ñîðòèðîâêè
         Sorting(ref content, options);
 
-        // Âêëþ÷àåì ñâÿçàííûå ñóùíîñòè ñ AsSplitQuery äëÿ îïòèìèçàöèè
         content = content
             .Include(x => x.Category)
             .Include(x => x.Files)
@@ -99,13 +125,11 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             .Include(x => x.Region)
             .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
             .Include(x => x.Languages)
-            .AsSplitQuery() // Îïòèìèçàöèÿ çàïðîñîâ
+            .AsSplitQuery()
             .AsNoTracking();
 
-        // Ïàãèíàöèÿ è âûïîëíåíèå çàïðîñà
         var items = await content.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
 
-        // Ìàïïèíã äàííûõ â API-ìîäåëü
         var data = items.Select(x => x.MapToApi()).ToList();
 
         return data;
@@ -201,7 +225,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         .Include(x => x.Languages)
         .Include(x => x.Region)
         .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
-        
+
         .Where(x => x.Id == Id);
         return content == null ? throw new ValidationException("ContentEntity Not Found") : content.ToList().MapToViewList();
     }
@@ -315,9 +339,15 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
     {
         ContentMapper.From(contentView, content);
 
+        if (contentView.RegionView != null)
+        {
+            content.Region = dbContext.Regions.First(x => x.Id == contentView.RegionView.Id && x.Locale == contentView.Locale);
+        }
+        else
+        {
+            content.Region = contentView.RegionView?.MapFromView();
+        }
 
-
-        content.Region = contentView.RegionView != null ? dbContext.Regions.First(x => x.Id == content.Region.Id && x.Locale == contentView.Locale) : contentView.RegionView!.MapFromView();
         if (content.Category != null)
         {
             var cat = dbContext.Categories
@@ -326,7 +356,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             content.CategoryId = cat.Id;
             content.CategoryLocale = cat.Locale;
         }
-            
+
         if (content.Files != null)
             content.Files = [.. dbContext.Files.Where(x => content.Files.Select(tt => tt.Id).ToList().Contains(x.Id))];
         var photo = contentView.PhotoView == null ? null : dbContext.Files.First(x => x.Id == contentView.PhotoView.Id);
@@ -339,7 +369,6 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
             content.Languages = [.. dbContext.Languages.Where(x => content.Languages.Select(tt => tt.Id).ToList().Contains(x.Id) && x.Locale == contentView.Locale)];
         if (content.Facilities != null)
             content.Facilities = [.. dbContext.Facilities.Where(x => content.Facilities.Select(tt => tt.Id).ToList().Contains(x.Id) && x.Locale == contentView.Locale)];
-
     }
 
     private void Sorting(ref IQueryable<ContentEntity> content, TableOptions options) => content = options.SortLabel switch

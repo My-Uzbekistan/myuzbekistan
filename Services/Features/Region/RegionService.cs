@@ -39,6 +39,10 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
             );
         }
 
+        if (!String.IsNullOrEmpty(options.Lang)){
+            region = region.Where(s => s.Locale == options.Lang);
+        }
+
         Sorting(ref region, options);
         
 

@@ -261,14 +261,15 @@ using var dbContext = dbContextFactory.CreateDbContext();
 using var apldbContext = apldbContextFactory.CreateDbContext();
 await dbContext.Database.MigrateAsync();
 await apldbContext.Database.MigrateAsync();
-// ✅ Инициализация ролей и администратора
+// ✅ Инициализация 
 using (var scope = app.Services.CreateScope())
 {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<long>>>();
 
-    await SeedRolesAsync(roleManager);
-    await SeedAdminAsync(userManager);
+    await Seeds.SeedRolesAsync(roleManager);
+    await Seeds.SeedAdminAsync(userManager);
+    Seeds.SeedAboutContent(dbContext);
 }
 
 
@@ -276,58 +277,6 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 
-// ✅ Метод для создания ролей
-async Task SeedRolesAsync(RoleManager<IdentityRole<long>> roleManager)
-{
-    string[] roles = new[] { "User", "Admin" };
-
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole<long>(role));
-        }
-    }
-}
-
-// ✅ Метод для создания администратора
-async Task SeedAdminAsync(UserManager<ApplicationUser> userManager)
-{
-    var adminEmail = "travelAdmin@example.com";
-    var adminUsername = "travelAdmin@example.com";
-    var adminPassword = "1q2w3e4r5t6y!QAZ";
-
-    var existingAdmin = await userManager.FindByNameAsync(adminUsername);
-    if (existingAdmin == null)
-    {
-        var adminUser = new ApplicationUser
-        {
-            UserName = adminUsername,
-            Email = adminEmail,
-            EmailConfirmed = true
-        };
-
-        var result = await userManager.CreateAsync(adminUser, adminPassword);
-
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(adminUser, "Admin");
-            Console.WriteLine("✅ Администратор travelAdmin успешно создан!");
-        }
-        else
-        {
-            Console.WriteLine("❌ Ошибка при создании администратора:");
-            foreach (var error in result.Errors)
-            {
-                Console.WriteLine($"- {error.Description}");
-            }
-        }
-    }
-    else
-    {
-        Console.WriteLine("ℹ️ Администратор travelAdmin уже существует.");
-    }
-}
 
 
 public class CustomPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : class

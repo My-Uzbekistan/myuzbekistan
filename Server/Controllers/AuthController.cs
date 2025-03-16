@@ -81,13 +81,17 @@ public class AuthController : ControllerBase
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
-    private async Task<GoogleJsonWebSignature.Payload?> ValidateGoogleToken(string idToken)
+    private async Task<GoogleJsonWebSignature.Payload?> ValidateGoogleToken(string idToken, string platform)
     {
         try
         {
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = new List<string>() { _configuration["Google:ClientId"]! }
+                Audience = [
+                    platform == "ios" ? _configuration["Google:IosClientIdClientId"]! : 
+                    platform == "android" ? _configuration["Google:AndroidClientId"]! : 
+                    _configuration["Google:ClientId"]!
+                ]
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
@@ -104,9 +108,9 @@ public class AuthController : ControllerBase
         public string IdToken { get; set; }
     }
     [HttpPost("google-login")]
-    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request, [FromQuery] string platform)
     {
-        var validPayload = await ValidateGoogleToken(request.IdToken);
+        var validPayload = await ValidateGoogleToken(request.IdToken, platform);
         if (validPayload == null)
         {
             return BadRequest("Invalid Google token.");

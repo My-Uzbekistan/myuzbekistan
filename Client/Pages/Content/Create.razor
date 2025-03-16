@@ -1,4 +1,5 @@
 @page "/categories/{CategoryId:long}/contents/create"
+@page "/more/{CategoryId:long}/contents/create"
 
 @inject UICommander Command
 @inject ISnackbar Snackbar
@@ -14,6 +15,15 @@
 
     public bool Processing {get;set;} = false;
 
+    private bool IsCategories;
+    private string? routePath;
+
+    protected override void OnInitialized()
+    {
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        IsCategories = navigation.Uri.Contains("/categories/");
+    }
+
     public async Task OnSubmit(List<ContentView> entity)
     {
        Processing = true;
@@ -27,7 +37,7 @@
        else
        {
           Snackbar.Add(@L["SuccessCreate"], Severity.Success);
-            navigation.NavigateTo($"/categories/{CategoryId}/contents");
+            navigation.NavigateTo($"/{routePath}/{CategoryId}/contents");
        }
        Processing = false;
     }

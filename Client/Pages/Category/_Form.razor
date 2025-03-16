@@ -13,6 +13,7 @@
                 <SaveCancelButton OnCancel='() => PageHistoryState.Back("categories")' Processing="@Processing" />
             </Actions>
             <ChildContent>
+                <DataAnnotationsValidator></DataAnnotationsValidator>
                 <MudGrid>
                     <MudItem lg="8" xs="12">
                         <MudGrid>
@@ -25,52 +26,62 @@
                                     <input type="hidden" @bind-value="current.Id">
                                 </MudPaper>
                             </MudItem>
-                            <MudItem xs="12">
-                                <MudPaper Class="pa-4">
-                                    @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
-                                    {
-                                        @if (Bitwise.Is(current.Fields, field))
+                            @if (current.Fields > 0)
+                            {
+                                <MudItem xs="12">
+                                    <MudPaper Class="pa-4">
+                                        @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
                                         {
-                                            <MudTextField @bind-Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text" />
-                                        }
+                                            @if (Bitwise.Is(current.Fields, field))
+                                            {
+                                                <MudTextField @bind-Value="current.FieldNames[field]" Label="Name" AutoFocus="true" Variant="Variant.Text" />
+                                            }
 
-                                    }
-                                </MudPaper>
-                            </MudItem>
+                                        }
+                                    </MudPaper>
+                                </MudItem>
+                            }
                         </MudGrid>
 
                     </MudItem>
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
-                        <MudExpansionPanels Class="mb-3">
-                            <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
-                                <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status); }" Class="pa-4" Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
-                                    <MudSelectItem T="ContentStatus" Value="ContentStatus.Active">@L["Active"]</MudSelectItem>
-                                    <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
-                                </MudSelect>
-                                <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
-                                <MudSelect Value="current.ViewType"  class="mt-3" Label="@L["SelectViewType"]" ValueChanged="async (ViewType ev) => { OnChangeViewType(ev); }">
-                                    @foreach (ViewType viewType in ((ViewType[])Enum.GetValues(typeof(ViewType))))
+                        @if (RoutePath == "more")
+                        {
+                            <MudExpansionPanels Class="mb-3">
+                                <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
+                                    <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status); }" Class="pa-4" Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
+                                        <MudSelectItem T="ContentStatus" Value="ContentStatus.Active">@L["Active"]</MudSelectItem>
+                                        <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
+                                    </MudSelect>
+                                    <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
+
+                                    <MudSelect Value="current.ViewType" class="mt-3" Label="@L["SelectViewType"]" ValueChanged="async (ViewType ev) => { OnChangeViewType(ev); }">
+                                        @foreach (ViewType viewType in ((ViewType[])Enum.GetValues(typeof(ViewType))))
+                                        {
+                                            <MudSelectItem Value="@viewType"> @L[viewType.ToString()]</MudSelectItem>
+                                        }
+
+                                    </MudSelect>
+                                </MudExpansionPanel>
+                                <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
+                                    @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
                                     {
-                                        <MudSelectItem Value="@viewType"> @L[viewType.ToString()]</MudSelectItem>
+                                        <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => { PopulateFlags(current.Fields,field); }" BitWise=field Label="@L[field.ToString()]" />
                                     }
-
-                                </MudSelect>
-                            </MudExpansionPanel>
-                            <MudExpansionPanel Text="@L["Fields"]" Gutters="true" Expanded="true">
-                                @foreach (ContentFields field in ((ContentFields[])Enum.GetValues(typeof(ContentFields))).Where(x => x != ContentFields.None))
-                                {
-                                    <FieldFlagCheckbox @bind-Flag="current.Fields" @bind-Flag:after="() => { PopulateFlags(current.Fields,field); }" BitWise=field Label="@L[field.ToString()]" />
-                                }
-                            </MudExpansionPanel>
+                                </MudExpansionPanel>
 
 
-                        </MudExpansionPanels>
+                            </MudExpansionPanels>
+                        }
                         <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
-                        <MudExpansionPanels Class="mt-3">
-                            <MudExpansionPanel Text="@L["Icon"]" Gutters="true" Expanded="true">
-                                <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => { Model.ForEach(x => x.IconView = current.IconView); }" />
-                            </MudExpansionPanel>
-                        </MudExpansionPanels>
+                        @if (RoutePath == "more")
+                        {
+                            <MudExpansionPanels Class="mt-3">
+                                <MudExpansionPanel Text="@L["Icon"]" Gutters="true" Expanded="true">
+                                    <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => { Model.ForEach(x => x.IconView = current.IconView); }" />
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
+                        }
                     </MudItem>
                 </MudGrid>
             </ChildContent>
@@ -80,6 +91,8 @@
 @code {
 
     string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
+    [Parameter]
+    public string RoutePath { get; set; } = null!;
 
     [Parameter]
     public List<CategoryView> Model { get; set; } = [new CategoryView { Locale = "uz" }, new CategoryView { Locale = "ru" }, new CategoryView { Locale = "en" },];
@@ -126,6 +139,11 @@
 
             }
             _contexts[item.Locale] = new(item);
+        }
+
+        if (RoutePath == "more")
+        {
+            OnChangeViewType(ViewType.More);
         }
     }
 

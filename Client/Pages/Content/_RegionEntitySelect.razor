@@ -42,7 +42,7 @@
 
     protected override async Task<TableResponse<RegionView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await RegionService.GetAll(new() { Search = MutableState.Value }, cancellationToken);
+        return await RegionService.GetAll(new() { Search = MutableState.Value, PageSize = 500, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("ru") }, cancellationToken);
     }
 
     private async Task<IEnumerable<RegionView>> Search(string value, CancellationToken cancellationToken)

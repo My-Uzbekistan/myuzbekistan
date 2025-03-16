@@ -52,7 +52,8 @@ public class PageHistoryState(NavigationManager navManager)
         var queryParams = new Dictionary<string, object?>
         {
             ["page"] = MutableState.Value.Page.ToString(),
-            ["search"] = string.Empty == MutableState.Value.Search ? null : MutableState.Value.Search
+            ["search"] = string.Empty == MutableState.Value.Search ? null : MutableState.Value.Search,
+            ["is-more"] = MutableState.Value.IsMore.ToString(),
         };
 
         var newUri = NavManager.GetUriWithQueryParameters(queryParams);
