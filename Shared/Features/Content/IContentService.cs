@@ -20,7 +20,6 @@ public interface IContentService:IComputeService
 
     Task<List<MainPageContent>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default);
     Task<ContentDto> GetContent(long ContentId, CancellationToken cancellationToken = default);
-    [ComputeMethod]
     Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default);
 }
     

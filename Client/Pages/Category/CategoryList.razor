@@ -105,7 +105,6 @@
         var uri = navigation.ToAbsoluteUri(navigation.Uri);
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
-        QueryHelpers.ParseQuery(uri.Query).TryGetValue("is-more", out var isMore);
         int count = 1;
         int.TryParse(_initialCount, out count);
         return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 11, SortDirection = 1, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"), Search = searchParam, IsMore = routePath == "more" } };
