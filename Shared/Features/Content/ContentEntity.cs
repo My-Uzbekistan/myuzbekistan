@@ -54,10 +54,10 @@ public partial class CallInformation
 
     [property: DataMember] public string Action => Icon switch
     {
-        "/Images/phone.svg" => "tel:" + Contact,
-        "/Images/telegram.svg" => "https://t.me/" + Contact.Replace("@",""),
-        "/Images/instagram.svg" => "https://instagram.com/" + Contact.Replace("@",""),
-        "/Images/whatsapp.svg" => "https://wa.me/" + Regex.Replace(Contact, @"\D", ""),
+        "/Images/phone.png" => "tel:" + Regex.Replace(Contact, @"\D", ""),
+        "/Images/telegram.png" => "https://t.me/" + Contact.Replace("@",""),
+        "/Images/instagram.png" => "https://instagram.com/" + Contact.Replace("@",""),
+        "/Images/whatsapp.png" => "https://wa.me/" + Regex.Replace(Contact, @"\D", ""),
         _ => Contact
     };
     [property: DataMember] public string Name { get; set; } = null!;

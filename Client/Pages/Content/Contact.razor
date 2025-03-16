@@ -7,20 +7,20 @@
             <MudItem xs="12" md="2">
  
                 <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="@(async ()=> {
-                    contact.Name = L[contact.Icon.Replace(".svg","")];
+                    contact.Name = L[contact.Icon.Replace(".png","")];
                     await Changed();
 
 })" Label="@L["Contact_ContactType"]">
-                    <MudSelectItem Value="@("/Images/telegram.svg")">@L["Telegram"]</MudSelectItem>
-                <MudSelectItem Value="@("/Images/phone.svg")">@L["Phone"]</MudSelectItem>
-                <MudSelectItem Value="@("/Images/instagram.svg")">@L["Instagram"]</MudSelectItem>
-                <MudSelectItem Value="@("/Images/whatsapp.svg")">@L["WhatsApp"]</MudSelectItem>
-                <MudSelectItem Value="@("/Images/site.svg")">@L["Site"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/telegram.png")">@L["Telegram"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/phone.png")">@L["Phone"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/instagram.png")">@L["Instagram"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/whatsapp.png")">@L["WhatsApp"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/site.png")">@L["Site"]</MudSelectItem>
                 </MudSelect>
             </MudItem>
 
             <MudItem xs="12" md="4">
-            @if (contact.Icon == "/Images/phone.svg" || contact.Icon == "/Images/whatsapp.svg" || contact.Icon == "/Images/telegram.svg")
+                @if (contact.Icon == "/Images/phone.png" || contact.Icon == "/Images/whatsapp.png" || contact.Icon == "/Images/telegram.png")
                 {
                     <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" 
                                   Placeholder="(__) ___ __ __"
@@ -28,7 +28,7 @@
                                   Adornment="Adornment.Start"
                                   AdornmentText="+998" Label="@L["Contact_PhoneNumber"]" />
                 }
-            else if (contact.Icon == "/Images/site.svg")
+                else if (contact.Icon == "/Images/site.png")
                 {
                     <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Site"]" />
                 }
@@ -61,7 +61,7 @@
             {
                 Contact = string.Empty,
                 Name = L["Phone"],
-            Icon = "/Images/phone.svg" // Значение по умолчанию
+                Icon = "/Images/phone.png" // Значение по умолчанию
             });
 
         await ContactsChange.InvokeAsync(Contacts);
