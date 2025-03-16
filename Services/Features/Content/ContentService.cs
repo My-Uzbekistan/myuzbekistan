@@ -20,9 +20,9 @@ public class ContentService(IServiceProvider services,ILogger<ContentService> lo
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var content = from s in dbContext.Contents select s;
 
-
+        var cnt = dbContext.Contents.First(x => x.Category.Name.Contains(CategoryName));
         #region CategoryId
-        content = content.Where(x => x.Category.Name.Contains(CategoryName));
+        content = content.Where(x => x.Id == cnt.Id);
         #endregion
 
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
