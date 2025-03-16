@@ -2,6 +2,7 @@ using ActualLab.Async;
 using ActualLab.Fusion;
 using ActualLab.Fusion.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using myuzbekistan.Shared;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -9,7 +10,7 @@ using System.Reactive;
 using System.Text.Json;
 namespace myuzbekistan.Services;
 
-public class ContentService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IContentService
+public class ContentService(IServiceProvider services,ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
 
@@ -21,7 +22,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
 
 
         #region CategoryId
-        content = content.Where(x => x.Category.Name == CategoryName);
+        content = content.Where(x => x.Category.Name.Contains(CategoryName));
         #endregion
 
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
@@ -36,6 +37,7 @@ public class ContentService(IServiceProvider services) : DbServiceBase<AppDbCont
         content = content.Include(x => x.Languages);
         content = content.Include(x => x.Region);
 
+        logger.LogError(content.ToQueryString());
 
         var items = await content.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
         return [.. items.Select(x=>x.MapToShortApi())];
