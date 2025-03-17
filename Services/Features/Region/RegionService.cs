@@ -34,8 +34,7 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
         if (!String.IsNullOrEmpty(options.Search))
         {
             region = region.Where(s => 
-                     s.Name.Contains(options.Search)
-                    || s.Locale.Contains(options.Search)
+                     s.Name.ToLower().Contains(options.Search.ToLower())
             );
         }
 
