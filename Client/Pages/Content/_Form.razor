@@ -12,7 +12,7 @@
         <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
 
             <Actions>
-                <SaveCancelButton OnCancel='() => PageHistoryState.Back($"categories/{CategoryId}/contents")' Processing="@Processing" />
+                <SaveCancelButton OnCancel='() => PageHistoryState.Back($"{routePath}/{CategoryId}/contents")' Processing="@Processing" />
             </Actions>
             <ChildContent>
                 <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -75,15 +75,19 @@
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
-                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
-                                {
+                                
                                     <MudStack Row="true">
+                                        @if (Bitwise.Is(categoryView.Fields, ContentFields.Location) )
+                                {
                                         <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
-
-                                        <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Value="current.Recommended"
-                                                   @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
-                                    </MudStack>
                                 }
+
+                                        @if( routePath == "categories")
+                                        {
+                                        <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Value="current.Recommended"
+                                                  @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
+                                        }
+                                    </MudStack>
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Facilities))
                                 {
                                     <_FacilityEntityMultiSelect Class="mt-4" Label="@L["Facilities"]" @bind-Value="current.Facilities"
@@ -167,6 +171,17 @@
 }
 @code {
 
+
+      private bool IsCategories;
+    private string? routePath;
+
+    protected override void OnInitialized()
+    {
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        IsCategories = navigation.Uri.Contains("/categories/");
+        base.OnInitialized();
+    }
+
     string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
 
 
@@ -189,12 +204,6 @@
 
     [Parameter]
     public bool Processing { get; set; }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-    }
 
     public void handleModelChanged(List<CallInformation> callInformation)
     {
