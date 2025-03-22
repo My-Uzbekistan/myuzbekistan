@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using myuzbekistan.Services;
 using myuzbekistan.Shared;
+using System.Security.Claims;
 
 namespace Server.Controllers;
 
@@ -26,7 +27,9 @@ public class CategoryController(ICategoryService categoryService, IContentServic
     [HttpGet("{id}/contents")]
     public async Task<List<MainPageContent>> GetContents(long id, [FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
     {
-        return await _contentService.GetContents(id, tableOptions, cancellationToken);
+        var userId =   User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        long.TryParse(userId, out long userIdLong);
+        return await _contentService.GetContents(id, userIdLong, tableOptions, cancellationToken);
     }
 
 }

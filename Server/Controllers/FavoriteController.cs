@@ -47,11 +47,11 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<List<FavoriteApiView>> GetFavorites(CancellationToken cancellationToken)
+        public async Task<List<MainPageContent>> GetFavorites([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
         {
             var userId = long.Parse(HttpContext.User.Identities.First().Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
             var session = await sessionResolver.GetSession();
-            return await favoriteService.GetFavorites(userId, cancellationToken);
+            return await favoriteService.GetFavorites(userId, tableOptions, cancellationToken);
         }
 
     }

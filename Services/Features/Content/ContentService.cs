@@ -1,5 +1,6 @@
 using ActualLab.Async;
 using ActualLab.Fusion;
+using ActualLab.Fusion.Authentication;
 using ActualLab.Fusion.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,7 +11,7 @@ using System.Reactive;
 using System.Text.Json;
 namespace myuzbekistan.Services;
 
-public class ContentService(IServiceProvider services,ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
+public class ContentService(IServiceProvider services, ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
 
@@ -40,7 +41,7 @@ public class ContentService(IServiceProvider services,ILogger<ContentService> lo
         logger.LogError(content.ToQueryString());
 
         var items = await content.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
-        return [.. items.Select(x=>x.MapToShortApi())];
+        return [.. items.Select(x => x.MapToShortApi())];
     }
 
     [ComputeMethod]
@@ -90,7 +91,7 @@ public class ContentService(IServiceProvider services,ILogger<ContentService> lo
 
 
     [ComputeMethod]
-    public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, long userId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -117,7 +118,7 @@ public class ContentService(IServiceProvider services,ILogger<ContentService> lo
 
         Sorting(ref content, options);
 
-        content = content
+        var query = content
             .Include(x => x.Category)
             .Include(x => x.Files)
             .Include(x => x.Photos)
@@ -127,13 +128,102 @@ public class ContentService(IServiceProvider services,ILogger<ContentService> lo
             .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
             .Include(x => x.Languages)
             .AsSplitQuery()
-            .AsNoTracking();
+            .AsNoTracking()
+                .Select(x => new MainPageContent
+                {
+                    ContentId = x.Id,
+                    Title = x.Title,
+                    Caption = x.Description,
+                    Photos = x.Photos.Select(p => p.Path).ToList(),
+                    Photo = x.Photo.Path,
+                    Region = x.Region.Name,
+                    Facilities = x.Facilities.Select(f => new FacilityItemDto
+                    {
+                        Id = f.Id,
+                        Name = f.Name,
+                        Icon = f.Icon.Path
+                    }).ToList(),
+                    Languages = x.Languages.Select(l => l.Name).ToList(),
+                    RatingAverage = x.RatingAverage,
+                    AverageCheck = x.AverageCheck,
+                    Price = x.Price,
+                    PriceInDollar = x.PriceInDollar,
+                    viewType = x.Category.ViewType,
+                    isFavorite = dbContext.Favorites.Any(f => f.UserId == userId && f.ContentId == x.Id)
+                });
+            ;
 
-        var items = await content.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+        var items = await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
 
-        var data = items.Select(x => x.MapToApi()).ToList();
+        return items;
+    }
 
-        return data;
+
+
+    [ComputeMethod]
+    public async virtual Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, TableOptions options, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+
+        var content = dbContext.Contents.AsQueryable();
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            var search = options.Search.ToLower();
+
+            content = content.Where(s =>
+                s.Title.ToLower().Contains(search) ||
+                s.Description.ToLower().Contains(search) ||
+                s.WorkingHours.ToLower().Contains(search) ||
+                s.Facilities.Any(f => f.Name.ToLower().Contains(search)) ||
+                s.Languages.Any(l => l.Name.ToLower().Contains(search)) ||
+                s.Address.ToLower().Contains(search)
+            );
+        }
+
+        content = content.Where(x => contentIds.Contains(x.Id));
+
+        content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
+
+        Sorting(ref content, options);
+
+        var query = content
+            .Include(x => x.Category)
+            .Include(x => x.Files)
+            .Include(x => x.Photos)
+            .Include(x => x.Photo)
+            .Include(x => x.Reviews)
+            .Include(x => x.Region)
+            .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
+            .Include(x => x.Languages)
+            .AsSplitQuery()
+            .AsNoTracking()
+            .Select(x => new MainPageContent
+            {
+                ContentId = x.Id,
+                Title = x.Title,
+                Caption = x.Description,
+                Photos = x.Photos.Select(p => p.Path).ToList(),
+                Photo = x.Photo.Path,
+                Region = x.Region.Name,
+                Facilities = x.Facilities.Select(f => new FacilityItemDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Icon = f.Icon.Path
+                }).ToList(),
+                Languages = x.Languages.Select(l => l.Name).ToList(),
+                RatingAverage = x.RatingAverage,
+                AverageCheck = x.AverageCheck,
+                Price = x.Price,
+                PriceInDollar = x.PriceInDollar,
+                viewType = x.Category.ViewType,
+                isFavorite = true
+            });
+        ;
+
+        return await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
     }
 
 

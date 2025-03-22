@@ -18,8 +18,9 @@ public interface IContentService:IComputeService
     Task Delete(DeleteContentCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
 
-    Task<List<MainPageContent>> GetContents(long CategoryId, TableOptions options, CancellationToken cancellationToken = default);
+    Task<List<MainPageContent>> GetContents(long CategoryId,long userId, TableOptions options, CancellationToken cancellationToken = default);
     Task<ContentDto> GetContent(long ContentId, CancellationToken cancellationToken = default);
     Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default);
+    Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, TableOptions options, CancellationToken cancellationToken = default);
 }
     

@@ -8,27 +8,19 @@ using System.Reactive;
 
 namespace myuzbekistan.Services;
 
-public class FavoriteService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IFavoriteService
+public class FavoriteService(IServiceProvider services, IContentService contentService) : DbServiceBase<AppDbContext>(services), IFavoriteService
 {
     #region Queries
 
 
-    public async virtual Task<List<FavoriteApiView>> GetFavorites(long userId, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MainPageContent>> GetFavorites(long userId,TableOptions options,  CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var favorite = from s in dbContext.Favorites select s;
 
-        favorite = favorite.Include(x => x.Content)
-
-             .ThenInclude(x => x.Category)
-        .Include(x => x.Content).ThenInclude(x => x.Files)
-        .Include(x => x.Content).ThenInclude(x => x.Photos)
-        .Include(x => x.Content).ThenInclude(x => x.Reviews)
-        .Include(x => x.Content).ThenInclude(x => x.Languages)
-        .Include(x => x.Content).ThenInclude(x => x.Facilities).ThenInclude(x => x.Icon)
-            ;
-        return favorite.AsNoTracking().ToList().MapToApiList();
+        var contentIds = favorite.Where(f => f.UserId == userId).Select(x => x.ContentId).ToList();
+        return await contentService.GetContentsByIds(contentIds,options ,cancellationToken);
     }
     [ComputeMethod]
     public async virtual Task<TableResponse<FavoriteView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)

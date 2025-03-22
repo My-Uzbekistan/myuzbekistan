@@ -74,7 +74,7 @@ namespace Services.Migrations
 
                     b.HasIndex("UserId", "IsSignOutForced");
 
-                    b.ToTable("_Sessions");
+                    b.ToTable("_Sessions", (string)null);
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUser<string>", b =>
@@ -98,7 +98,7 @@ namespace Services.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUserIdentity<string>", b =>
@@ -121,7 +121,7 @@ namespace Services.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("UserIdentities");
+                    b.ToTable("UserIdentities", (string)null);
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.EntityFramework.Operations.DbEvent", b =>
@@ -152,7 +152,7 @@ namespace Services.Migrations
 
                     b.HasIndex("State", "DelayUntil");
 
-                    b.ToTable("_Events");
+                    b.ToTable("_Events", (string)null);
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.EntityFramework.Operations.DbOperation", b =>
@@ -191,7 +191,7 @@ namespace Services.Migrations
                     b.HasIndex("Uuid")
                         .IsUnique();
 
-                    b.ToTable("_Operations");
+                    b.ToTable("_Operations", (string)null);
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Extensions.Services.DbKeyValue", b =>
@@ -210,7 +210,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ExpiresAt");
 
-                    b.ToTable("_KeyValues");
+                    b.ToTable("_KeyValues", (string)null);
                 });
 
             modelBuilder.Entity("ContentEntityFacilityEntity", b =>
@@ -231,7 +231,7 @@ namespace Services.Migrations
 
                     b.HasIndex("FacilitiesId", "FacilitiesLocale");
 
-                    b.ToTable("ContentEntityFacilityEntity");
+                    b.ToTable("ContentEntityFacilityEntity", (string)null);
                 });
 
             modelBuilder.Entity("ContentEntityFileEntity", b =>
@@ -249,7 +249,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentFilesId", "ContentFilesLocale");
 
-                    b.ToTable("ContentEntityFileEntity");
+                    b.ToTable("ContentEntityFileEntity", (string)null);
                 });
 
             modelBuilder.Entity("ContentEntityFileEntity1", b =>
@@ -267,7 +267,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentPhotosId", "ContentPhotosLocale");
 
-                    b.ToTable("ContentEntityFileEntity1");
+                    b.ToTable("ContentEntityFileEntity1", (string)null);
                 });
 
             modelBuilder.Entity("ContentEntityLanguageEntity", b =>
@@ -288,7 +288,7 @@ namespace Services.Migrations
 
                     b.HasIndex("LanguagesId", "LanguagesLocale");
 
-                    b.ToTable("ContentEntityLanguageEntity");
+                    b.ToTable("ContentEntityLanguageEntity", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>
@@ -340,7 +340,7 @@ namespace Services.Migrations
 
                     b.HasIndex("IconId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
@@ -421,7 +421,7 @@ namespace Services.Migrations
 
                     b.HasIndex("RegionId", "RegionLocale");
 
-                    b.ToTable("Contents");
+                    b.ToTable("Contents", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FacilityEntity", b =>
@@ -452,7 +452,7 @@ namespace Services.Migrations
 
                     b.HasIndex("IconId");
 
-                    b.ToTable("Facilities");
+                    b.ToTable("Facilities", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FavoriteEntity", b =>
@@ -483,7 +483,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentId", "ContentLocale");
 
-                    b.ToTable("Favorites");
+                    b.ToTable("Favorites", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>
@@ -521,7 +521,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.LanguageEntity", b =>
@@ -547,7 +547,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id", "Locale");
 
-                    b.ToTable("Languages");
+                    b.ToTable("Languages", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.RegionEntity", b =>
@@ -581,7 +581,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ParentRegionId", "ParentRegionLocale");
 
-                    b.ToTable("Regions");
+                    b.ToTable("Regions", (string)null);
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ReviewEntity", b =>
@@ -618,7 +618,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentEntityId", "ContentEntityLocale");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUserIdentity<string>", b =>
