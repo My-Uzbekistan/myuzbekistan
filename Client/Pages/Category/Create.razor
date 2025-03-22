@@ -6,7 +6,8 @@
 @inject NavigationManager navigation
 @inject Session Session
 
-<Client.Pages.Category._Form RoutePath="routePath" OnSubmit="OnSubmit" Processing="@Processing" IsNew="true" />
+@routePath
+<Client.Pages.Category._Form RoutePath="@routePath" OnSubmit="OnSubmit" Processing="@Processing" IsNew="true" />
 
 @code {
  
@@ -19,6 +20,7 @@
     {
         routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
         IsCategories = navigation.Uri.Contains("/categories/");
+        base.OnInitialized();
     }
 
     public async Task OnSubmit(List<CategoryView> entity)

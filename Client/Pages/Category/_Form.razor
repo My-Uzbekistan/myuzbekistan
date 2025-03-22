@@ -45,7 +45,7 @@
 
                     </MudItem>
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
-                        @if (RoutePath == "more")
+                        @if (RoutePath == "categories")
                         {
                             <MudExpansionPanels Class="mb-3">
                                 <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
@@ -74,7 +74,8 @@
                             </MudExpansionPanels>
                         }
                         <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
-                        @if (RoutePath == "more")
+                        
+                        @if (RoutePath == "categories")
                         {
                             <MudExpansionPanels Class="mt-3">
                                 <MudExpansionPanel Text="@L["Icon"]" Gutters="true" Expanded="true">

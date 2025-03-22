@@ -12,7 +12,7 @@
     var Model = State.LastNonErrorValue ?? new List<CategoryView>() { };
 }
 
-<Client.Pages.Category._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+<Client.Pages.Category._Form RoutePath="@routePath" OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
 
 
 
@@ -29,6 +29,7 @@
     {
         routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
         IsCategories = navigation.Uri.Contains("/categories/");
+        base.OnInitialized();
     }
     
     public async Task OnSubmit(List<CategoryView> entity)
