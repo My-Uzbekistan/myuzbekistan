@@ -98,7 +98,7 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var favorite = await dbContext.Favorites
         .Include(x => x.Content)
-        .FirstOrDefaultAsync(x => x.Id == command.favoriteId && x.UserId == command.UserId) ?? throw new ValidationException("FavoriteEntity Not Found");
+        .FirstOrDefaultAsync(x => x.ContentId == command.contentId && x.UserId == command.UserId) ?? throw new ValidationException("FavoriteEntity Not Found");
         dbContext.Remove(favorite);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

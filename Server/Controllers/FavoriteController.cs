@@ -38,11 +38,11 @@ namespace Server.Controllers
 
         [HttpDelete]
 
-        public async Task<IActionResult> UnFavorite([FromQuery] long favoriteId)
+        public async Task<IActionResult> UnFavorite([FromQuery] long contentId)
         {
             var userId = User.Id();
             var session = await sessionResolver.GetSession();
-            await commander.Call(new DeleteFavoriteCommand(session,  favoriteId, userId));
+            await commander.Call(new DeleteFavoriteCommand(session, contentId, userId));
             return Ok();
         }
 
