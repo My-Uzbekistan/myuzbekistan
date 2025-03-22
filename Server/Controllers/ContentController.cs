@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using myuzbekistan.Services;
 using myuzbekistan.Shared;
+using System.Security.Claims;
 
 namespace Server.Controllers;
 
@@ -16,14 +17,13 @@ public class ContentController(ICategoryService categoryService, IContentService
     {
         try
         {
-            return Ok(await _contentService.GetContent(contentId, cancellationToken));
+            var userId= User.Id();
+            return Ok(await _contentService.GetContent(contentId, userId, cancellationToken));
         }
         catch (NotFoundException)
         {
-
             return NotFound();
         }
-        
     }
 }
 

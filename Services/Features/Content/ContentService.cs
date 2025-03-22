@@ -228,7 +228,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
 
 
 
-    public async virtual Task<ContentDto> GetContent(long ContentId, CancellationToken cancellationToken = default)
+    public async virtual Task<ContentDto> GetContent(long ContentId, long userId, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -282,7 +282,14 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
                     'AverageCheck', c."AverageCheck",
                     'Price',  c."Price",
                     'PriceInDollar',  c."PriceInDollar",
-                    'Address',  c."Address"
+                    'Address',  c."Address",
+                    'IsFavorite',
+                        EXISTS (
+                            SELECT 1
+                            FROM "Favorites" fav
+                            WHERE fav."UserId" = {userId} AND fav."ContentId" = c."Id"
+                        )
+
                 ) AS "Value"
                 FROM "Contents" c
                 LEFT JOIN "Categories" cat ON cat."Id" = c."CategoryId" AND cat."Locale" = c."Locale"

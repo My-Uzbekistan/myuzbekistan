@@ -71,6 +71,7 @@ public partial class ContentDto
     [property: DataMember] public decimal Price { get; set; } // Простое число, без FieldDto
     [property: DataMember] public decimal PriceInDollar { get; set; } // Простое число, без FieldDto
     [property: DataMember] public string? Address { get; set; } = null!;
+    [property: DataMember] public bool IsFavorite { get; set; } 
 }
 
 [DataContract, MemoryPackable]

@@ -21,7 +21,7 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddFavorite([FromQuery] long contentId)
         {
-            var userId = long.Parse(HttpContext.User.Identities.First().Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            var userId = User.Id();
             var session = await sessionResolver.GetSession();
             try
             {
@@ -40,7 +40,7 @@ namespace Server.Controllers
 
         public async Task<IActionResult> UnFavorite([FromQuery] long favoriteId)
         {
-            var userId = long.Parse(HttpContext.User.Identities.First().Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            var userId = User.Id();
             var session = await sessionResolver.GetSession();
             await commander.Call(new DeleteFavoriteCommand(session,  favoriteId, userId));
             return Ok();
@@ -49,7 +49,7 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<List<MainPageContent>> GetFavorites([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
         {
-            var userId = long.Parse(HttpContext.User.Identities.First().Claims.First(x => x.Type == ClaimTypes.NameIdentifier).Value);
+            var userId = User.Id();
             var session = await sessionResolver.GetSession();
             return await favoriteService.GetFavorites(userId, tableOptions, cancellationToken);
         }
