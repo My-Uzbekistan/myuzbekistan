@@ -13,7 +13,6 @@ namespace myuzbekistan.Services;
 public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICategoryService
 {
     #region Queries
-    //[ComputeMethod]
     public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
@@ -57,19 +56,18 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
          c.ViewType,
          c.Contents!
              .Where(content => string.IsNullOrEmpty(options.Search) ||
-                               content.Title.ToLower().Contains(options.Search.ToLower()) ||
-                               content.Address.ToLower().Contains(options.Search.ToLower()))
-             .Where(c => c.RegionId == options.RegionId)
+                               content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+                               content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase))
+             .Where(c => c.RegionId == options.RegionId || c.Region?.ParentRegionId == options.RegionId)
              .Select(x => x.MapToApi())
              .ToList()
      ))
      .Where(s =>
          string.IsNullOrEmpty(options.Search) ||
-         s.CategoryName.ToLower().Contains(options.Search.ToLower()) ||
-         s.Contents.Any(t => t.Region.ToLower().Contains(options.Search.ToLower()))
+         s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+         s.Contents.Any(t => t.Region.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase))
      )
      .ToListAsync(cancellationToken);
-
 
         return [.. categories];
     }
