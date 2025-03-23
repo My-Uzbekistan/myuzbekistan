@@ -29,6 +29,9 @@ public partial class ContentView
     [property: DataMember] public ICollection<ReviewView>? ReviewsView { get; set; }
     [property: DataMember] public ICollection<LanguageView>? Languages { get; set; }
     [property: DataMember] public RegionView? RegionView { get; set; } = null!;
+    [property: DataMember] public long? RegionId { get; set; } = null!;
+    [property: DataMember] public string? RegionLocale { get; set; } = null!;
+    
     [property: DataMember] public double RatingAverage { get; set; }
     [property: DataMember] public int AverageCheck { get; set; }
     [property: DataMember] public Decimal Price { get; set; }

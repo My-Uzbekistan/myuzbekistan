@@ -39,13 +39,6 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                 .ThenInclude(content => content.Facilities!)
                     .ThenInclude(f => f.Icon).AsQueryable();
 
-        if (options.RegionId != null && options.RegionId != 1)
-        {
-
-            query = query.Where(x => x.Contents != null && x.Contents.Any(content => content.Region != null && content.Region.Id == options.RegionId));
-
-        }
-
         if (options.IsMore.HasValue && options.IsMore.Value)
         {
             query = query.Where(x => x.ViewType == ViewType.More);
@@ -60,12 +53,13 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
      .Select(c => new MainPageApi(
          c.Name,
          c.Id,
-         c.Contents!.FirstOrDefault(x => x.Recommended)?.MapToApi(),
+         c.Contents!.FirstOrDefault(x => x.Recommended && x.RegionId == options.RegionId)?.MapToApi(),
          c.ViewType,
          c.Contents!
              .Where(content => string.IsNullOrEmpty(options.Search) ||
                                content.Title.ToLower().Contains(options.Search.ToLower()) ||
                                content.Address.ToLower().Contains(options.Search.ToLower()))
+             .Where(c => c.RegionId == options.RegionId)
              .Select(x => x.MapToApi())
              .ToList()
      ))

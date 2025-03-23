@@ -67,6 +67,10 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         content = content.Where(x => x.CategoryId == CategoryId);
         #endregion
 
+        if (options.RegionId != null)
+        {
+            content = content.Where(x => x.RegionId == options.RegionId);
+        }
 
         if (!String.IsNullOrEmpty(options.Lang))
             content = content.Where(x => x.Locale.Equals(options.Lang));
@@ -151,7 +155,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
                     viewType = x.Category.ViewType,
                     isFavorite = dbContext.Favorites.Any(f => f.UserId == userId && f.ContentId == x.Id)
                 });
-            ;
+        ;
 
         var items = await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
 
@@ -354,7 +358,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         var fContent = command.Entity.First();
         if (command.Entity.First().Recommended)
         {
-            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {fContent.CategoryId};");
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {fContent.CategoryId} and \"RegionId\" = {fContent.RegionId} ;");
         }
 
 

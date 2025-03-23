@@ -8,6 +8,7 @@
 @inject UInjector UInjector
 @inject IContentService ContentService
 @inject ICategoryService CategoryService
+@inject PageHistoryState PageHistoryState
 
 @inherits MixedStateComponent<TableResponse<ContentView>,TableOptions>
 @{
@@ -24,79 +25,91 @@
     </Actions>
     <ChildContent>
         <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="ContentView">
-            @if (SortColumns.Contains("Title"))
-            {
-                <MudTd DataLabel="Title">@context.Title</MudTd>
-            }
-            @if (SortColumns.Contains("Description"))
-            {
-                <MudTd DataLabel="Description">@context.Description</MudTd>
-            }
-            @if (SortColumns.Contains("Photos"))
-            {
-                <MudTd DataLabel="Photos">
-                    <ImagesView Files="@context.PhotosView?.ToList()" />
+            <HeadContent>
+                <MudItem xs="12" lg="3">
+                    <_RegionEntitySimpleSelect ValueId="regionId" ValueChanged="(RegionView? regionView) => {
+                        MutableState.Value.RegionId = regionView?.Id;
+                        PageHistoryState.SetPage(MutableState);
+                    }"></_RegionEntitySimpleSelect>
+                </MudItem>
+            </HeadContent>
+            <ChildContent>
+                @if (SortColumns.Contains("Title"))
+                {
+                    <MudTd DataLabel="Title">@context.Title</MudTd>
+                }
+                @if (SortColumns.Contains("Description"))
+                {
+                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                }
+                @if (SortColumns.Contains("Photos"))
+                {
+                    <MudTd DataLabel="Photos">
+                        <ImagesView Files="@context.PhotosView?.ToList()" />
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("Photo"))
+                {
+                    <MudTd DataLabel="Photo">
+                        <ImageView fileEntity="@context.PhotoView" />
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("Languages"))
+                {
+                    <MudTd DataLabel="Languages">
+                        @string.Join(" ", context.Languages?.Select(x => x.Name)?.ToList() ?? new List<string>())
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("AverageCheck"))
+                {
+                    <MudTd DataLabel="AverageCheck">
+                        <MudRating SelectedValue="context.AverageCheck"
+                                   ReadOnly="true"
+                                   MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
+                                   FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("RatingAverage"))
+                {
+                    <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
+                }
+                @if (SortColumns.Contains("Price"))
+                {
+                    <MudTd DataLabel="Price">@context.Price</MudTd>
+                }
+                @if (SortColumns.Contains("PriceInDollar"))
+                {
+                    <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
+                }
+                @if (SortColumns.Contains("Address"))
+                {
+                    <MudTd DataLabel="Address">@context.Address</MudTd>
+                }
+                @if (SortColumns.Contains("Recommended"))
+                {
+                    <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
+                }
+                @if (SortColumns.Contains("Id"))
+                {
+                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                }
+
+                <MudTd>
+                    <div style="display:flex; gap:7px; " class="d-flex justify-end">
+                        <MudLink Href=@($"{routePath}/{CategoryId}/contents/{context.Id}")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    </div>
                 </MudTd>
-            }
-            @if (SortColumns.Contains("Photo"))
-            {
-                <MudTd DataLabel="Photo">
-                    <ImageView fileEntity="@context.PhotoView" />
-                </MudTd>
-            }
-            @if (SortColumns.Contains("Languages"))
-            {
-                <MudTd DataLabel="Languages">
-                    @string.Join(" ", context.Languages?.Select(x => x.Name)?.ToList() ?? new List<string>())
-                </MudTd>
-            }
-            @if (SortColumns.Contains("AverageCheck"))
-            {
-                <MudTd DataLabel="AverageCheck">
-                    <MudRating SelectedValue="context.AverageCheck"
-                               ReadOnly="true"
-                               MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
-                               FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
-                </MudTd>
-            }
-            @if (SortColumns.Contains("RatingAverage"))
-            {
-                <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
-            }
-            @if (SortColumns.Contains("Price"))
-            {
-                <MudTd DataLabel="Price">@context.Price</MudTd>
-            }
-            @if (SortColumns.Contains("PriceInDollar"))
-            {
-                <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
-            }
-            @if (SortColumns.Contains("Address"))
-            {
-                <MudTd DataLabel="Address">@context.Address</MudTd>
-            }
-            @if (SortColumns.Contains("Recommended"))
-            {
-                <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
-            }
-            @if (SortColumns.Contains("Id"))
-            {
-                <MudTd DataLabel="Id">@context.Id</MudTd>
-            }
-            <MudTd>
-                <div style="display:flex; gap:7px; " class="d-flex justify-end">
-                    <MudLink Href=@($"{routePath}/{CategoryId}/contents/{context.Id}")>
-                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
-                    </MudLink>
-                    <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
-                </div>
-            </MudTd>
+            </ChildContent>
         </UTCTable>
     </ChildContent>
 </ListContainer>
 
 @code {
     private string? routePath;
+    private long regionId;
     [Parameter] public long CategoryId { get; set; }
     private TableResponse<ContentView>? Items;
 
@@ -140,9 +153,11 @@
         var uri = navigation.ToAbsoluteUri(navigation.Uri);
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("region-id", out var regionIdString);
         int count = 1;
         int.TryParse(_initialCount, out count);
-        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"), Search = searchParam } };
+        long.TryParse(regionIdString, out regionId);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"), Search = searchParam, RegionId = regionId } };
     }
 
     protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken = default)

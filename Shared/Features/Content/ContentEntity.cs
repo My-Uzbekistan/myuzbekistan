@@ -34,6 +34,8 @@ public class ContentEntity : BaseEntity
     public ICollection<ReviewEntity>? Reviews { get; set; } = [];
     public ICollection<LanguageEntity>? Languages { get; set; } = [];
     public RegionEntity? Region { get; set; } = null!;
+    public long? RegionId { get; set; } = null!;
+    public string? RegionLocale { get; set; }
     public double RatingAverage { get; set; } 
     public int AverageCheck { get; set; } 
     public decimal Price { get; set; }
