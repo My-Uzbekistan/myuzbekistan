@@ -9,7 +9,7 @@ public interface IFavoriteService:IComputeService
     [ComputeMethod]
     Task<TableResponse<FavoriteView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
     [ComputeMethod]
-    Task<List<MainPageContent>> GetFavorites(long userId, TableOptions options, CancellationToken cancellationToken = default);
+    Task<TableResponse<MainPageContent>> GetFavorites(long userId, TableOptions options, CancellationToken cancellationToken = default);
     [ComputeMethod]
     Task<FavoriteView> Get(long Id, CancellationToken cancellationToken = default);
     [CommandHandler]

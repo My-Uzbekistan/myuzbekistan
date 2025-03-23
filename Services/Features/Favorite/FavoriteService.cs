@@ -5,6 +5,7 @@ using ActualLab.Fusion.EntityFramework;
 using System.ComponentModel.DataAnnotations;
 using ActualLab.Async;
 using System.Reactive;
+using System.Globalization;
 
 namespace myuzbekistan.Services;
 
@@ -13,14 +14,17 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
     #region Queries
 
 
-    public async virtual Task<List<MainPageContent>> GetFavorites(long userId,TableOptions options,  CancellationToken cancellationToken = default)
+    public async virtual Task<TableResponse<MainPageContent>> GetFavorites(long userId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var favorite = from s in dbContext.Favorites select s;
+        var favorite = from s in dbContext.Favorites
+                       where s.UserId == userId && s.ContentLocale == LangHelper.currentLocale
+                       select s;
 
-        var contentIds = favorite.Where(f => f.UserId == userId).Select(x => x.ContentId).ToList();
-        return await contentService.GetContentsByIds(contentIds,options ,cancellationToken);
+        var count = await favorite.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
+        var contentIds = favorite.Where(f => f.UserId == userId).Select(x => x.ContentId).Paginate(options).ToList();
+        return new TableResponse<MainPageContent> { Items = await contentService.GetContentsByIds(contentIds, options, cancellationToken), TotalItems = count };
     }
     [ComputeMethod]
     public async virtual Task<TableResponse<FavoriteView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)
@@ -67,16 +71,21 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        if (dbContext.Contents.Any(x => x.Id == command.ContentId))
+        var contents = dbContext.Contents.Where(x => x.Id == command.ContentId).ToList();
+        if (contents.Count > 0)
         {
-            FavoriteEntity favorite = new()
+            foreach (var content in contents)
             {
-                Content = dbContext.Contents
+                FavoriteEntity favorite = new()
+                {
+                    Content = content,
+                    UserId = command.UserId
 
-            .First(x => x.Id == command.ContentId)!,
-                UserId = command.UserId
-            };
-            dbContext.Add(favorite);
+                };
+
+                dbContext.Add(favorite);
+            }
+
 
             await dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -84,7 +93,7 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
         {
             throw new NotFoundException("Content not found");
         }
-        
+
     }
 
 
@@ -96,10 +105,12 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var favorite = await dbContext.Favorites
-        .Include(x => x.Content)
-        .FirstOrDefaultAsync(x => x.ContentId == command.contentId && x.UserId == command.UserId) ?? throw new ValidationException("FavoriteEntity Not Found");
-        dbContext.Remove(favorite);
+        var favorites = dbContext.Favorites.Where(x => x.ContentId == command.ContentId && x.UserId == command.UserId).ToList();
+            if (favorites.Count == 0)
+        {
+            throw new ValidationException("FavoriteEntity Not Found");
+        }
+        dbContext.RemoveRange(favorites);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 

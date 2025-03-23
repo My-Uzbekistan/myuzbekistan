@@ -14,5 +14,5 @@ public partial record CreateFavoriteCommand([property: DataMember] Session Sessi
 public partial record UpdateFavoriteCommand([property: DataMember] Session Session, [property: DataMember] FavoriteView Entity) : ISessionCommand<FavoriteView>;
 
 [DataContract, MemoryPackable]
-public partial record DeleteFavoriteCommand([property: DataMember] Session Session, [property: DataMember] long contentId, [property: DataMember] long UserId) : ISessionCommand<FavoriteView>;
+public partial record DeleteFavoriteCommand([property: DataMember] Session Session, [property: DataMember] long ContentId, [property: DataMember] long UserId) : ISessionCommand<FavoriteView>;
 

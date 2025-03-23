@@ -47,7 +47,7 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        public async Task<List<MainPageContent>> GetFavorites([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
+        public async Task<TableResponse<MainPageContent>> GetFavorites([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
         {
             var userId = User.Id();
             var session = await sessionResolver.GetSession();

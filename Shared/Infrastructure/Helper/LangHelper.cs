@@ -1,4 +1,6 @@
-﻿namespace myuzbekistan.Shared;
+﻿using System.Globalization;
+
+namespace myuzbekistan.Shared;
 
 public static class LangHelper
 {
@@ -12,7 +14,10 @@ public static class LangHelper
             {  "en-US","en" }
         };
 
-    
+
+    public static string currentLocale => CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+
+
 }
 
 
