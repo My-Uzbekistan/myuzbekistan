@@ -67,7 +67,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         content = content.Where(x => x.CategoryId == CategoryId);
         #endregion
 
-        if (options.RegionId != null)
+        if (options.RegionId != null && options.RegionId != 0)
         {
             content = content.Where(x => x.RegionId == options.RegionId);
         }
