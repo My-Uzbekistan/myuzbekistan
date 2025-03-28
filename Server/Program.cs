@@ -49,8 +49,9 @@ builder.Services.AddOpenTelemetryFeature(builder);
 services.AddHttpLogging(logging =>
 {
     logging.LoggingFields = HttpLoggingFields.RequestQuery | HttpLoggingFields.RequestBody | HttpLoggingFields.RequestPath;
-    logging.RequestBodyLogLimit = 512;
-    logging.ResponseBodyLogLimit = 512;
+    logging.RequestBodyLogLimit = 1512;
+    logging.ResponseBodyLogLimit = 1512;
+    
 });
 
 #endregion
