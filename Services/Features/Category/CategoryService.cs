@@ -50,18 +50,26 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         var categories = await query
      .AsAsyncEnumerable()
      .Select(c => new MainPageApi(
-         c.Name,
-         c.Id,
-         c.Contents!.FirstOrDefault(x => x.Recommended && x.RegionId == options.RegionId)?.MapToApi(),
-         c.ViewType,
-         c.Contents!
-             .Where(content => string.IsNullOrEmpty(options.Search) ||
-                               content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
-                               content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase))
-             .Where(c => c.RegionId == options.RegionId || c.Region?.ParentRegionId == options.RegionId)
-             .Select(x => x.MapToApi())
-             .ToList()
-     ))
+    c.Name,
+    c.Id,
+    c.Contents!
+        .Where(x => x.Recommended)
+        .Where(x => options.RegionId == null || x.RegionId == options.RegionId)
+        .FirstOrDefault()
+        ?.MapToApi(),
+    c.ViewType,
+    c.Contents!
+        .Where(content =>
+            string.IsNullOrEmpty(options.Search) ||
+            content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+            (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
+        .Where(content =>
+            options.RegionId == null ||
+            content.RegionId == options.RegionId ||
+            content.Region?.ParentRegionId == options.RegionId)
+        .Select(x => x.MapToApi())
+        .ToList()
+))
      .Where(s =>
          string.IsNullOrEmpty(options.Search) ||
          s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||

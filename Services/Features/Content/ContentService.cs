@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reactive;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 namespace myuzbekistan.Services;
 
 public class ContentService(IServiceProvider services, ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
@@ -21,9 +22,13 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var content = from s in dbContext.Contents select s;
 
-        var cnt = dbContext.Contents.First(x => x.Category.Name.Contains(CategoryName));
+        var cnt = dbContext.Contents.FirstOrDefault(x => x.Category.Name.Contains(CategoryName));
+        if(cnt == null)
+        {
+            return [];
+        }
         #region CategoryId
-        content = content.Where(x => x.Id == cnt.Id);
+        content = content.Where(x => x.CategoryId == cnt.CategoryId);
         #endregion
 
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
@@ -421,6 +426,11 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
             var cont = content.First(x => x.Locale == item.Locale);
             Reattach(cont, item, dbContext);
             dbContext.Entry(cont).State = EntityState.Modified;
+        }
+
+        if (command.Entity.First().Recommended)
+        {
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {command.Entity.First().CategoryId} and \"RegionId\" = {command.Entity.First().RegionId} ;");
         }
 
 
