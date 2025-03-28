@@ -54,7 +54,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
     c.Id,
     c.Contents!
         .Where(x => x.Recommended)
-        .Where(x => options.RegionId == null || x.RegionId == options.RegionId)
+        .Where(x => options.RegionId == null || x.Region?.ParentRegionId == options.RegionId)
         .FirstOrDefault()
         ?.MapToApi(),
     c.ViewType,
