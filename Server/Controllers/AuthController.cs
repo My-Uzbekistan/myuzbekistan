@@ -87,11 +87,11 @@ public class AuthController : ControllerBase
         {
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = [
-                    platform == "ios" ? _configuration["Google:IosClientId"]! : 
-                    platform == "android" ? _configuration["Google:AndroidClientId"]! : 
-                    _configuration["Google:ClientId"]!
-                ]
+                //Audience = [
+                //    platform == "ios" ? _configuration["Google:IosClientId"]! : 
+                //    platform == "android" ? _configuration["Google:AndroidClientId"]! : 
+                //    _configuration["Google:ClientId"]!
+                //]
             };
 
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
