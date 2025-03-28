@@ -360,4 +360,7 @@
   <data name="More" xml:space="preserve">
     <value>Ko'proq</value>
   </data>
+  <data name="GlobalRecommended" xml:space="preserve">
+    <value>Global Tavsia</value>
+  </data>
 </root>

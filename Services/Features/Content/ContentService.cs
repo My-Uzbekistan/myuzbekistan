@@ -12,7 +12,7 @@ using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 namespace myuzbekistan.Services;
 
-public class ContentService(IServiceProvider services, ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
+public class ContentService(IServiceProvider services, ICategoryService categoryService, ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
 
@@ -345,6 +345,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         if (Invalidation.IsActive)
         {
             _ = await Invalidate();
+            _ = await categoryService.Invalidate();
             return;
         }
 
@@ -366,6 +367,11 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
             dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {fContent.CategoryId} and \"RegionId\" = {fContent.RegionId} ;");
         }
 
+        if (command.Entity.First().GlobalRecommended)
+        {
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"GlobalRecommended\" = false where \"CategoryId\" = {fContent.CategoryId};");
+        }
+
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -377,6 +383,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         if (Invalidation.IsActive)
         {
             _ = await Invalidate();
+            _ = await categoryService.Invalidate();
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
@@ -407,6 +414,7 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         if (Invalidation.IsActive)
         {
             _ = await Invalidate();
+            _ = await categoryService.Invalidate();
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
@@ -427,10 +435,15 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
             Reattach(cont, item, dbContext);
             dbContext.Entry(cont).State = EntityState.Modified;
         }
-
-        if (command.Entity.First().Recommended)
+        var fContent = command.Entity.First();
+        if (fContent.Recommended)
         {
-            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {command.Entity.First().CategoryId} and \"RegionId\" = {command.Entity.First().RegionId} ;");
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"Recommended\" = false where \"CategoryId\" = {fContent.CategoryId} and \"RegionId\" = {fContent.RegionId} ;");
+        }
+
+        if (fContent.GlobalRecommended)
+        {
+            dbContext.Database.ExecuteSqlInterpolated($"UPDATE  \"Contents\" set \"GlobalRecommended\" = false where \"CategoryId\" = {fContent.CategoryId};");
         }
 
 
@@ -459,6 +472,8 @@ public class ContentService(IServiceProvider services, ILogger<ContentService> l
         {
             content.Region = contentView.RegionView?.MapFromView();
         }
+
+        content.RatingAverage = contentView.RatingAverage;
 
         if (content.Category != null)
         {

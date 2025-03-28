@@ -2,6 +2,7 @@
 using MemoryPack;
 using Microsoft.EntityFrameworkCore;
 using Shared.Localization;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
@@ -36,13 +37,17 @@ public class ContentEntity : BaseEntity
     public RegionEntity? Region { get; set; } = null!;
     public long? RegionId { get; set; } = null!;
     public string? RegionLocale { get; set; }
-    public double RatingAverage { get; set; } 
+    public int RatingAverage { get; set; } 
     public int AverageCheck { get; set; } 
     public decimal Price { get; set; }
     public decimal PriceInDollar { get; set; }
     public string? Address { get; set; } = null!;
 
+    [DefaultValue(999)]
+    public int Order { get; set; } = 999;
+
     public bool Recommended { get; set; } = false;
+    public bool GlobalRecommended { get; set; } = false;
     public string Locale { get; set; } = null!;
     public ContentStatus Status { get; set; } = ContentStatus.Active;
 

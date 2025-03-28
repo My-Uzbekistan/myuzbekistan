@@ -53,10 +53,12 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
     c.Name,
     c.Id,
     c.Contents!
-        .Where(x => x.Recommended)
-        .Where(x => options.RegionId == null || x.Region?.ParentRegionId == options.RegionId)
-        .FirstOrDefault()
-        ?.MapToApi(),
+    .Where(x =>
+        (options.RegionId == null || options.RegionId == 1)
+            ? x.GlobalRecommended
+            : x.Recommended && x.Region?.ParentRegionId == options.RegionId)
+    .FirstOrDefault()
+    ?.MapToApi(),
     c.ViewType,
     c.Contents!
         .Where(content =>
@@ -67,6 +69,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
             options.RegionId == null ||
             content.RegionId == options.RegionId ||
             content.Region?.ParentRegionId == options.RegionId)
+        .OrderBy(x=>x.Order)
         .Select(x => x.MapToApi())
         .ToList()
 ))

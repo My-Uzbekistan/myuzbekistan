@@ -75,55 +75,74 @@
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
-                                
-                                    <MudStack Row="true">
-                                        @if (Bitwise.Is(categoryView.Fields, ContentFields.Location) )
-                                {
+                                <MudStack>
+                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
+                                    {
                                         <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
-                                }
-
-                                        @if( routePath == "categories")
-                                        {
+                                    }
+                                </MudStack>
+                                <MudStack Row="true">
+                                    @if (routePath == "categories")
+                                    {
                                         <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["Recommended"] @bind-Value="current.Recommended"
-                                                  @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
-                                        }
-                                    </MudStack>
+                                        @bind-Value:after="()=>{UpdateRecommended(current.Recommended);}" For="@(() => current.Recommended)" />
+                                        <MudSwitch Class="mt-3" Color="Color.Primary" Label=@L["GlobalRecommended"] @bind-Value="current.GlobalRecommended"
+                                        @bind-Value:after="()=>{UpdateGlobalRecommended(current.GlobalRecommended);}" For="@(() => current.GlobalRecommended)" />
+                                    }
+                                </MudStack>
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Facilities))
                                 {
                                     <_FacilityEntityMultiSelect Class="mt-4" Label="@L["Facilities"]" @bind-Value="current.Facilities"
-                                                                @bind-Value:after="() =>  Model.ForEach(x=>x.Facilities = current.Facilities )" For="()=> current.Facilities" />
+                                    @bind-Value:after="() =>  Model.ForEach(x=>x.Facilities = current.Facilities )" For="()=> current.Facilities" />
                                 }
 
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Languages))
                                 {
                                     <_LanguageEntityMultiSelect Class="mt-4" Label="@L["Languages"]" @bind-Value="current.Languages"
-                                                                @bind-Value:after="() =>  Model.ForEach(x=>x.Languages = current.Languages )" For="()=> current.Languages"></_LanguageEntityMultiSelect>
+                                    @bind-Value:after="() =>  Model.ForEach(x=>x.Languages = current.Languages )" For="()=> current.Languages"></_LanguageEntityMultiSelect>
 
                                 }
 
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.AverageCheck))
                                 {
                                     <label class="mt-4 mb-2" style="display: flex;    align-items: center;
-                                            ">
+                                    ">
                                         @L["AverageCheck"]
                                         @current.AverageCheck
 
                                     </label>
                                     <MudRating SelectedValue="current.AverageCheck"
-                                               SelectedValueChanged="(int val)=>{
+                                    SelectedValueChanged="(int val)=>{
 
                                                     Console.WriteLine(val);
                                                     current.AverageCheck = val;
                                                     }"
-                                               MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
-                                               FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
+                                    MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
+                                    FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
 
                                 }
                                 @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
                                 {
-                                    <_RegionEntitySelect Label="@L["Region"]" @bind-Value="current.RegionView" For="@(() => current.RegionView)" Required="true" @bind-Value:after="()=>{
+                                    <_RegionEntitySelect Class="mt-4" Label="@L["Region"]" @bind-Value="current.RegionView" For="@(() => current.RegionView)" Required="true" @bind-Value:after="()=>{
                                     Model.ForEach(x=>x.RegionView = current.RegionView);
                                 }" />
+                                }
+
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
+                                {
+                                    <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
+                                }
+
+                                @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
+                                {
+                                    <div class="d-flex flex-column gap-0 mt-4">
+                                        <label for="rating">@L["Rating"]</label>
+                                        <MudRating id="rating" @bind-SelectedValue="current.RatingAverage" For="@(() => current.RatingAverage)" Required="true" @bind-SelectedValue:after="()=>{
+                                    Model.ForEach(x=>x.RatingAverage = current.RatingAverage);
+
+                                }" />
+
+                                    </div>
                                 }
 
 
@@ -172,7 +191,7 @@
 @code {
 
 
-      private bool IsCategories;
+    private bool IsCategories;
     private string? routePath;
 
     protected override void OnInitialized()
@@ -234,6 +253,14 @@
         Model.ForEach(x =>
         {
             x.Recommended = rec;
+        });
+    }
+
+    public void UpdateGlobalRecommended(bool rec)
+    {
+        Model.ForEach(x =>
+        {
+            x.GlobalRecommended = rec;
         });
     }
 

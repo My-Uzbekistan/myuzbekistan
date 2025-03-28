@@ -32,12 +32,14 @@ public partial class ContentView
     [property: DataMember] public long? RegionId { get; set; } = null!;
     [property: DataMember] public string? RegionLocale { get; set; } = null!;
     
-    [property: DataMember] public double RatingAverage { get; set; }
+    [property: DataMember] public int RatingAverage { get; set; }
     [property: DataMember] public int AverageCheck { get; set; }
+    [property: DataMember] public int Order { get; set; } = 999;
     [property: DataMember] public Decimal Price { get; set; }
     [property: DataMember] public Decimal PriceInDollar { get; set; }
     [property: DataMember] public string? Address { get; set; }
     [property: DataMember] public bool Recommended { get; set; }
+    [property: DataMember] public bool GlobalRecommended { get; set; }
     [property: DataMember] public long Id { get; set; }
     [property: DataMember] public string Locale { get; set; } = null!;
     [property: DataMember] public ContentStatus Status { get; set; } = ContentStatus.Active;

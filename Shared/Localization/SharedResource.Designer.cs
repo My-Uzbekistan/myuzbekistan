@@ -349,6 +349,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to GlobalRecommended.
+        /// </summary>
+        public static string GlobalRecommended {
+            get {
+                return ResourceManager.GetString("GlobalRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Hello, World!.
         /// </summary>
         public static string Greeting {
