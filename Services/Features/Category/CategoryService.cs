@@ -71,7 +71,6 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
             content.RegionId == options.RegionId ||
             content.Region?.ParentRegionId == options.RegionId)
           .OrderBy(_ => Guid.NewGuid()) // для SQLite/PostgreSQL
-    .Take(10)
         .Select(x => x.MapToApi())
         .ToList()
 ))
