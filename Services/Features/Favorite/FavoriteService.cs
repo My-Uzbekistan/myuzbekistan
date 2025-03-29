@@ -6,10 +6,12 @@ using System.ComponentModel.DataAnnotations;
 using ActualLab.Async;
 using System.Reactive;
 using System.Globalization;
+using System.Drawing;
+using ClosedXML.Excel;
 
 namespace myuzbekistan.Services;
 
-public class FavoriteService(IServiceProvider services, IContentService contentService) : DbServiceBase<AppDbContext>(services), IFavoriteService
+public class FavoriteService(IServiceProvider services, IContentService contentService, IDbContextFactory<ApplicationDbContext> dbContextFactory) : DbServiceBase<AppDbContext>(services), IFavoriteService
 {
     #region Queries
 
@@ -40,12 +42,18 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
             );
         }
 
+        if (!String.IsNullOrEmpty(options.Lang))
+            favorite = favorite.Where(x => x.ContentLocale.Equals(options.Lang));
+
         Sorting(ref favorite, options);
 
         favorite = favorite.Include(x => x.Content);
 
         var count = await favorite.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await favorite.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+        var users = dbContextFactory.CreateDbContext().Users.Where(x => items.Select(x => x.UserId).Contains(x.Id)).ToList();
+
+        items.ForEach(x => x.User = users.FirstOrDefault(u => u.Id == x.UserId));
         return new TableResponse<FavoriteView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
@@ -63,6 +71,60 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
 
     #endregion
     #region Mutations
+
+    public async virtual Task<string> FavoriteToExcel(FavoriteToExcelCommand command,
+        CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return default!;
+        }
+
+        command.Options.PageSize = 1000000;
+        var favorites = await GetAll(command.Options, cancellationToken);
+
+
+        using var workbook = new XLWorkbook();
+        var worksheet = workbook.Worksheets.Add("favorites");
+        var currentRow = 1;
+        var headers = new[]
+    {
+         "Id","Content", "Email",
+    };
+
+        for (int col = 2; col < headers.Length + 2; col++)
+        {
+            worksheet.Cell(currentRow, col).Value = headers[col - 2];
+            worksheet.Cell(currentRow, col).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, col).Style.Fill.BackgroundColor = XLColor.LightBlue;
+            worksheet.Cell(currentRow, col).Style.Font.FontColor = XLColor.Black;
+            worksheet.Cell(currentRow, col).Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+            worksheet.Cell(currentRow, col).Style.Border.OutsideBorderColor = XLColor.Black;
+            worksheet.Cell(currentRow, col).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        }
+
+        foreach (var favorite in favorites.Items.ToList())
+        {
+            currentRow++;
+            worksheet.Cell(currentRow, 2).Value = favorite.Id;
+            worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.LightBlue;
+            worksheet.Cell(currentRow, 2).Style.Font.FontColor = XLColor.Black;
+            worksheet.Cell(currentRow, 2).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            worksheet.Cell(currentRow, 2).Style.Border.OutsideBorderColor = XLColor.Black;
+
+            worksheet.Cell(currentRow, 3).Value = favorite.ContentView.Title;
+            worksheet.Cell(currentRow, 4).Value = favorite?.User?.Email;
+            
+        }
+
+        worksheet.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return Convert.ToBase64String(stream.ToArray());
+    }
+
     public async virtual Task Create(CreateFavoriteCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
@@ -106,7 +168,7 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var favorites = dbContext.Favorites.Where(x => x.ContentId == command.ContentId && x.UserId == command.UserId).ToList();
-            if (favorites.Count == 0)
+        if (favorites.Count == 0)
         {
             throw new ValidationException("FavoriteEntity Not Found");
         }

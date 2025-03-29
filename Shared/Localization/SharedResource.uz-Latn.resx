@@ -363,4 +363,10 @@
   <data name="GlobalRecommended" xml:space="preserve">
     <value>Global Tavsia</value>
   </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Foydalanuvchi nomi</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Yaratilgan</value>
+  </data>
 </root>

@@ -49,6 +49,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         var categories = await query
      .AsAsyncEnumerable()
+     .OrderBy(x => x.Order)
      .Select(c => new MainPageApi(
     c.Name,
     c.Id,
@@ -56,7 +57,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
     .Where(x =>
         (options.RegionId == null || options.RegionId == 1)
             ? x.GlobalRecommended
-            : x.Recommended && x.Region?.ParentRegionId == options.RegionId)
+            : x.Recommended && x.RegionId == options.RegionId)
     .FirstOrDefault()
     ?.MapToApi(),
     c.ViewType,
@@ -69,7 +70,8 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
             options.RegionId == null ||
             content.RegionId == options.RegionId ||
             content.Region?.ParentRegionId == options.RegionId)
-        .OrderBy(x=>x.Order)
+          .OrderBy(_ => Guid.NewGuid()) // для SQLite/PostgreSQL
+    .Take(10)
         .Select(x => x.MapToApi())
         .ToList()
 ))
@@ -78,6 +80,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
          s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
          s.Contents.Any(t => t.Region.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase))
      )
+     
      .ToListAsync(cancellationToken);
 
         return [.. categories];

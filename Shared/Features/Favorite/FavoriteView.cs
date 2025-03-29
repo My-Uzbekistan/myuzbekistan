@@ -24,7 +24,8 @@ public partial class FavoriteApiView: ContentApiView
 public partial class FavoriteView
 {
    [property: DataMember] public ContentView ContentView { get; set; } 
-   [property: DataMember] public long UserId { get; set; } 
+   [property: DataMember] public long UserId { get; set; }
+    [property: DataMember] public ApplicationUserView? User { get; set; } = null!;
    [property: DataMember] public long Id { get; set; }
 
     public override bool Equals(object? o)

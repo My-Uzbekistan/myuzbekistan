@@ -6,6 +6,8 @@
 @inject IDialogService _dialogService
 @inject UInjector UInjector
 @inject IUserService UserService
+@inject UICommander Command
+@inject IJSRuntime jsRuntime
 
 @inherits MixedStateComponent<TableResponse<ApplicationUser>,TableOptions>
 @{
@@ -14,24 +16,28 @@
 
 <ListContainer Title="User">
     <Actions>
-        <MudLink Href="/users/create">
-            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
-                @L["Create"]
-            </MudButton>
-        </MudLink>
+        <MudButton Variant="Variant.Filled" Class="me-3" Color="Color.Success" OnClick="ExportToExcel" StartIcon="@Icons.Material.Filled.IosShare">
+            Excel
+        </MudButton>
+        @* <MudLink Href="/users/create"> *@
+        @*     <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"> *@
+        @*         @L["Create"] *@
+        @*     </MudButton> *@
+        @* </MudLink> *@
     </Actions>
     <ChildContent>
         <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="ApplicationUser">
             
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="UserName">@context.UserName</MudTd>
+            <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
 
             <MudTd Class="d-flex justify-end">
                 <div style="display:flex; gap:7px;">
-                    <MudLink Href=@($"/users/{context.Id }")>
-                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
-                    </MudLink>
-                    <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    @* <MudLink Href=@($"/users/{context.Id }")> *@
+                    @*     <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" /> *@
+                    @* </MudLink> *@
+                    @* <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small /> *@
                 </div>
             </MudTd>
         </UTCTable>
@@ -43,7 +49,7 @@
     private TableResponse<ApplicationUser>? Items;
 
 
-    private string[] SortColumns = new string[] { "Id", "UserName" };
+    private string[] SortColumns = new string[] { "Id", "UserName", "CreatedAt" };
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -72,6 +78,17 @@
         {
             await commander.Run(new DeleteFileCommand(Session, Id));
             Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+
+    public async Task ExportToExcel()
+    {
+        var table = await Command.Run(new UserToExcelCommand(Session, MutableState.Value));
+
+        if (!table.HasError)
+        {
+            string now = DateTime.UtcNow.AddHours(5).ToString("yyyy_MM_dd_HH_mm_ss");
+            await jsRuntime.InvokeVoidAsync("saveAsFile", $"{now}.xlsx", table.Value);
         }
     }
 }

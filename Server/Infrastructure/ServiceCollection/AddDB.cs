@@ -12,6 +12,7 @@ namespace Server.Infrastructure.ServiceCollection;
 
 public static class AddDB
 {
+    [Obsolete]
     public static IServiceCollection AddDataBase<TContext>(this IServiceCollection services, IWebHostEnvironment env,
     ConfigurationManager cfg, DataBaseType dataBaseType) where TContext : DbContext
     {

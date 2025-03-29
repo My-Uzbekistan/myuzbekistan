@@ -18,19 +18,23 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var region = (from s in dbContext.Regions
-                      join r in dbContext.Regions
-                          on new { ParentRegionId = s.ParentRegionId ?? 0, s.Locale } equals new { ParentRegionId = r.Id, r.Locale }
-                      where s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName
-                      select new RegionEntity
-                      {
-                          Id = s.Id,
-                          Name = s.Name,
-                          Locale = s.Locale,
-                          ParentRegionId = s.ParentRegionId,
-                          ParentRegion = r
-                      });
-        
+        var region = from s in dbContext.Regions
+                     where s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName
+                     join r in dbContext.Regions
+                         on new { ParentRegionId = s.ParentRegionId ?? 0, s.Locale }
+                         equals new { ParentRegionId = r.Id, r.Locale }
+                         into joined
+                     from r in joined.DefaultIfEmpty()
+                     select new RegionEntity
+                     {
+                         Id = s.Id,
+                         Name = s.Name,
+                         Locale = s.Locale,
+                         ParentRegionId = s.ParentRegionId,
+                         ParentRegion = r
+                     };
+
+
         if (!String.IsNullOrEmpty(options.Search))
         {
             region = region.Where(s => 

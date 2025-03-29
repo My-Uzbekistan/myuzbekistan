@@ -19,4 +19,7 @@ public interface IUserService:IComputeService
     Task<List<ApplicationUser>> Get(long Id, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
+
+    [CommandHandler]
+    Task<string> UserToExcel(UserToExcelCommand command, CancellationToken cancellationToken = default);
 }

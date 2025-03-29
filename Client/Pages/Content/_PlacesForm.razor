@@ -46,7 +46,7 @@
     private async Task Confirm()
     {
         await LocationChanged.InvokeAsync(Location);
-        await AddressChanged.InvokeAsync(Address);
+        // await AddressChanged.InvokeAsync(Address);
         _visible = false;
     }
 

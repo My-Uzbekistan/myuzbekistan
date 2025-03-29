@@ -18,6 +18,9 @@ public interface IFavoriteService:IComputeService
     Task Update(UpdateFavoriteCommand command, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Delete(DeleteFavoriteCommand command, CancellationToken cancellationToken = default);
+    [CommandHandler]
+    Task<string> FavoriteToExcel(FavoriteToExcelCommand command, CancellationToken cancellationToken = default);
+
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
 }
     

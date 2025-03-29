@@ -363,4 +363,10 @@
   <data name="GlobalRecommended" xml:space="preserve">
     <value>Глобальная рекомендация</value>
   </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Имя пользователя</value>
+  </data>
+  <data name="CreatedAt" xml:space="preserve">
+    <value>Создан</value>
+  </data>
 </root>

@@ -23,10 +23,9 @@
                 @if (contact.Icon == "/Images/phone.png" || contact.Icon == "/Images/whatsapp.png" || contact.Icon == "/Images/telegram.png")
                 {
                     <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" 
-                                  Placeholder="(__) ___ __ __"
-                                  Mask="@(new PatternMask("(00) 000-00-00"))"
+                                  
                                   Adornment="Adornment.Start"
-                                  AdornmentText="+998" Label="@L["Contact_PhoneNumber"]" />
+                                   Label="@L["Contact_PhoneNumber"]" />
                 }
                 else if (contact.Icon == "/Images/site.png")
                 {

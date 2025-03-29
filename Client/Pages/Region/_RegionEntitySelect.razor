@@ -11,6 +11,7 @@
                  Value="Value"
                  Immediate="true"
                  Required=Required
+                 MaxItems="150"
                  For="For"
                  ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" SearchFunc="Search"  />
 
@@ -42,7 +43,7 @@
 
     protected override async Task<TableResponse<RegionView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await RegionService.GetAll(new() { Search = MutableState.Value }, cancellationToken);
+        return await RegionService.GetAll(new() { Search = MutableState.Value, PageSize = 150 }, cancellationToken);
     }
 
     private async Task<IEnumerable<RegionView>> Search(string value, CancellationToken cancellationToken)

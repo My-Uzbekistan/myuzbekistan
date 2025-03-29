@@ -16,3 +16,10 @@ public partial record UpdateFavoriteCommand([property: DataMember] Session Sessi
 [DataContract, MemoryPackable]
 public partial record DeleteFavoriteCommand([property: DataMember] Session Session, [property: DataMember] long ContentId, [property: DataMember] long UserId) : ISessionCommand<FavoriteView>;
 
+
+[DataContract, MemoryPackable]
+public partial record FavoriteToExcelCommand(
+    [property: DataMember] Session Session,
+    [property: DataMember] TableOptions Options) : ISessionCommand<string>;
+
+

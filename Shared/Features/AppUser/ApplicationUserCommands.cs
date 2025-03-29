@@ -14,5 +14,9 @@ public partial record CreateApplicationUserCommand([property: DataMember] Sessio
 public partial record UpdateApplicationUserCommand([property: DataMember] Session Session,[property: DataMember] List<ApplicationUser> Entity) :ISessionCommand<ApplicationUser>; 
 
 [DataContract, MemoryPackable]
-public partial record DeleteApplicationUserCommand([property: DataMember] Session Session,[property: DataMember] long Id):ISessionCommand<ApplicationUser>; 
+public partial record DeleteApplicationUserCommand([property: DataMember] Session Session,[property: DataMember] long Id):ISessionCommand<ApplicationUser>;
 
+[DataContract, MemoryPackable]
+public partial record UserToExcelCommand(
+    [property: DataMember] Session Session,
+    [property: DataMember] TableOptions Options) : ISessionCommand<string>;
