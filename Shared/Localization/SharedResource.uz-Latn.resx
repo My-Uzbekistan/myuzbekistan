@@ -262,7 +262,7 @@
     <value>Ish vaqti</value>
   </data>
   <data name="Category" xml:space="preserve">
-    <value>Tili</value>
+    <value>Turi</value>
   </data>
   <data name="Facility" xml:space="preserve">
     <value>Muassasa</value>
@@ -368,5 +368,8 @@
   </data>
   <data name="CreatedAt" xml:space="preserve">
     <value>Yaratilgan</value>
+  </data>
+  <data name="PhotosCount" xml:space="preserve">
+    <value>Fotosuratlar soni</value>
   </data>
 </root>

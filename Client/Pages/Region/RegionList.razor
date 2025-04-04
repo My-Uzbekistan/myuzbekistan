@@ -1,4 +1,4 @@
-@page  "/regions" 
+@page "/regions"
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -16,34 +16,35 @@
     <Actions>
         <MudLink Href="/regions/create">
             <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
-            @L["Create"]
+                @L["Create"]
             </MudButton>
         </MudLink>
     </Actions>
     <ChildContent>
-        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="RegionView">
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Locale">@context.Locale</MudTd>
-                <MudTd DataLabel="ParentRegion.Name">@context.ParentRegionView?.Name</MudTd>
-                <MudTd DataLabel="Id">@context.Id</MudTd>
-                       
-                <MudTd Class="d-flex justify-end">
-                    <div style="display:flex; gap:7px;">
-                        <MudLink Href=@($"/regions/{context.Id }")>
-                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
-                        </MudLink>
-                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
-                    </div>
-                </MudTd>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="RegionView">
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Locale">@context.Locale</MudTd>
+            <MudTd DataLabel="ParentRegion.Name">@context.ParentRegionView?.Name</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Status"> <MudChip T="string" Color="context.IsActive == true ? Color.Success : Color.Error"> @L[context.IsActive == true ? "Active" : "InActive"] </MudChip>   </MudTd>
+
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    <MudLink Href=@($"/regions/{context.Id}")>
+                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudLink>
+                    <MudFab @onclick=@(() => Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                </div>
+            </MudTd>
         </UTCTable>
     </ChildContent>
 </ListContainer>
 
 @code {
 
-    private TableResponse<RegionView>? Items ;
-    
-    private string[] SortColumns = new string[] {"Name","Locale","ParentRegion","Id",};
+    private TableResponse<RegionView>? Items;
+
+    private string[] SortColumns = new string[] { "Name", "Locale", "ParentRegion", "Id", "Status" };
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -52,7 +53,7 @@
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
         int count = 1;
         int.TryParse(_initialCount, out count);
-        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en") } };
     }
 
     protected override async Task<TableResponse<RegionView>> ComputeState(CancellationToken cancellationToken = default)
@@ -70,7 +71,7 @@
         yesText: "Delete!", cancelText: @L["Cancel"]);
         if (result ?? false)
         {
-            await commander.Run(new DeleteRegionCommand(Session,Id));
+            await commander.Run(new DeleteRegionCommand(Session, Id));
             Snackbar.Add(@L["SuccessDelete"], Severity.Success);
         }
     }

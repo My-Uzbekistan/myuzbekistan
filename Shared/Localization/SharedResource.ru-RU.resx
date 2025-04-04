@@ -369,4 +369,7 @@
   <data name="CreatedAt" xml:space="preserve">
     <value>Создан</value>
   </data>
+  <data name="PhotosCount" xml:space="preserve">
+    <value>Кол-во Фотографии</value>
+  </data>
 </root>

@@ -24,6 +24,8 @@ public static partial class RegionMapper
     [MapProperty("ParentRegionView", "ParentRegion")]
     private static partial RegionEntity From(this RegionView RegionView);
     [MapProperty("ParentRegionView", "ParentRegion")]
+    [MapperIgnoreTarget("Locale") ]
+    [MapperIgnoreTarget("Id")]
     public static partial void From(RegionView personView, RegionEntity personEntity);
 
     #endregion

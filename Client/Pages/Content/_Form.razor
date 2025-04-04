@@ -25,7 +25,7 @@
                                     <MudTextField @bind-Value="current.Title" Label="Title" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Title)" Required="true" />
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Description))
                                     {
-                                        <MudTextField AutoGrow MaxLines="4" @bind-Value="current.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" />
+                                        <MudTextField AutoGrow  @bind-Value="current.Description" Label="@L["Description"]"  AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" />
                                     }
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.WorkingHours))

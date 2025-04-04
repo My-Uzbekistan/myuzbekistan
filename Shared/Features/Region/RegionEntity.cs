@@ -13,6 +13,7 @@ public class RegionEntity:BaseEntity
 {
     public string Name { get; set; }
     public string Locale { get; set; }
+    public bool IsActive { get; set; } 
     public RegionEntity? ParentRegion { get; set; }
     public long? ParentRegionId { get; set; }
     public List<ContentEntity>? Contents { get; set; }

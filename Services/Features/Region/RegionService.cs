@@ -28,6 +28,7 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
                      select new RegionEntity
                      {
                          Id = s.Id,
+                         IsActive = s.IsActive,
                          Name = s.Name,
                          Locale = s.Locale,
                          ParentRegionId = s.ParentRegionId,
@@ -62,7 +63,7 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
         var region = (from s in dbContext.Regions
                       //join r in dbContext.Regions
                       //    on new { ParentRegionId = s.ParentRegionId ?? 0, s.Locale } equals new { ParentRegionId = r.Id, r.Locale }
-                      where s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName
+                      where s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName && s.IsActive == true
                       select new RegionEntity
                       {
                           Id = s.Id,
@@ -143,14 +144,15 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var regions = dbContext.Regions
-        .Include(x => x.Contents);
+        .Include(x => x.ParentRegion);
 
         if (regions == null) throw new ValidationException("RegionEntity Not Found");
 
         foreach (var item in command.Entity)
         {
-            Reattach(regions.First(x => x.Locale == item.Locale), item, dbContext);
-            dbContext.Update(regions.First(x => x.Locale == item.Locale));
+            var langRegion = regions.First(x => x.Locale == item.Locale && x.Id == item.Id);
+            Reattach(langRegion, item, dbContext);
+            dbContext.Update(langRegion);
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

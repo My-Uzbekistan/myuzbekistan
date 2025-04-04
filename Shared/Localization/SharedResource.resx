@@ -369,4 +369,7 @@
   <data name="CreatedAt" xml:space="preserve">
     <value>CreatedAt</value>
   </data>
+  <data name="PhotosCount" xml:space="preserve">
+    <value>Photos Count</value>
+  </data>
 </root>

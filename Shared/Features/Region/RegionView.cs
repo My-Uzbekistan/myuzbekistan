@@ -10,6 +10,7 @@ public partial class RegionView
 {
     [property: DataMember] public string Name { get; set; } = null!;
     [property: DataMember] public string Locale { get; set; } = null!;
+    [property: DataMember] public bool IsActive { get; set; }
     [property: DataMember] public RegionView? ParentRegionView { get; set; }
     [property: DataMember] public ICollection<ContentView>? ContentsView { get; set; }
     [property: DataMember] public long Id { get; set; }

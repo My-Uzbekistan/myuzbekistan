@@ -38,16 +38,25 @@
                 {
                     <MudTd DataLabel="Title">@context.Title</MudTd>
                 }
-                @if (SortColumns.Contains("Description"))
+                @* @if (SortColumns.Contains("Description")) *@
+                @* { *@
+                @*     <MudTd DataLabel="Description">@context.PhotosView</MudTd> *@
+                @* } *@
+                @if (SortColumns.Contains("PhotosCount"))
                 {
-                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                    <MudTd DataLabel="PhotosCount">
+                        @context.PhotosView.Count
+                        
+                    </MudTd>
                 }
+
                 @if (SortColumns.Contains("Photos"))
                 {
                     <MudTd DataLabel="Photos">
                         <ImagesView Files="@context.PhotosView?.ToList()" />
                     </MudTd>
                 }
+                
                 @if (SortColumns.Contains("Photo"))
                 {
                     <MudTd DataLabel="Photo">
@@ -115,7 +124,7 @@
 
 
 
-    private string[] SortColumns = new string[] { "Title", "Description", "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
+    private string[] SortColumns = new string[] { "Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
 
     protected override void OnInitialized()
     {
@@ -126,7 +135,7 @@
         }
         else
         {
-            SortColumns = ["Title", "Description", "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
+            SortColumns = ["Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
         }
         navigation.LocationChanged += Navigation_LocationChanged;
         base.OnInitialized();
@@ -142,7 +151,7 @@
         }
         else
         {
-            SortColumns = ["Title", "Description", "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
+            SortColumns = ["Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
         }
         StateHasChanged();
         MutableState.Invalidate();
@@ -165,8 +174,9 @@
         var category = await CategoryService.Get(CategoryId, cancellationToken);
         var contents = await ContentService.GetAll(CategoryId, MutableState.Value);
         var catField = category.First().Fields;
-        string[] constatnFields = ["Title", "Id", "RatingAverage", "Recommended"];
+        string[] constatnFields = ["Title", "Id","PhotosCount", "RatingAverage", "Recommended"];
         SortColumns = SortColumns.Where(x => constatnFields.Contains(x) || Bitwise.Is(catField, (ContentFields)Enum.Parse(typeof(ContentFields), x))).ToArray();
+        
 
 
         return contents;

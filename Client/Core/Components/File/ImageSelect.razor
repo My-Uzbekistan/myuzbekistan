@@ -3,105 +3,149 @@
 @inject IUFileService UFileService
 @inject Session Session
 @namespace Client.Core.Components
-@inherits MixedStateComponent<TableResponse<FileView>,TableOptions>
+@inherits MixedStateComponent<TableResponse<FileView>, TableOptions>
 
 @{
     Images = State.LastNonErrorValue ?? new TableResponse<FileView>() { };
 }
 
-<MudDialog Visible="@IsImageSelect" VisibleChanged="(isVisible) => OnVisibleChanged(isVisible)" Options="dialogOptions">
+<MudDialog Visible="@IsImageSelect" VisibleChanged="OnVisibleChanged" Options="dialogOptions">
     <TitleContent>
-        <MudText Typo="Typo.h6">
-            List of Images
-        </MudText>
+        <MudText Typo="Typo.h6">List of Images</MudText>
         <MudSpacer />
         <FileUpload Accept="@Accept" />
     </TitleContent>
     <DialogContent>
         <MudGrid Justify="Justify.SpaceEvenly" Spacing="2" Style="max-height: 520px; overflow-x:hidden; overflow-y:scroll; min-height: 200px">
-            @if (Images?.Items.Count() > 0)
+            @if (Images?.Items?.Count() > 0)
             {
                 @foreach (var image in Images.Items)
                 {
-                   
-                    <MudItem xs="3" @onclick='()=>UpdateValue(image)' Style="width:230px; height:170px; margin-bottom:10px;" Class="@StyleFor(image.Id)">
-                        <MudImage ObjectFit="ObjectFit.Contain" Src="@(url + image.Path)" Alt="@image.Name" Style="max-width:200px; max-height:130px;" />
+                    <MudItem xs="3" @onclick="@(() => UpdateValue(image))"
+                             Style="width:230px; height:170px; margin-bottom:10px;"
+                             Class="@StyleFor(image.Id)">
+                        <MudImage ObjectFit="ObjectFit.Contain"
+                                  Src="@(url + image.Path)"
+                                  Alt="@image.Name"
+                                  Style="max-width:200px; max-height:130px;" />
                     </MudItem>
                 }
             }
             else
             {
                 <MudItem Class="d-flex align-center">
-                    <MudChip T="string" Icon="@Icons.Material.Filled.CloudUpload" IconColor="Color.Warning" Variant="Variant.Text" Color="Color.Warning">No Images Found! Upload Your First Image</MudChip>
+                    <MudChip T="string"
+                             Icon="@Icons.Material.Filled.CloudUpload"
+                             IconColor="Color.Warning"
+                             Variant="Variant.Text"
+                             Color="Color.Warning">
+                        No Images Found! Upload Your First Image
+                    </MudChip>
                 </MudItem>
             }
-
         </MudGrid>
     </DialogContent>
     <DialogActions>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Submit</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Submit"
+                   Class="px-10">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+
+    [Parameter]
+    public FileView? Value
+    {
+        get => SelectedValues?.FirstOrDefault();
+        set
+        {
+            SelectedValues = value != null ? new List<FileView> { value } : new();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<FileView> ValueChanged { get; set; }
     [Parameter]
     public string Accept { get; set; } = ".jpg, .jpeg, .png";
+
     [Parameter]
     public bool IsImageSelect { get; set; }
-    [Parameter] public EventCallback<bool> IsImageSelectChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsImageSelectChanged { get; set; }
+
+    [Parameter]
+    public bool Multiple { get; set; } = false;
+
+    [Parameter]
+    public List<FileView> SelectedValues { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<List<FileView>> SelectedValuesChanged { get; set; }
+
+    [Parameter]
+    public EventCallback ImageSelected { get; set; }
 
     TableResponse<FileView>? Images { get; set; }
 
     DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
 
-    [Parameter]
-    public FileView? Value { get; set; }
-    [Parameter]
-    public EventCallback<FileView> ValueChanged { get; set; }
-
-    [Parameter]
-    public EventCallback ImageSelected { get; set; }
-
     string url = string.Empty;
-    
-    protected async override Task OnParametersSetAsync()
+
+    protected override async Task OnParametersSetAsync()
     {
-        var urlTask = UFileService.GetFileUrl();
-        url = await urlTask;
+        url = await UFileService.GetFileUrl();
     }
 
     void UpdateValue(FileView value)
     {
-        Value = value;
+        if (Multiple)
+        {
+            if (SelectedValues.Any(x => x.Id == value.Id))
+                SelectedValues.RemoveAll(x => x.Id == value.Id);
+            else
+                SelectedValues.Add(value);
+        }
+        else
+        {
+            SelectedValues.Clear();
+            SelectedValues.Add(value);
+        }
+
         StateHasChanged();
     }
 
     async Task Submit()
     {
-        await ValueChanged.InvokeAsync(Value);
-       
+        if (!Multiple && SelectedValues.Count == 1)
+        {
+            await ValueChanged.InvokeAsync(SelectedValues[0]);
+        }
+        await SelectedValuesChanged.InvokeAsync(SelectedValues);
         await ImageSelected.InvokeAsync();
     }
 
-
     protected override async Task<TableResponse<FileView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await FileService.GetAll(new TableOptions() { Page = 1, PageSize = 1000, SortLabel = "Id", SortDirection = 1, Search = "" }, cancellationToken);
+        return await FileService.GetAll(new TableOptions
+        {
+            Page = 1,
+            PageSize = 1000,
+            SortLabel = "Id",
+            SortDirection = 1,
+            Search = ""
+        }, cancellationToken);
     }
 
-    public string StyleFor(long id)
+    string StyleFor(long id)
     {
-        if (Value != null && Value.Id == id)
-        {
-            return "border-dotted border-2 mud-border-success";
-        }
-        else
-        {
-            return "";
-        }
+        return SelectedValues.Any(x => x.Id == id)
+            ? "border-dotted border-2 mud-border-success"
+            : "";
     }
-
 
     private async void OnVisibleChanged(bool isVisible)
     {
@@ -109,6 +153,4 @@
         await IsImageSelectChanged.InvokeAsync(IsImageSelect);
         StateHasChanged();
     }
-    
-
 }

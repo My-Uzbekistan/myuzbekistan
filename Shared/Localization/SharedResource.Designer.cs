@@ -556,6 +556,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Photos Count.
+        /// </summary>
+        public static string PhotosCount {
+            get {
+                return ResourceManager.GetString("PhotosCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pick a Location.
         /// </summary>
         public static string PickLocation {

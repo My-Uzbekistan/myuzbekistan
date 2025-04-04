@@ -18,6 +18,7 @@
                             <MudTextField @bind-Value="current.Name" Label="@L["Name"]" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
                             <Client.Pages.Region._RegionEntitySelect Label="@L["ParentRegion"]" @bind-Value="current.ParentRegionView" For="@(() => current.ParentRegionView)" />
                             <input type="hidden" @bind-value="current.Id">
+                            <MudSwitch Color="Color.Primary" @bind-Value="current.IsActive" @bind-Value:after="() => { Model.ForEach(x => x.IsActive = current.IsActive); }" Label="@L["IsActive"]" />
                         </MudPaper>
                     </MudItem>
                     <MudItem md="4" xs="12" Class="order-md-1 order-0">
