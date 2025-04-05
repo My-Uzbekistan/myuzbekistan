@@ -5,6 +5,7 @@
 @inject NavigationManager navigation
 @inject PageHistoryState PageHistoryState
 @inject ICategoryService categoryService
+@inject ICurrencyService currencyService
 
 @foreach (var current in Model)
 {
@@ -37,6 +38,11 @@
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Address))
                                     {
                                         <MudTextField @bind-Value="current.Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Address)" />
+                                    }
+
+                                    @if(routePath == "more")
+                                    {
+                                        <MudTextField @bind-Value="current.ActionUrl" Label="@L["ActionUrl"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.ActionUrl)" />
                                     }
 
                                     <input type="hidden" @bind-value="current.Id">
@@ -76,6 +82,10 @@
                         <MudExpansionPanels Class="mb-3">
                             <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
                                 <MudStack>
+                                    <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status); }"  Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
+                                        <MudSelectItem T="ContentStatus" Value="ContentStatus.Active">@L["Active"]</MudSelectItem>
+                                        <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
+                                    </MudSelect>
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
                                     {
                                         <_PlacesForm @bind-Location="current.Location" @bind-Address="current.Address" />
@@ -152,7 +162,7 @@
                                     <MudGrid Class="mt-4">
                                         <MudItem md="6" xs="12">
                                             <MudNumericField @bind-Value="current.Price"
-                                                             @bind-Value:after="() => { Model.ForEach(x=>{x.Price = current.Price;}); }"
+                                                             @bind-Value:after="async () => { await OnChangePrice(current); }"
                                                              Label="@L["Price"]"
                                                              Culture="@(new CultureInfo("ru-RU"))"
                                                              Format="N0"
@@ -172,6 +182,7 @@
                                                              Adornment="Adornment.End"
                                                              AdornmentText="$"
                                                              Immediate="true"
+                                                             ReadOnly="true"
                                                              Placeholder="@L["EnterPrice"]"
                                                              Required="true"
                                                              HideSpinButtons="true" />
@@ -202,6 +213,26 @@
         base.OnInitialized();
     }
 
+
+    void OnChangeStatus(ContentStatus status)
+    {
+        Model.ForEach(s =>
+        {
+            s.Status = status;
+        });
+    }
+
+
+    async Task OnChangePrice(ContentView contentView)
+    {
+        var currency = await currencyService.GetUsdCourse();
+        decimal rate = decimal.Parse(currency.Rate.Replace(".",","));
+        Model.ForEach(s =>
+        {
+            s.Price = contentView.Price;
+            s.PriceInDollar = Math.Ceiling(contentView.Price / rate);
+        });
+    }
     string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
 
 

@@ -8,15 +8,20 @@ namespace myuzbekistan.Shared;
 
 
 [DataContract, MemoryPackable]
-public partial record CreateApplicationUserCommand([property: DataMember] Session Session,[property: DataMember] List<ApplicationUser> Entity):ISessionCommand<ApplicationUser>; 
+public partial record CreateUserCommand([property: DataMember] Session Session, [property: DataMember] CreateUser User) : ISessionCommand<ApplicationUser>;
 
 [DataContract, MemoryPackable]
-public partial record UpdateApplicationUserCommand([property: DataMember] Session Session,[property: DataMember] List<ApplicationUser> Entity) :ISessionCommand<ApplicationUser>; 
+public partial record ChangePasswordCommand([property: DataMember] Session Session, [property: DataMember] long UserId, [property: DataMember] string Password) : ISessionCommand<ApplicationUser>;
 
-[DataContract, MemoryPackable]
-public partial record DeleteApplicationUserCommand([property: DataMember] Session Session,[property: DataMember] long Id):ISessionCommand<ApplicationUser>;
 
 [DataContract, MemoryPackable]
 public partial record UserToExcelCommand(
     [property: DataMember] Session Session,
     [property: DataMember] TableOptions Options) : ISessionCommand<string>;
+
+[DataContract, MemoryPackable]
+public partial record ChangeRoleCommand(
+    [property: DataMember] Session Session,
+    [property: DataMember] long UserId,
+    [property: DataMember] string Role) : ISessionCommand<string>;
+

@@ -1,0 +1,87 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+<EditForm Model="Model" OnSubmit="HandleSubmit">
+    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+        <Actions>
+            <SaveCancelButton OnCancel='() => PageHistoryState.Back("users")' Processing="@Processing" />
+        </Actions>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="8">
+                    <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                        <MudTextField @bind-Value="Model.Login" Label="@L["Login"]" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Login)" Required="true" />
+
+                        <MudSelect @bind-Value="Model.Role"
+                                   Label=@L["Role"]
+                                   Margin="Margin.Dense"
+                                   Placeholder=@L["SelectRole"]>
+                            @foreach (var role in _roles)
+                            {
+                                <MudSelectItem Value="@role">@role</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudTextField Margin="Margin.Dense"  @bind-Value="Model.Password" Label=@L["Password"] InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ButtonTestclick" AdornmentAriaLabel="Show Password" />
+                        
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </FormContainer>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public CreateUser Model { get; set; } = new CreateUser();
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<CreateUser> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+    private string[] _roles = new string[] { "Admin", "User", "Moderator" };
+
+    string GetTitle()
+    {
+        return IsNew ? @L["Create"] : @L["Edit"];
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    void HandleSubmit(EditContext ctx)
+    {
+        OnSubmit.InvokeAsync(Model);
+    }
+
+    bool isShow;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void ButtonTestclick()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

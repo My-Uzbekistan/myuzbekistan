@@ -10,12 +10,14 @@ public class MoreController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
     private readonly IContentService _contentService;
+    private readonly ICurrencyService _currencyService;
 
 
-    public MoreController(ICategoryService categoryService, IContentService contentService)
+    public MoreController(ICategoryService categoryService, IContentService contentService, ICurrencyService currencyService)
     {
         _categoryService = categoryService;
         _contentService = contentService;
+        _currencyService = currencyService;
     }
 
     [HttpGet("about")]
@@ -33,11 +35,7 @@ public class MoreController : ControllerBase
     [HttpGet("currency")]
     public async Task<List<Currency>> GetCurrency(CancellationToken cancellationToken)
     {
-        var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("Accept", "application/json");
-        var date = DateTime.Now.ToString("YYYY-MM-DD");
-        var response = await client.GetFromJsonAsync<List<Currency>>($"https://cbu.uz/ru/arkhiv-kursov-valyut/json/all/{date}/", cancellationToken: cancellationToken);
-        return response ?? [];
+        return await _currencyService.GetCurrencies(cancellationToken);
     }
 }
 

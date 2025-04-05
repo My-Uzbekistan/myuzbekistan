@@ -50,6 +50,7 @@ public class ContentEntity : BaseEntity
     public bool GlobalRecommended { get; set; } = false;
     public string Locale { get; set; } = null!;
     public ContentStatus Status { get; set; } = ContentStatus.Active;
+    public string? ActionUrl { get; set; }
 
 }
 

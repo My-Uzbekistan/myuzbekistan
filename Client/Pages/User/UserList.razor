@@ -8,29 +8,55 @@
 @inject IUserService UserService
 @inject UICommander Command
 @inject IJSRuntime jsRuntime
+@inject UserManager<ApplicationUser> userManager
+@inject UICommander _command
+
 
 @inherits MixedStateComponent<TableResponse<ApplicationUser>,TableOptions>
 @{
     Items = State.GetValue(UInjector);
 }
+<MudDialog @bind-Visible="_visible" Options="_dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> @L["EditRole"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudSelect @bind-Value="_role"
+                   Variant="Variant.Outlined"
+                   Label=@L["Role"]
+                   Margin="Margin.Dense"
+                   Placeholder=@L["SelectRole"]>
+            @foreach (var role in _roles)
+            {
+                <MudSelectItem Value="@role">@role</MudSelectItem>
+            }
+        </MudSelect>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
 
 <ListContainer Title="User">
     <Actions>
         <MudButton Variant="Variant.Filled" Class="me-3" Color="Color.Success" OnClick="ExportToExcel" StartIcon="@Icons.Material.Filled.IosShare">
             Excel
         </MudButton>
-        @* <MudLink Href="/users/create"> *@
-        @*     <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"> *@
-        @*         @L["Create"] *@
-        @*     </MudButton> *@
-        @* </MudLink> *@
+        <MudLink Href="/users/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                @L["Create"]
+            </MudButton>
+        </MudLink>
     </Actions>
     <ChildContent>
         <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="ApplicationUser">
-            
+
             <MudTd DataLabel="Id">@context.Id</MudTd>
             <MudTd DataLabel="UserName">@context.UserName</MudTd>
             <MudTd DataLabel="CreatedAt">@context.CreatedAt</MudTd>
+            <MudTd DataLabel="CreatedAt">@context.Roles.FirstOrDefault()?.Name  </MudTd>
 
             <MudTd Class="d-flex justify-end">
                 <div style="display:flex; gap:7px;">
@@ -38,18 +64,51 @@
                     @*     <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" /> *@
                     @* </MudLink> *@
                     @* <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small /> *@
+                    <MudButton OnClick="() => OpenDialog(context)" Variant="Variant.Filled" Color="Color.Primary">
+                        @L["EditRole"]
+                    </MudButton>
                 </div>
             </MudTd>
         </UTCTable>
     </ChildContent>
 </ListContainer>
 
+
+
 @code {
 
+    private bool _visible;
+    private string? _role;
     private TableResponse<ApplicationUser>? Items;
 
+    private readonly DialogOptions _dialogOptions = new() { };
 
-    private string[] SortColumns = new string[] { "Id", "UserName", "CreatedAt" };
+    private string[] _roles = new string[] { "Admin", "User", "Moderator" };
+    private ApplicationUser? applicationUser;
+
+    private void OpenDialog(ApplicationUser user)
+    {
+        applicationUser = user;
+        _role = user.Roles.FirstOrDefault()?.Name;
+        _visible = true;
+        StateHasChanged();
+    }
+
+    private async Task Submit()
+    {
+        _visible = false;
+        StateHasChanged();
+
+        if (applicationUser == null) return;
+
+
+        await _command.Call(new ChangeRoleCommand(Session, applicationUser!.Id, _role!));
+        _role = null;
+
+    }
+
+
+    private string[] SortColumns = new string[] { "Id", "UserName", "CreatedAt", "Role" };
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {

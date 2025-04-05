@@ -7,6 +7,8 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
 @inject Session Session
+@inject PageHistoryState PageHistoryState
+
 
 @{
     var Model = State.LastNonErrorValue ?? new List<ContentView>() { };
@@ -46,7 +48,8 @@
         else
         {
             Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
-            navigation.NavigateTo($"/{routePath}/{CategoryId}/contents");
+            PageHistoryState.Back($"{routePath}/{CategoryId}/contents");
+            // navigation.NavigateTo($"/{routePath}/{CategoryId}/contents");
         }
 
         Processing = false;

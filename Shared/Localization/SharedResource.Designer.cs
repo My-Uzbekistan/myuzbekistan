@@ -70,6 +70,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ActionUrl.
+        /// </summary>
+        public static string ActionUrl {
+            get {
+                return ResourceManager.GetString("ActionUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
         public static string Active {
@@ -282,6 +291,15 @@ namespace Shared.Localization {
         public static string Edit {
             get {
                 return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Role.
+        /// </summary>
+        public static string EditRole {
+            get {
+                return ResourceManager.GetString("EditRole", resourceCulture);
             }
         }
         
@@ -660,6 +678,15 @@ namespace Shared.Localization {
         public static string reviews {
             get {
                 return ResourceManager.GetString("reviews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role.
+        /// </summary>
+        public static string Role {
+            get {
+                return ResourceManager.GetString("Role", resourceCulture);
             }
         }
         

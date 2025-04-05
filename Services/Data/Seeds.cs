@@ -13,7 +13,7 @@ public static class Seeds
     // ✅ Метод для создания ролей
     public static async Task SeedRolesAsync(RoleManager<IdentityRole<long>> roleManager)
     {
-        string[] roles = new[] { "User", "Admin" };
+        string[] roles = new[] { "User", "Admin","Moderator" };
 
         foreach (var role in roles)
         {
@@ -30,6 +30,7 @@ public static class Seeds
         var adminEmail = "travelAdmin@example.com";
         var adminUsername = "travelAdmin@example.com";
         var adminPassword = "1q2w3e4r5t6y!QAZ";
+
 
         var existingAdmin = await userManager.FindByNameAsync(adminUsername);
         if (existingAdmin == null)

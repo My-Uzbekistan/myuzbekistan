@@ -1,7 +1,6 @@
 using myuzbekistan.Services;
 using myuzbekistan.Shared;
 using ActualLab.Fusion;
-using Services.Features.User;
 
 namespace myuzbekistan.Server;
 public static class FusionServerExtension
@@ -18,7 +17,8 @@ public static class FusionServerExtension
         fusion.AddService<IAuditLogsService, AuditLogService>();
         fusion.AddService<IUserService, UserService>();
         fusion.AddService<IRegionService, RegionService>();
-        
+        fusion.AddService<ICurrencyService, CurrencyService>();
+
         return fusion;
     }
 }

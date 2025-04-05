@@ -5,11 +5,12 @@
 @inject ISnackbar Snackbar
 @inject NavigationManager navigation
 @inject Session Session
+@inject PageHistoryState PageHistoryState
 
 <Client.Pages.Content._Form OnSubmit="OnSubmit" Processing="@Processing" IsNew="true" CategoryId="CategoryId" />
 
 @code {
- 
+
     [Parameter]
     public long CategoryId { get; set; }
 
@@ -26,18 +27,19 @@
 
     public async Task OnSubmit(List<ContentView> entity)
     {
-       Processing = true;
-       
+        Processing = true;
 
-       var response= await Command.Run(new CreateContentCommand(Session,entity));
-       if(response.HasError)
-       {
-          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message, Severity.Error);
-       }
-       else
-       {
-          Snackbar.Add(@L["SuccessCreate"], Severity.Success);
-            navigation.NavigateTo($"/{routePath}/{CategoryId}/contents");
+
+        var response= await Command.Run(new CreateContentCommand(Session,entity));
+        if(response.HasError)
+        {
+            Snackbar.Add(@L["Error"]+" : "+response.Error?.Message, Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add(@L["SuccessCreate"], Severity.Success);
+            PageHistoryState.Back($"/{routePath}/{CategoryId}/contents");
+            // navigation.NavigateTo($"/{routePath}/{CategoryId}/contents");
        }
        Processing = false;
     }

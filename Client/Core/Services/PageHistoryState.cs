@@ -31,7 +31,7 @@ public class PageHistoryState(NavigationManager navManager)
 
     public bool CanGoBack()
     {
-        return previousPages.Count > 1;
+        return previousPages.Count > 0;
     }
 
     public void Back(string route)

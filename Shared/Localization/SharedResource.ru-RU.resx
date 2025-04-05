@@ -372,4 +372,13 @@
   <data name="PhotosCount" xml:space="preserve">
     <value>Кол-во Фотографии</value>
   </data>
+  <data name="EditRole" xml:space="preserve">
+    <value>Редактировать Роль</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Роль</value>
+  </data>
+  <data name="ActionUrl" xml:space="preserve">
+    <value>Ссылка</value>
+  </data>
 </root>

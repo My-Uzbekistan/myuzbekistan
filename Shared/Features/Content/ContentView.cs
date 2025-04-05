@@ -43,6 +43,7 @@ public partial class ContentView
     [property: DataMember] public long Id { get; set; }
     [property: DataMember] public string Locale { get; set; } = null!;
     [property: DataMember] public ContentStatus Status { get; set; } = ContentStatus.Active;
+    [property: DataMember] public string? ActionUrl { get; set; }
 
     public override bool Equals(object? o)
     {
@@ -68,6 +69,7 @@ public partial class ContentDto
     [property: DataMember] public FieldDto<List<FacilityItemDto>> Facilities { get; set; } = null!;
     [property: DataMember] public FieldDto<List<string>> Languages { get; set; } = null!;
     [property: DataMember] public FieldDto<List<string>> Files { get; set; } = null!;
+    [property: DataMember] public FieldDto<List<AttachmentDto>> Attachments { get; set; } = null!;
     [property: DataMember] public List<string>? Photos { get; set; } // Просто массив путей, без FieldDto
     [property: DataMember] public string? Photo { get; set; } // Просто строка, без FieldDto
     [property: DataMember] public FieldDto<List<ContactDto>> Contacts { get; set; } = null!;
@@ -135,6 +137,17 @@ public partial class ContactDto
     };
 }
 
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class AttachmentDto
+{
+    [property: DataMember] public string? Icon { get; set; } 
+    [property: DataMember] public string? Name { get; set; } 
+    [property: DataMember] public string? Files { get; set; }
+   
+}
+
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class ReviewDto
@@ -146,16 +159,6 @@ public partial class ReviewDto
     [property: DataMember] public DateTime CreatedAt { get; set; }
 }
 
-
-[DataContract, MemoryPackable]
-[ParameterComparer(typeof(ByValueParameterComparer))]
-public partial class Currency
-{
-    [property: DataMember] public int Id { get; set; }
-    [property: DataMember] public string Ccy { get; set; } = null!;
-    [property: DataMember] public string Rate { get; set; } = null!;
-}
-
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class ContentShort
@@ -164,4 +167,5 @@ public partial class ContentShort
     [property: DataMember] public string Title { get; set; } = null!;
     [property: DataMember] public string Description { get; set; } = null!;
     [property: DataMember] public string Photo { get; set; } = null!;
+    [property: DataMember] public string ActionUrl { get; set; } = null!;
 }

@@ -1,0 +1,30 @@
+@page "/users/create"
+
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+<_Form OnSubmit="OnSubmit" Processing="@Processing" IsNew="true"/>
+
+@code {
+ 
+    public bool Processing {get;set;} = false;
+
+    public async Task OnSubmit(CreateUser user)
+    {
+       Processing = true;
+
+        var response = await Command.Run(new CreateUserCommand(Session, user));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message, Severity.Error);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessCreate"], Severity.Success);
+          navigation.NavigateTo("/users");
+       }
+       Processing = false;
+    }
+}

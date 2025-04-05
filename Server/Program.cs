@@ -9,6 +9,7 @@ using BackuptaGram;
 using Blazored.LocalStorage;
 using Client;
 using Client.Core.Services;
+using Coravel;
 using EF.Audit.Core.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
@@ -139,6 +140,9 @@ services.Configure<RequestLocalizationOptions>(options =>
     options.AddSupportedUICultures(supportedCultures);
 });
 
+services.AddScheduler();
+services.AddTransient<CurrencyInvalidateScheduler>();
+
 
 //var supportedCultures = new[] { "en-US", "ru-RU", "uz-Latn" };
 
@@ -255,6 +259,15 @@ app
  .AddInteractiveServerRenderMode();
 app.MapAdditionalIdentityEndpoints();
 #endregion
+
+app.Services.UseScheduler(scheduler =>
+{
+    scheduler.Schedule<CurrencyInvalidateScheduler>().Cron("0 9 * * *").Zoned(TimeZoneInfo.Local);
+    scheduler.Schedule<CurrencyInvalidateScheduler>().Cron("0 16 * * *").Zoned(TimeZoneInfo.Local);
+    scheduler.Schedule<CurrencyInvalidateScheduler>().Cron("9 15 * * *").Zoned(TimeZoneInfo.Local);
+    
+    scheduler.Schedule<CurrencyInvalidateScheduler>().Cron("0 21 * * *").Zoned(TimeZoneInfo.Local);
+}).OnError(exception => throw exception);
 
 var dbContextFactory = app.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
 var apldbContextFactory = app.Services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();

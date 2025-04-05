@@ -21,6 +21,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(PacketVersions)" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(PacketVersions)" />
 		<PackageReference Include="Riok.Mapperly" Version="4.1.0" />
+		<PackageReference Include="Coravel" Version="6.0.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Shared\Shared.csproj" />

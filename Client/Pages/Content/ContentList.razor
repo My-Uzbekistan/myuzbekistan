@@ -38,18 +38,17 @@
                 {
                     <MudTd DataLabel="Title">@context.Title</MudTd>
                 }
-                @* @if (SortColumns.Contains("Description")) *@
-                @* { *@
-                @*     <MudTd DataLabel="Description">@context.PhotosView</MudTd> *@
-                @* } *@
+                @if (SortColumns.Contains("Description")) 
+                {
+                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                 }
+
                 @if (SortColumns.Contains("PhotosCount"))
                 {
                     <MudTd DataLabel="PhotosCount">
-                        @context.PhotosView.Count
-                        
+                        @context.PhotosView?.Count
                     </MudTd>
                 }
-
                 @if (SortColumns.Contains("Photos"))
                 {
                     <MudTd DataLabel="Photos">
@@ -175,6 +174,10 @@
         var contents = await ContentService.GetAll(CategoryId, MutableState.Value);
         var catField = category.First().Fields;
         string[] constatnFields = ["Title", "Id","PhotosCount", "RatingAverage", "Recommended"];
+        if(routePath == "more")
+        {
+            constatnFields = ["Title", "Id", "RatingAverage", "Recommended"];
+        }
         SortColumns = SortColumns.Where(x => constatnFields.Contains(x) || Bitwise.Is(catField, (ContentFields)Enum.Parse(typeof(ContentFields), x))).ToArray();
         
 

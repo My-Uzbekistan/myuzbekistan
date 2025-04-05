@@ -372,4 +372,13 @@
   <data name="PhotosCount" xml:space="preserve">
     <value>Fotosuratlar soni</value>
   </data>
+  <data name="EditRole" xml:space="preserve">
+    <value>Rolni tahrirlash</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Rol</value>
+  </data>
+  <data name="ActionUrl" xml:space="preserve">
+    <value>Havola</value>
+  </data>
 </root>

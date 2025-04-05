@@ -31,6 +31,8 @@ public class ContentService(IServiceProvider services, ICategoryService category
         content = content.Where(x => x.CategoryId == cnt.CategoryId);
         #endregion
 
+        content = content.Where(x => x.Status == ContentStatus.Active);
+
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
 
 
@@ -125,6 +127,8 @@ public class ContentService(IServiceProvider services, ICategoryService category
 
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
 
+        content = content.Where(x => x.Status == ContentStatus.Active);
+
         Sorting(ref content, options);
 
         var query = content
@@ -138,28 +142,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
             .Include(x => x.Languages)
             .AsSplitQuery()
             .AsNoTracking()
-                .Select(x => new MainPageContent
-                {
-                    ContentId = x.Id,
-                    Title = x.Title,
-                    Caption = x.Description,
-                    Photos = x.Photos.Select(p => p.Path).ToList(),
-                    Photo = x.Photo.Path,
-                    Region = x.Region.Name,
-                    Facilities = x.Facilities.Select(f => new FacilityItemDto
-                    {
-                        Id = f.Id,
-                        Name = f.Name,
-                        Icon = f.Icon.Path
-                    }).ToList(),
-                    Languages = x.Languages.Select(l => l.Name).ToList(),
-                    RatingAverage = x.RatingAverage,
-                    AverageCheck = x.AverageCheck,
-                    Price = x.Price,
-                    PriceInDollar = x.PriceInDollar,
-                    viewType = x.Category.ViewType,
-                    isFavorite = dbContext.Favorites.Any(f => f.UserId == userId && f.ContentId == x.Id)
-                });
+                .Select(x => mapToMainPage(x));
         ;
 
         var items = await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
@@ -194,6 +177,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
         content = content.Where(x => contentIds.Contains(x.Id));
 
         content = content.Where(x => x.Locale.Equals(CultureInfo.CurrentCulture.TwoLetterISOLanguageName));
+        content = content.Where(x => x.Status == ContentStatus.Active);
 
         Sorting(ref content, options);
 
@@ -208,31 +192,37 @@ public class ContentService(IServiceProvider services, ICategoryService category
             .Include(x => x.Languages)
             .AsSplitQuery()
             .AsNoTracking()
-            .Select(x => new MainPageContent
-            {
-                ContentId = x.Id,
-                Title = x.Title,
-                Caption = x.Description,
-                Photos = x.Photos.Select(p => p.Path).ToList(),
-                Photo = x.Photo.Path,
-                Region = x.Region.Name,
-                Facilities = x.Facilities.Select(f => new FacilityItemDto
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    Icon = f.Icon.Path
-                }).ToList(),
-                Languages = x.Languages.Select(l => l.Name).ToList(),
-                RatingAverage = x.RatingAverage,
-                AverageCheck = x.AverageCheck,
-                Price = x.Price,
-                PriceInDollar = x.PriceInDollar,
-                viewType = x.Category.ViewType,
-                isFavorite = true
-            });
+            .Select(x => mapToMainPage(x));
         ;
 
         return await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+    }
+
+
+    private static MainPageContent mapToMainPage(ContentEntity x)
+    {
+        return new MainPageContent
+        {
+            ContentId = x.Id,
+            Title = x.Title,
+            Caption = x.Description,
+            Photos = x.Photos?.Select(p => p.Path).ToList(),
+            Photo = x.Photo?.Path,
+            Region = x.Region.Name,
+            Facilities = x.Facilities.Select(f => new FacilityItemDto
+            {
+                Id = f.Id,
+                Name = f.Name,
+                Icon = f.Icon.Path
+            }).ToList(),
+            Languages = x.Languages.Select(l => l.Name).ToList(),
+            RatingAverage = x.RatingAverage,
+            AverageCheck = x.AverageCheck,
+            Price = x.Price,
+            PriceInDollar = x.PriceInDollar,
+            viewType = x.Category.ViewType,
+            isFavorite = true
+        };
     }
 
 
@@ -278,6 +268,20 @@ public class ContentService(IServiceProvider services, ICategoryService category
                         JOIN "Files" fil ON fil."Id" = cfe."FilesId"
                         WHERE cfe."ContentFilesId" = c."Id" and cfe."ContentFilesLocale" = c."Locale")
                     ),
+                    'Attachments', jsonb_build_object(
+                    'Name', COALESCE(cat."FieldNames"->>'Files', 'Files'),
+                    'Value',
+                    (
+                        SELECT jsonb_agg(jsonb_build_object(
+                            'Name', regexp_replace(fil."Name", '\.[^.]+$', ''),
+                            'Icon', '/Images/attachment.png',
+                            'Files', fil."Path"
+                        ))
+                        FROM "ContentEntityFileEntity" cfe
+                        JOIN "Files" fil ON fil."Id" = cfe."FilesId"
+                        WHERE cfe."ContentFilesId" = c."Id" AND cfe."ContentFilesLocale" = c."Locale"
+                    )
+                ),
                     'Photos',
                         (SELECT jsonb_agg(fil."Path")
                         FROM "ContentEntityFileEntity1" cfp

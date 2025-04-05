@@ -61,26 +61,8 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                     .FirstOrDefault()
                     ?.MapToApi(),
                 c.ViewType,
-                [.. c.Contents!
-                            .Where(content =>
-                            string.IsNullOrEmpty(options.Search) ||
-                            content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
-                            (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
-                            .Where(content =>
-                                options.RegionId == null ||
-                                (
-                                    content.Region != null &&
-                                    content.Region.IsActive &&
-                                    (
-                                        content.RegionId == options.RegionId ||
-                                        content.Region.ParentRegionId == options.RegionId
-                                    )
-                                )
-                            )
-                                    .OrderBy(_ => Guid.NewGuid()) // для SQLite/PostgreSQL
-                                    .Select(x => x.MapToApi())
-                                    ]
-                            ))
+                [.. ContentQuery(c.Contents!,options).OrderBy(_ => Guid.NewGuid())
+                .Select(x => x.MapToApi())]))
             .Where(s =>
                 string.IsNullOrEmpty(options.Search) ||
                 s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
@@ -91,6 +73,39 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         return [.. categories];
     }
+
+    private IEnumerable<ContentEntity> ContentQuery(List<ContentEntity> contentEntities, TableOptions options)
+    {
+        if (options.RegionId is null || options.RegionId == 1)
+        {
+
+         return   contentEntities.Where(content =>
+                            string.IsNullOrEmpty(options.Search) ||
+                            content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+                            (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
+                            .Where(content =>
+                                    content.Region != null &&
+                                    content.Region.IsActive &&
+                                    content.Status == ContentStatus.Active
+
+                            );
+        }
+
+        return contentEntities.Where(content =>
+                            string.IsNullOrEmpty(options.Search) ||
+                            content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+                            (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
+                            .Where(content =>
+                                options.RegionId == null ||
+                                (
+                                    content.Region != null &&
+                                    content.Region.IsActive && content.RegionId == options.RegionId &&
+                                    content.Status == ContentStatus.Active
+                                )
+                            );
+
+    }
+
     //[ComputeMethod]
     public async virtual Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default)
     {
