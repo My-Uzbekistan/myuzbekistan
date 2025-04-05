@@ -1,5 +1,6 @@
 @page "/categories/{CategoryId:long}/contents"
 @page "/more/{CategoryId:long}/contents"
+@using System.Security.Claims
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -107,7 +108,10 @@
                         <MudLink Href=@($"{routePath}/{CategoryId}/contents/{context.Id}")>
                             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                         </MudLink>
-                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                        @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+                        {
+                         <MudFab @onclick=@(()=>Delete(context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />    
+                        }
                     </div>
                 </MudTd>
             </ChildContent>
@@ -121,7 +125,8 @@
     [Parameter] public long CategoryId { get; set; }
     private TableResponse<ContentView>? Items;
 
-
+    [CascadingParameter]
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
 
     private string[] SortColumns = new string[] { "Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
 

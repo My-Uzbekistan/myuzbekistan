@@ -18,6 +18,7 @@ public static class FusionServerExtension
         fusion.AddService<IUserService, UserService>();
         fusion.AddService<IRegionService, RegionService>();
         fusion.AddService<ICurrencyService, CurrencyService>();
+        fusion.AddService<IContentStatisticService, ContentStatisticService>();
 
         return fusion;
     }

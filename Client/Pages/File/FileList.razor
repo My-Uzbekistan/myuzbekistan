@@ -1,4 +1,5 @@
 @page "/files"
+@using System.Security.Claims
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -30,7 +31,7 @@
                 else
                 {
                     <MudIcon Icon="@Icons.Custom.FileFormats.FileDocument"></MudIcon>
-                    
+
                 }
 
             </MudTd>
@@ -43,10 +44,13 @@
 
             <MudTd Class="d-flex justify-end">
                 <div style="display:flex; gap:7px;">
-                    <MudLink Href=@($"/files/{context.Id }")>
+                    <MudLink Href=@($"/files/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>
-                    <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+                    {
+                        <MudFab @onclick=@(() => Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    }
                 </div>
             </MudTd>
         </UTCTable>
@@ -55,11 +59,14 @@
 
 @code {
 
+    [CascadingParameter]
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+
     private TableResponse<FileView>? Items;
 
     private string[] imageExtensions = ["svg", "jpg", "png"];
 
-    private string[] SortColumns = new string[] { "Path","Name", "Extension" , "Size", "Type", "Id", };
+    private string[] SortColumns = new string[] { "Path", "Name", "Extension", "Size", "Type", "Id", };
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {

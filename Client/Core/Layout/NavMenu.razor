@@ -1,3 +1,7 @@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" IconColor="Color.Inherit"> @L["Home"]</MudNavLink>
 <MudNavLink Href="/categories" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Category" IconColor="Color.Inherit">@L["Category"]</MudNavLink>
 <MudNavGroup Title=@L["Settings"] Expanded="false" Icon="@Icons.Material.Filled.Settings">
@@ -6,9 +10,18 @@
     <MudNavLink Href="/files" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Attachment" IconColor="Color.Inherit">@L["File"]</MudNavLink>
     <MudNavLink Href="/languages" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Language" IconColor="Color.Inherit">@L["Language"]</MudNavLink>
     <MudNavLink Href="/reviews" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Reviews" IconColor="Color.Inherit">@L["Review"]</MudNavLink>
-    <MudNavLink Href="/users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VerifiedUser" IconColor="Color.Inherit">@L["User"]</MudNavLink>
+    @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+    {
+        <MudNavLink Href="/users" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.VerifiedUser" IconColor="Color.Inherit">@L["User"]</MudNavLink>
+    }
     <MudNavLink Href="/regions" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.AreaChart" IconColor="Color.Inherit">@L["Region"]</MudNavLink>
     <MudNavLink Href="/more" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.More" IconColor="Color.Inherit">@L["More"]</MudNavLink>
 </MudNavGroup>
 
 
+@code {
+    [CascadingParameter]
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+
+
+}

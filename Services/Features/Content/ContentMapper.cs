@@ -9,6 +9,9 @@ public static partial class ContentMapper
 {
     #region Usable
 
+    public static ContentRequestEntity MapToRequest(this ContentRequestView src) => src.MapToRequestEntity();
+    public static ContentRequestView MapToRequestV(this ContentRequestEntity src) => src.MapToRequestView();
+
     public static ContentShort MapToShortApi(this ContentEntity src)
     {
         var source = src.ToShortApi();
@@ -33,6 +36,8 @@ public static partial class ContentMapper
     #endregion
 
     #region Internal
+
+    
 
     private static List<string> MapToListOfString(ICollection<FileEntity> source)
     {
@@ -78,6 +83,10 @@ public static partial class ContentMapper
     private static partial ContentShort ToShortApi(this ContentEntity src);
 
     private static partial FacilityApiView MapToFacilityView(FacilityEntity source);
+
+    private static partial ContentRequestEntity MapToRequestEntity(this ContentRequestView src);
+    private static partial ContentRequestView MapToRequestView(this ContentRequestEntity src);
+
     [MapProperty("Id", "ContentId")]
     private static partial MainPageContent ToApi(this ContentEntity src);
 

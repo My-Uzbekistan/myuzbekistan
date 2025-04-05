@@ -1,11 +1,13 @@
 ﻿using ActualLab.Fusion.Blazor;
 using Client.Core.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Services;
 using System.Globalization;
+using System.Security.Claims;
 
 namespace Client.Core.Layout;
 
@@ -13,6 +15,9 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 {
     [CascadingParameter(Name = "IsDark")]
     public bool IsDark { get; set; }
+
+    [CascadingParameter(Name = "IsDark")]
+    public IEnumerable<Claim> Claims { get; set; } = new List<Claim>();
     bool _drawerOpen = true;
 
     [Inject] private LayoutService LayoutService { get; set; } = null!;
@@ -28,6 +33,19 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         LayoutService.Updated += OnLayoutServiceUpdated;
         Navigation.LocationChanged += OnLocationChanged;
         UIActionFailureTracker.Changed += OnUIActionFailureTrackerChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider
+           .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            Claims = user.Claims;
+        }
+        await base.OnInitializedAsync();
     }
     private void OnLayoutServiceUpdated(object? sender, EventArgs e) => StateHasChanged();
 

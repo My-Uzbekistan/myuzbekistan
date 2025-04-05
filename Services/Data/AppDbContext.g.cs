@@ -13,4 +13,5 @@ public partial class AppDbContext : DbContextBase
     public DbSet<LanguageEntity> Languages { get; protected set; } = null!;
     public DbSet<RegionEntity> Regions { get; protected set; } = null!;
     public DbSet<ReviewEntity> Reviews { get; protected set; } = null!;
+    public DbSet<ContentRequestEntity> ContentRequests { get; protected set; } = null!;
 }

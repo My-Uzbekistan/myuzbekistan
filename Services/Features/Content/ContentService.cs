@@ -8,11 +8,12 @@ using myuzbekistan.Shared;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Reactive;
+using System.Security.Claims;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 namespace myuzbekistan.Services;
 
-public class ContentService(IServiceProvider services, ICategoryService categoryService, ILogger<ContentService> logger) : DbServiceBase<AppDbContext>(services), IContentService
+public class ContentService(IServiceProvider services, ICategoryService categoryService, ILogger<ContentService> logger, IAuth auth) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
 
@@ -23,7 +24,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
         var content = from s in dbContext.Contents select s;
 
         var cnt = dbContext.Contents.FirstOrDefault(x => x.Category.Name.Contains(CategoryName));
-        if(cnt == null)
+        if (cnt == null)
         {
             return [];
         }
@@ -381,7 +382,21 @@ public class ContentService(IServiceProvider services, ICategoryService category
 
     }
 
+    public async virtual Task AddRequest(AddRequestCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
 
+        var user = await auth.GetUser(command.Session);
+
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var request = command.ContentRequest.MapToRequest();
+            dbContext.Add(request);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
     public async virtual Task Delete(DeleteContentCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)

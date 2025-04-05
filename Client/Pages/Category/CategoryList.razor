@@ -1,5 +1,6 @@
 @page "/categories"
 @page "/more"
+@using System.Security.Claims
 
 @inject UICommander commander
 @inject Session Session
@@ -52,10 +53,13 @@
             <MudTd>
 
                 <div style="display:flex; gap:7px; " class="d-flex justify-end">
-                    <MudLink Href=@($"/{routePath}/{context.Id }")>
+                    <MudLink Href=@($"/{routePath}/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>
-                    <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+                    {
+                        <MudFab @onclick=@(() => Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    }
                 </div>
             </MudTd>
         </UTCTable>
@@ -67,6 +71,8 @@
     private TableResponse<CategoryView>? Items;
 
     private string[] SortColumns = new string[] { "Icon", "Name", "ContentCount", "Order", "Id", };
+    [CascadingParameter]
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
 
     protected override void OnInitialized()
     {

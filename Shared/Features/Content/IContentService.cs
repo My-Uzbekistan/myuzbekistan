@@ -22,5 +22,8 @@ public interface IContentService:IComputeService
     Task<ContentDto> GetContent(long ContentId,long userId, CancellationToken cancellationToken = default);
     Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default);
     Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, TableOptions options, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task AddRequest(AddRequestCommand command, CancellationToken cancellationToken = default);
 }
     

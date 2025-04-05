@@ -1,4 +1,5 @@
 @page  "/reviews" 
+@using System.Security.Claims
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -32,7 +33,10 @@
                         <MudLink Href=@($"/reviews/{context.Id }")>
                             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
                         </MudLink>
+                        @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+{
                         <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+}
                     </div>
                 </MudTd>
         </UTCTable>
@@ -42,6 +46,9 @@
 @code {
 
     private TableResponse<ReviewView>? Items ;
+
+    [CascadingParameter]
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
     
     private string[] SortColumns = new string[] {"User","Comment","Rating","Id",};
 
