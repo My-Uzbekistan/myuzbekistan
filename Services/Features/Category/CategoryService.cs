@@ -84,9 +84,8 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                             content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
                             (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
                             .Where(content =>
-                                    content.Region != null &&
-                                    content.Region.IsActive &&
-                                    content.Status == ContentStatus.Active
+                                     (content.Region == null || content.Region.IsActive) &&
+    content.Status == ContentStatus.Active
 
                             );
         }
