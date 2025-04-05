@@ -62,33 +62,32 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                     ?.MapToApi(),
                 c.ViewType,
                 [.. c.Contents!
-                    .Where(content =>
-                        // фильтрация по поиску
-                        string.IsNullOrEmpty(options.Search) ||
-                        content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
-                        (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
-                    .Where(content =>
-                        // фильтрация по региону
-                        (options.RegionId == null ||
-                         content.RegionId == options.RegionId ||
-                         content.Region?.ParentRegionId == options.RegionId)
-                        &&
-                        // проверка, что регион активен
-                            options.RegionId == null
-        ? true // регион не указан — не фильтруем
-        : content.RegionId == options.RegionId
-            && content.Region != null
-            && content.Region.IsActive) 
-                    .OrderBy(_ => Guid.NewGuid()) // для SQLite/PostgreSQL
-                    .Select(x => x.MapToApi())]
-            ))
+                            .Where(content =>
+                            string.IsNullOrEmpty(options.Search) ||
+                            content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+                            (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
+                            .Where(content =>
+                                options.RegionId == null ||
+                                (
+                                    content.Region != null &&
+                                    content.Region.IsActive &&
+                                    (
+                                        content.RegionId == options.RegionId ||
+                                        content.Region.ParentRegionId == options.RegionId
+                                    )
+                                )
+                            )
+                                    .OrderBy(_ => Guid.NewGuid()) // для SQLite/PostgreSQL
+                                    .Select(x => x.MapToApi())
+                                    ]
+                            ))
             .Where(s =>
                 string.IsNullOrEmpty(options.Search) ||
                 s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
                 s.Contents.Any(t => t.Region.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase))
             );
 
-            var categories =await  catQuery.ToListAsync(cancellationToken);
+        var categories = await catQuery.ToListAsync(cancellationToken);
 
         return [.. categories];
     }
