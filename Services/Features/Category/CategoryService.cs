@@ -112,6 +112,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var category = from s in dbContext.Categories.Include(x => x.Icon)
                        where s.Status == ContentStatus.Active && s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName && s.ViewType != ViewType.More
+                       orderby s.Order
                        select new CategoryApi(s.Name, s.Icon!.Path!, s.Id);
 
         return [.. category];
