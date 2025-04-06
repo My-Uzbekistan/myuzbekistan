@@ -176,7 +176,7 @@
                                         <MudItem md="6" xs="12">
                                             <MudNumericField @bind-Value="current.PriceInDollar"
                                                              @bind-Value:after="() => { Model.ForEach(x=>{x.PriceInDollar = current.PriceInDollar;}); }"
-                                                             Label="@L["PriceInDollar"]"
+                                                             Label=@($"{L["PriceInDollar"]} ({currency})")
                                                              Culture="@(new CultureInfo("ru-RU"))"
                                                              Format="N0"
                                                              Adornment="Adornment.End"
@@ -205,6 +205,7 @@
 
     private bool IsCategories;
     private string? routePath;
+    private string currency = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -213,6 +214,7 @@
         base.OnInitialized();
     }
 
+    
 
     void OnChangeStatus(ContentStatus status)
     {
@@ -225,8 +227,8 @@
 
     async Task OnChangePrice(ContentView contentView)
     {
-        var currency = await currencyService.GetUsdCourse();
-        decimal rate = decimal.Parse(currency.Rate.Replace(".",","));
+        currency = (await currencyService.GetUsdCourse()).Rate;
+        decimal rate = decimal.Parse(currency, CultureInfo.InvariantCulture);
         Model.ForEach(s =>
         {
             s.Price = contentView.Price;
@@ -267,6 +269,7 @@
     protected override async Task OnInitializedAsync()
     {
         var categories = await categoryService.Get(CategoryId);
+        currency = (await currencyService.GetUsdCourse()).Rate;
         categoryView = categories.First();
 
         foreach (var item in Model)
