@@ -17,11 +17,14 @@ public class ContentStatisticService(
     public async virtual Task<StatisticSummaryView> GetSummary(StatisticFilter filter, CancellationToken cancellationToken = default)
     {
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        List<string> excluded = ["About Uzbekistan", "Useful tips"];
+        var categoryCount = await dbContext.Categories.Where(x=> x.Locale == "en" && x.Status == ContentStatus.Active
+        && !excluded.Contains(x.Name)
+        ).Select(x => x.Id).CountAsync(cancellationToken);
 
-        var categoryCount = await dbContext.Categories.Where(x=> x.Locale == LangHelper.currentLocale && x.Status == ContentStatus.Active).Select(x => x.Id).CountAsync(cancellationToken);
-
+        
         var contentPerCategory = await dbContext.Contents
-            .Where(x => x.Locale == LangHelper.currentLocale && x.Status == ContentStatus.Active)
+            .Where(x => x.Locale == "en" && x.Status == ContentStatus.Active && !excluded.Contains(x.Category.Name))
             .GroupBy(x => new { x.CategoryId, x.Category.Name })
             .Select(g => new CategoryContentCount
             {
