@@ -201,7 +201,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
     }
 
 
-    private static MainPageContent mapToMainPage(ContentEntity x,AppDbContext dbContext ,long userId)
+    private static MainPageContent mapToMainPage(ContentEntity x, AppDbContext dbContext, long userId)
     {
         return new MainPageContent
         {
@@ -210,19 +210,19 @@ public class ContentService(IServiceProvider services, ICategoryService category
             Caption = x.Description,
             Photos = x.Photos?.Select(p => p.Path).ToList(),
             Photo = x.Photo?.Path,
-            Region = x.Region.Name,
-            Facilities = x.Facilities.Select(f => new FacilityItemDto
+            Region = x.Region?.Name,
+            Facilities = x.Facilities?.Select(f => new FacilityItemDto
             {
                 Id = f.Id,
                 Name = f.Name,
-                Icon = f.Icon.Path
+                Icon = f.Icon?.Path
             }).ToList(),
-            Languages = x.Languages.Select(l => l.Name).ToList(),
+            Languages = x.Languages?.Select(l => l.Name).ToList(),
             RatingAverage = x.RatingAverage,
             AverageCheck = x.AverageCheck,
             Price = x.Price,
             PriceInDollar = x.PriceInDollar,
-            viewType = x.Category.ViewType,
+            viewType = x.Category?.ViewType ?? default(ViewType),
             isFavorite = dbContext.Favorites.Any(f => f.UserId == userId && f.ContentId == x.Id)
         };
     }
