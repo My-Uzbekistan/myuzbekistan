@@ -18,10 +18,10 @@ public class ContentStatisticService(
     {
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
-        var categoryCount = await dbContext.Categories.Select(x => x.Id).Distinct().CountAsync(cancellationToken);
+        var categoryCount = await dbContext.Categories.Where(x=> x.Locale == LangHelper.currentLocale && x.Status == ContentStatus.Active).Select(x => x.Id).CountAsync(cancellationToken);
 
         var contentPerCategory = await dbContext.Contents
-            .Where(x => x.Locale == LangHelper.currentLocale)
+            .Where(x => x.Locale == LangHelper.currentLocale && x.Status == ContentStatus.Active)
             .GroupBy(x => new { x.CategoryId, x.Category.Name })
             .Select(g => new CategoryContentCount
             {
@@ -53,7 +53,7 @@ public class ContentStatisticService(
                 Count = g.Count()
             }).ToListAsync(cancellationToken);
 
-        var facilityCount = await dbContext.Facilities.CountAsync(cancellationToken);
+        var facilityCount = await dbContext.Facilities.Where(x=>x.Locale == LangHelper.currentLocale) .CountAsync(cancellationToken);
 
         var topRequests = await contentRequests
             .GroupBy(x => new { x.CategoryId, x.CategoryName, x.ContentId, x.ContentName })

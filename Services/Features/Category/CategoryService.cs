@@ -83,11 +83,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                             string.IsNullOrEmpty(options.Search) ||
                             content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
                             (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
-                            .Where(content =>
-                                     (content.Region == null || content.Region.IsActive) &&
-    content.Status == ContentStatus.Active
-
-                            );
+                            .Where(content =>content.Status == ContentStatus.Active);
         }
 
         return contentEntities.Where(content =>

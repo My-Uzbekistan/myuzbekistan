@@ -1,5 +1,6 @@
 @page "/regions"
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -7,6 +8,8 @@
 @inject IDialogService _dialogService
 @inject UInjector UInjector
 @inject IRegionService RegionService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 @inherits MixedStateComponent<TableResponse<RegionView>,TableOptions>
 @{
@@ -50,8 +53,15 @@
 
     private string[] SortColumns = new string[] { "Name", "Locale", "ParentRegion", "Id", "Status" };
 
-    [CascadingParameter]
     public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Claims = user.Claims;
+        await base.OnInitializedAsync();
+    }
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {

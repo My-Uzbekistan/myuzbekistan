@@ -2,6 +2,7 @@ using ActualLab.Async;
 using ActualLab.Fusion;
 using ActualLab.Fusion.Authentication;
 using ActualLab.Fusion.EntityFramework;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using myuzbekistan.Shared;
@@ -143,7 +144,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
             .Include(x => x.Languages)
             .AsSplitQuery()
             .AsNoTracking()
-                .Select(x => mapToMainPage(x));
+                .Select(x => mapToMainPage(x,dbContext, userId));
         ;
 
         var items = await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
@@ -200,7 +201,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
     }
 
 
-    private static MainPageContent mapToMainPage(ContentEntity x)
+    private static MainPageContent mapToMainPage(ContentEntity x,AppDbContext dbContext ,long userId)
     {
         return new MainPageContent
         {
@@ -222,7 +223,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
             Price = x.Price,
             PriceInDollar = x.PriceInDollar,
             viewType = x.Category.ViewType,
-            isFavorite = true
+            isFavorite = dbContext.Favorites.Any(f => f.UserId == userId && f.ContentId == x.Id)
         };
     }
 

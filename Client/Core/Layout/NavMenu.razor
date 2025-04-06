@@ -20,8 +20,14 @@
 
 
 @code {
-    [CascadingParameter]
     public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Claims = user.Claims;
+        await base.OnInitializedAsync();
+    }
 
 }

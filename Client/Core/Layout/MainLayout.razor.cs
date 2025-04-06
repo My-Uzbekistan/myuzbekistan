@@ -35,18 +35,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         UIActionFailureTracker.Changed += OnUIActionFailureTrackerChanged;
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider
-           .GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity is not null && user.Identity.IsAuthenticated)
-        {
-            Claims = user.Claims;
-        }
-        await base.OnInitializedAsync();
-    }
+    
     private void OnLayoutServiceUpdated(object? sender, EventArgs e) => StateHasChanged();
 
     private readonly CultureInfo[] supportedCultures = [

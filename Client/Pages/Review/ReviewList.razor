@@ -1,5 +1,6 @@
 @page  "/reviews" 
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @inject UICommander commander
 @inject Session Session
 @inject NavigationManager navigation
@@ -7,6 +8,8 @@
 @inject IDialogService _dialogService
 @inject UInjector UInjector
 @inject IReviewService ReviewService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 @inherits MixedStateComponent<TableResponse<ReviewView>,TableOptions>
 @{
@@ -47,8 +50,15 @@
 
     private TableResponse<ReviewView>? Items ;
 
-    [CascadingParameter]
     public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Claims = user.Claims;
+        await base.OnInitializedAsync();
+    }
     
     private string[] SortColumns = new string[] {"User","Comment","Rating","Id",};
 
