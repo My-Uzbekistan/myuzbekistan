@@ -26,7 +26,7 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
 
         var count = await favorite.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var contentIds = favorite.Where(f => f.UserId == userId).Select(x => x.ContentId).Paginate(options).ToList();
-        return new TableResponse<MainPageContent> { Items = await contentService.GetContentsByIds(contentIds, options, cancellationToken), TotalItems = count };
+        return new TableResponse<MainPageContent> { Items = await contentService.GetContentsByIds(contentIds, userId, options, cancellationToken), TotalItems = count };
     }
     [ComputeMethod]
     public async virtual Task<TableResponse<FavoriteView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)

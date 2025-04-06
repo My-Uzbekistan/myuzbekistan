@@ -155,7 +155,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
 
 
     [ComputeMethod]
-    public async virtual Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, long userId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -194,7 +194,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
             .Include(x => x.Languages)
             .AsSplitQuery()
             .AsNoTracking()
-            .Select(x => mapToMainPage(x));
+            .Select(x => mapToMainPage(x,dbContext, userId));
         ;
 
         return await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
