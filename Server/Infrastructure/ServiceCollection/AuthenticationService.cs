@@ -43,6 +43,19 @@ namespace Server.Infrastructure.ServiceCollection
                     options.ClaimActions.MapJsonKey("urn:google:profile", "link");
                     options.ClaimActions.MapJsonKey("urn:google:image", "picture");
                 })
+                .AddApple(options =>
+                {
+                    options.ClientId = configuration.GetValue<string>("Apple:ClientId")!;
+                    options.KeyId = configuration.GetValue<string>("Apple:KeyId")!;
+                    options.TeamId = configuration.GetValue<string>("Apple:TeamId")!;
+                    options.UsePrivateKey((keyId) => env.ContentRootFileProvider.GetFileInfo(configuration.GetValue<string>("Apple:PrivateKey")!));
+                    options.CallbackPath = "/signin-apple";
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
+                    options.Scope.Add("email");
+                    options.Scope.Add("name");
+
+                    options.SaveTokens = true;
+                })
                 .AddPolicyScheme("oidc", "oidc", options =>
                     options.ForwardDefaultSelector = context =>
                     {

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.Google;
+﻿using AspNet.Security.OAuth.Apple;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -7,11 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using myuzbekistan.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Google.Apis.Auth;
 
 namespace Server.Controllers;
 
@@ -79,6 +82,14 @@ public class AuthController : ControllerBase
         var redirectUrl = Url.Action(nameof(ExternalLoginCallback));
         var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    [HttpGet("login-apple")]
+    public IActionResult LoginApple()
+    {
+        var redirectUrl = Url.Action(nameof(ExternalLoginCallback));
+        var properties = new AuthenticationProperties { RedirectUri = redirectUrl };
+        return Challenge(properties, AppleAuthenticationDefaults.AuthenticationScheme);
     }
 
     private async Task<GoogleJsonWebSignature.Payload?> ValidateGoogleToken(string idToken, string platform)
@@ -159,6 +170,131 @@ public class AuthController : ControllerBase
 
     }
 
+
+    public class AppleKeySet
+    {
+        [JsonProperty("keys")]
+        public List<AppleKey> Keys { get; set; } = new();
+    }
+
+    public class AppleKey
+    {
+        [JsonProperty("kty")]
+        public string Kty { get; set; } = default!;
+
+        [JsonProperty("kid")]
+        public string Kid { get; set; } = default!;
+
+        [JsonProperty("use")]
+        public string Use { get; set; } = default!;
+
+        [JsonProperty("alg")]
+        public string Alg { get; set; } = default!;
+
+        [JsonProperty("n")]
+        public string N { get; set; } = default!;
+
+        [JsonProperty("e")]
+        public string E { get; set; } = default!;
+    }
+
+    public async Task<ClaimsPrincipal?> ValidateAppleTokenAsync(string idToken)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwt = handler.ReadJwtToken(idToken);
+
+        // Получаем ключи от Apple (их public keys)
+        using var http = new HttpClient();
+        var json = await http.GetStringAsync("https://appleid.apple.com/auth/keys");
+        var keySet = JsonConvert.DeserializeObject<AppleKeySet>(json);
+        var key = keySet?.Keys.First(x=>x.Kid == jwt.Header.Kid);
+
+
+        var rsa = new RsaSecurityKey(new RSAParameters
+        {
+            Modulus = Base64UrlEncoder.DecodeBytes(key.N),
+            Exponent = Base64UrlEncoder.DecodeBytes(key.E)
+        });
+
+        var parameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "https://appleid.apple.com",
+
+            ValidateAudience = true,
+            ValidAudience = "uz.travel.my.uzbid",
+
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = rsa,
+
+            ValidateLifetime = true
+        };
+
+        try
+        {
+            var principal = handler.ValidateToken(idToken, parameters, out var _);
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    [HttpPost("apple-login")]
+    public async Task<IActionResult> AppleLogin([FromBody] GoogleLoginRequest request, [FromQuery] string platform)
+    {
+
+        var validPayload = await ValidateAppleTokenAsync(request.IdToken);
+            
+        if (validPayload == null)
+        {
+            return BadRequest("Invalid Google token.");
+        }
+
+        var email = validPayload.Claims.First(x=>x.Type == ClaimTypes.Email).Value;
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null)
+        {
+            user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                //ProfilePictureUrl = validPayload.Picture
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            await _userManager.AddToRoleAsync(user, "User");
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var accessToken = GenerateJwtToken(user, roles);
+
+        var refreshToken = GenerateRefreshToken();
+        // Сохраняем refresh-токен в БД
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+        try
+        {
+            return Ok(new
+            {
+                access_token = accessToken,
+                refresh_token = refreshToken,
+                expires = DateTime.Now.AddMinutes(30).Millisecond
+            });
+        }
+        finally
+        {
+            await _userManager.UpdateAsync(user);
+        }
+
+    }
+
     // Callback после авторизации через Google
     [HttpGet("external-login-callback")]
     public async Task<IActionResult> ExternalLoginCallback()
@@ -169,6 +305,7 @@ public class AuthController : ControllerBase
             return BadRequest("Ошибка аутентификации через Google");
 
         var email = authenticateResult.Principal.FindFirstValue(ClaimTypes.Email);
+        var idToken = authenticateResult.Properties?.GetTokenValue("id_token");
         var user = await _userManager.FindByEmailAsync(email);
 
         if (user == null)

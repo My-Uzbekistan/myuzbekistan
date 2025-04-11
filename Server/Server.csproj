@@ -11,6 +11,7 @@
 	<!--MICROSOFT-->
 	<ItemGroup>
 		<PackageReference Include="AlertaGram" Version="1.0.4" />
+		<PackageReference Include="AspNet.Security.OAuth.Apple" Version="9.2.0" />
 		
 		
 		<PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
@@ -62,5 +63,12 @@
 		<ProjectReference Include="..\Client\Client.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
 		<ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Update="AuthKey_Y54YS75249.p8">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>
