@@ -176,24 +176,21 @@ public class AuthController : ControllerBase
     public async Task<ClaimsPrincipal?> ValidateAppleTokenAsync(string idToken)
     {
         var handler = new JwtSecurityTokenHandler();
-        //var jwt = handler.ReadJwtToken(idToken);
+        var jwt = handler.ReadJwtToken(idToken);
 
-        //var key = new AppleKey
-        //{
-        //    Kty = "RSA",
-        //    Kid = "dMlERBaFdK",
-        //    Use = "sig",
-        //    Alg = "RS256",
-        //    N = "ryLWkB74N6SJNRVBjKF6xKMfP-QW3AAsJotv0LjVtf7m4NZNg_gTL78e7O8wmvngF8FuzBrvqf1mGW17Ct8BgNK6YXxnoGL0YLmlwXbmCZvTXki0VlEW1PDXeViWy7qXaCp2caF5v4OOdPsgroxNO_DgJRTuA_izJ4DFZYHCHXwojfdWJiDYG67j5PlD5pXKGx7zaqyryjovZTEII_Z1_bhFCRUZRjfJ3TVoK0fZj2z7iAZWjn33i-V3zExUhwzEyeuGph0118NfmOLCUEy_Jd4xvLf_X4laPpe9nq8UeORfs72yz2qH7cHDKL85W6oG08Gu05JWuAs5Ay49WxJrmw",
-        //    E = "AQAB"
-        //};
+        // Получаем ключи от Apple (их public keys)
+        using var http = new HttpClient();
+        var json = await http.GetStringAsync("https://appleid.apple.com/auth/keys");
+        var keySet = JsonConvert.DeserializeObject<AppleKeySet>(json);
+        var key = keySet?.Keys.First(x => x.Kid == jwt.Header.Kid);
 
 
-        //var rsa = new RsaSecurityKey(new RSAParameters
-        //{
-        //    Modulus = Base64UrlEncoder.DecodeBytes(key.N),
-        //    Exponent = Base64UrlEncoder.DecodeBytes(key.E)
-        //});
+
+        var rsa = new RsaSecurityKey(new RSAParameters
+        {
+            Modulus = Base64UrlEncoder.DecodeBytes(key.N),
+            Exponent = Base64UrlEncoder.DecodeBytes(key.E)
+        });
 
         var parameters = new TokenValidationParameters
         {
@@ -201,10 +198,10 @@ public class AuthController : ControllerBase
             ValidIssuer = "https://appleid.apple.com",
 
             ValidateAudience = false,
-            //ValidAudience = "uz.travel.my.uzbid",
+            ValidAudience = "uz.travel.my.uzb",
 
             ValidateIssuerSigningKey = false,
-            //IssuerSigningKey = rsa,
+            IssuerSigningKey = rsa,
 
             ValidateLifetime = true
         };
