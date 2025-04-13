@@ -221,7 +221,7 @@ public class AuthController : ControllerBase
             ValidateIssuer = true,
             ValidIssuer = "https://appleid.apple.com",
 
-            //ValidateAudience = true,
+            ValidateAudience = false,
             //ValidAudience = "uz.travel.my.uzbid",
 
             ValidateIssuerSigningKey = true,
