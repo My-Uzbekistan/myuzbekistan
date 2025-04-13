@@ -221,8 +221,8 @@ public class AuthController : ControllerBase
             ValidateIssuer = true,
             ValidIssuer = "https://appleid.apple.com",
 
-            ValidateAudience = true,
-            ValidAudience = "uz.travel.my.uzbid",
+            //ValidateAudience = true,
+            //ValidAudience = "uz.travel.my.uzbid",
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = rsa,
@@ -249,7 +249,7 @@ public class AuthController : ControllerBase
             
         if (validPayload == null)
         {
-            return BadRequest("Invalid Google token.");
+            return BadRequest("Invalid apple token.");
         }
 
         var email = validPayload.Claims.First(x=>x.Type == ClaimTypes.Email).Value;
