@@ -137,7 +137,7 @@ public class AuthController : ControllerBase
             user = new ApplicationUser
             {
                 UserName = email,
-                FullName = request.UserName,
+                FullName = request.UserName ?? validPayload.Name,
                 Email = email,
                 ProfilePictureUrl = request.PhotoUrl ?? validPayload.Picture
             };
@@ -239,7 +239,7 @@ public class AuthController : ControllerBase
             user = new ApplicationUser
             {
                 UserName = email,
-                FullName = request.UserName,
+                FullName = request.UserName ?? email,
                 Email = email,
                 ProfilePictureUrl = request.PhotoUrl 
             };
