@@ -117,6 +117,8 @@ public class AuthController : ControllerBase
     public class GoogleLoginRequest
     {
         public string IdToken { get; set; }
+        public string? UserName { get; set; }
+        public string? PhotoUrl { get; set; }
     }
     [HttpPost("google-login")]
     public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request, [FromQuery] string platform)
@@ -135,8 +137,9 @@ public class AuthController : ControllerBase
             user = new ApplicationUser
             {
                 UserName = email,
+                FullName = request.UserName,
                 Email = email,
-                ProfilePictureUrl = validPayload.Picture
+                ProfilePictureUrl = request.PhotoUrl ?? validPayload.Picture
             };
 
             var result = await _userManager.CreateAsync(user);
@@ -236,8 +239,9 @@ public class AuthController : ControllerBase
             user = new ApplicationUser
             {
                 UserName = email,
+                FullName = request.UserName,
                 Email = email,
-                //ProfilePictureUrl = validPayload.Picture
+                ProfilePictureUrl = request.PhotoUrl 
             };
 
             var result = await _userManager.CreateAsync(user);
@@ -377,7 +381,7 @@ public class AuthController : ControllerBase
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new("userName", user.UserName!),
+            new("userName", user.FullName!),
             new("photoUrl", user.ProfilePictureUrl ?? string.Empty)
         };
         if(roles != null)

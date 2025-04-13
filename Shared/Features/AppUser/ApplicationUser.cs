@@ -15,6 +15,7 @@ public class ApplicationUser : IdentityUser<long>
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public string? ProfilePictureUrl { get; set; }
+    public string? FullName { get; set; } 
 
     public List<IdentityRole<long>> Roles { get; set; } = new List<IdentityRole<long>>();
 }
