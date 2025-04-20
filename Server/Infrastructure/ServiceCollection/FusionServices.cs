@@ -1,20 +1,23 @@
-using System.Security.Claims;
-using ActualLab.Fusion.Extensions;
-using ActualLab.Rpc;
-using ActualLab.Fusion.Server.Authentication;
-using ActualLab.Fusion.Authentication;
+using ActualLab.CommandR;
+using ActualLab.CommandR.Diagnostics;
 using ActualLab.Fusion;
-using ActualLab.Fusion.Server;
+using ActualLab.Fusion.Authentication;
 using ActualLab.Fusion.Blazor;
 using ActualLab.Fusion.Blazor.Authentication;
-using ActualLab.CommandR;
-using myuzbekistan.Shared;
-using myuzbekistan.Services;
-using myuzbekistan.Server;
+using ActualLab.Fusion.Extensions;
+using ActualLab.Fusion.Server;
+using ActualLab.Fusion.Server.Authentication;
 using ActualLab.Resilience;
-using System.Diagnostics;
-using ActualLab.CommandR.Diagnostics;
+using ActualLab.Rpc;
+using myuzbekistan.Server;
+using myuzbekistan.Services;
+using myuzbekistan.Shared;
+using NuGet.Protocol.Core.Types;
 using OpenTelemetry.Trace;
+using System.Diagnostics;
+using System.Net;
+using System.Security.Claims;
+using System.Threading;
 
 namespace Server.Infrastructure.ServiceCollection
 {
@@ -92,7 +95,7 @@ namespace Server.Infrastructure.ServiceCollection
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, ServerAuthHelper serverAuthHelper, IAuth auth, ICommander commander, UserContext userContext)
+        public async Task InvokeAsync(HttpContext context, ServerAuthHelper serverAuthHelper, IAuth auth, ICommander commander, UserContext userContext,ISessionResolver sessionResolver)
         {
             userContext.UserClaims = context.User.Claims;
             userContext.Session = serverAuthHelper.Session;
@@ -101,7 +104,16 @@ namespace Server.Infrastructure.ServiceCollection
             context.User?.Identity != null &&
             context.User.Identity.IsAuthenticated)
             {
-                var user = await auth.GetUser(serverAuthHelper.Session);
+                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "";
+                var userAgent = context.Request.Headers.TryGetValue("User-Agent", out var userAgentValues)
+                                ? userAgentValues.FirstOrDefault() ?? ""
+                                : "";
+                var sessionId = context.User.Claims.FirstOrDefault(x => x.Type.Equals("session"))?.Value;
+                var sessionInfo = new ActualLab.Fusion.Session(sessionId);
+                
+                sessionResolver.Session = new Session(sessionId);
+
+                var user = await auth.GetUser(sessionId != null ?  new Session(sessionId) : serverAuthHelper.Session);
                 if (user != null && user.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value != context.User.Claims.First(x => x.Type.Equals(ClaimTypes.NameIdentifier)).Value)
                 {
                     await commander.Call(new Auth_SignOut(serverAuthHelper.Session));
@@ -122,7 +134,7 @@ namespace Server.Infrastructure.ServiceCollection
                         i++;
                     }
                 }
-                await serverAuthHelper.UpdateAuthState(context);
+                await serverAuthHelper.UpdateAuthState(sessionInfo,context);
             }
 
             await _next.Invoke(context!);

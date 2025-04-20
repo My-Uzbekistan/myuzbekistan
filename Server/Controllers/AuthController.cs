@@ -1,4 +1,5 @@
-﻿using AspNet.Security.OAuth.Apple;
+﻿using ActualLab.Fusion;
+using AspNet.Security.OAuth.Apple;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -15,6 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Server.Controllers;
 
@@ -26,12 +28,14 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
+    private readonly ISessionResolver _sessionResolver;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration, ILogger<AuthController> logger)
+    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration, ILogger<AuthController> logger, ISessionResolver sessionResolver)
     {
         _userManager = userManager;
         _configuration = configuration;
         _logger = logger;
+        _sessionResolver = sessionResolver;
     }
 
     [HttpPost("login")]
@@ -47,7 +51,7 @@ public class AuthController : ControllerBase
             {
                 var roles = await _userManager.GetRolesAsync(user);
 
-                var accessToken = GenerateJwtToken(user, roles);
+                var accessToken = await GenerateJwtToken(user, roles);
 
                 var refreshToken = GenerateRefreshToken();
                 // Сохраняем refresh-токен в БД
@@ -150,7 +154,7 @@ public class AuthController : ControllerBase
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = GenerateJwtToken(user, roles);
+        var accessToken = await GenerateJwtToken(user, roles);
 
         var refreshToken = GenerateRefreshToken();
         // Сохраняем refresh-токен в БД
@@ -252,7 +256,7 @@ public class AuthController : ControllerBase
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = GenerateJwtToken(user, roles);
+        var accessToken = await GenerateJwtToken(user, roles);
 
         var refreshToken = GenerateRefreshToken();
         // Сохраняем refresh-токен в БД
@@ -319,7 +323,7 @@ public class AuthController : ControllerBase
         }
 
         // Генерация JWT с ролями
-        var accessToken =  GenerateJwtToken(user);
+        var accessToken = await GenerateJwtToken(user);
 
         var refreshToken = GenerateRefreshToken();
         // Сохраняем refresh-токен в БД
@@ -354,7 +358,7 @@ public class AuthController : ControllerBase
 
         var roles = await _userManager.GetRolesAsync(user);
 
-        var newAccessToken = GenerateJwtToken(user, roles);
+        var newAccessToken = await GenerateJwtToken(user, roles);
 
         var newRefreshToken = GenerateRefreshToken();
         user.RefreshToken = newRefreshToken;
@@ -370,10 +374,11 @@ public class AuthController : ControllerBase
         });
     }
 
-    private string GenerateJwtToken(ApplicationUser user, IList<string>? roles = null)
+    private async Task<string> GenerateJwtToken(ApplicationUser user, IList<string>? roles = null)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var session = await _sessionResolver.GetSession();
 
         var claims = new List<Claim>
         {
@@ -382,7 +387,9 @@ public class AuthController : ControllerBase
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new("userName", user.FullName ?? string.Empty),
-            new("photoUrl", user.ProfilePictureUrl ?? string.Empty)
+            new("photoUrl", user.ProfilePictureUrl ?? string.Empty),
+            new("session", session.Id)
+
         };
         if(roles != null)
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
