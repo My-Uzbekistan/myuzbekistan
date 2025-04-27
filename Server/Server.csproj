@@ -4,7 +4,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PacketVersions>9.0.2</PacketVersions>
-		<FusionVersion>9.5.59</FusionVersion>
+		<FusionVersion>9.8.37</FusionVersion>
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 	</PropertyGroup>
 

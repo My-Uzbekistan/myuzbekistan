@@ -12,6 +12,7 @@
 @inject ICategoryService CategoryService
 @inject PageHistoryState PageHistoryState
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICurrencyService currencyService
 
 @inherits MixedStateComponent<TableResponse<ContentView>,TableOptions>
 @{
@@ -153,6 +154,7 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         Claims = user.Claims;
+        await currencyService.GetUsdCourse();
         await base.OnInitializedAsync();
     }
 

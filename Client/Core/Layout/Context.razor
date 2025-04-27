@@ -21,8 +21,7 @@
     {
         SessionProvider.Session = new Session(SessionId);
 
-        if (!BlazorCircuitContext.IsPrerendering)
-            BlazorCircuitContext.RootComponent = this;
+        
     }
 
     public void Dispose()
