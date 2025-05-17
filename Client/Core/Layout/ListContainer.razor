@@ -1,0 +1,30 @@
+﻿   <div style="background-color:var(--mud-palette-appbar-background)">
+       <MudContainer Class="py-1 d-flex text-center align-center justify-center " MaxWidth="MaxWidth.False" >
+           <div> @Title </div>
+           <MudDivider Vertical="true" FlexItem="true" Class="ml-2"/>
+           <Breadcrumb/>
+           <MudSpacer/>
+           @Actions
+       </MudContainer>
+   </div>
+
+   <MudContainer Class="d-flex text-center align-center justify-center flex-column pa-4" MaxWidth="MaxWidth.False">
+       @ChildContent
+   </MudContainer>
+
+   @code
+   {
+       [Parameter]
+       public RenderFragment? Actions { get; set; }
+
+       [Parameter]
+       public RenderFragment? ChildContent { get; set; }
+
+       [Parameter]
+       public string? Title { get; set; }
+
+       protected override void OnInitialized()
+       {
+           Title = L["Add something"];
+       }
+   }

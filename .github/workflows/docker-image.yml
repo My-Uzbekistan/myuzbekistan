@@ -1,0 +1,35 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag myuzbekistan-server:latest
+    - name: Login to DockerHub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Push Docker image
+      run: |
+        docker tag myuzbekistan-server timeshift92/myuzbekistan-server:latest
+        docker push timeshift92/myuzbekistan-server:latest
+    - name: Deploy to server via SSH
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd ~/myuzbekistan
+          sudo docker rmi timeshift92/myuzbekistan-server --force
+          sudo docker-compose -f docker-compose-prod.yml down
+          sudo docker-compose -f docker-compose-prod.yml up -d --remove-orphans

@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PacketVersions>9.0.2</PacketVersions>
+		<FusionVersion>9.8.37</FusionVersion>
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+	</PropertyGroup>
+
+	<!--MICROSOFT-->
+	<ItemGroup>
+		<PackageReference Include="AlertaGram" Version="1.0.4" />
+		<PackageReference Include="AspNet.Security.OAuth.Apple" Version="9.2.0" />
+		
+		
+		<PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(PacketVersions)">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<!--OTHERS-->
+	<ItemGroup>
+		<PackageReference Include="IdentityModel" Version="7.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+		<PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
+	</ItemGroup>
+
+	<!-- ActualLab.FUSION-->
+	<ItemGroup>
+		<PackageReference Include="ActualLab.Fusion.Server" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Blazor.Authentication" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Generators" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Blazor" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.EntityFramework.Redis" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.EntityFramework.Npgsql" Version="$(FusionVersion)" />
+
+	</ItemGroup>
+
+	<!-- OPENTELEMETRY -->
+	<ItemGroup>
+		<PackageReference Include="OpenTelemetry" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.7.0-beta.1" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.EventCounters" Version="1.5.1-alpha.1" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="UFile.Server" Version="1.1.1" />
+		<PackageReference Include="UTC.Minio" Version="0.0.5" />
+		<ProjectReference Include="..\Client\Client.csproj" />
+		<ProjectReference Include="..\Services\Services.csproj" />
+		<ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <None Update="AuthKey_Y54YS75249.p8">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+</Project>

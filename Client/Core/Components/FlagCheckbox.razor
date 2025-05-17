@@ -1,0 +1,38 @@
+﻿<MudCheckBox ValueChanged="async(bool ev ) => {await ChangeFlag(ev); IsChecked = ev;}" Value="@IsChecked" Label="@Label" Color="Color.Primary"></MudCheckBox>
+
+@code {
+
+    [Parameter]
+    public int Flag { get; set; }
+
+    [Parameter]
+    public EventCallback<int> FlagChanged { get; set; }
+
+    [Parameter]
+    public int BitWise { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    bool IsChecked { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        IsChecked = Bitwise.IsSetKthBit(Flag, BitWise);
+    }
+
+    async Task ChangeFlag(bool isChecked)
+    {
+        if (isChecked)
+        {
+            Flag = Bitwise.SetKthBit(Flag, BitWise);
+            await FlagChanged.InvokeAsync(Flag);
+        }
+        else
+        {
+            Flag = Bitwise.UnSetKthBit(Flag, BitWise);
+            await FlagChanged.InvokeAsync(Flag);
+        }
+    }
+
+}

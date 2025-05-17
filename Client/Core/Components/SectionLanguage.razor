@@ -1,0 +1,79 @@
+﻿@using System.Globalization
+<MudExpansionPanels>
+    <MudExpansionPanel Expanded=true Text="@L["LanguageVersions"]" Gutters="true">
+        <MudGrid Class="pa-4">
+            <MudItem xs="12">
+                <MudSimpleTable Outlined=true Hover=true>
+                    <tbody>
+                        <tr @onclick="@(()=>ChangeLang("uz"))">
+                            <td>@L["Uzbek"]</td>
+                            <td>
+                                <MudLink Disabled=@DisabledLink("uz") OnClick="@(()=>ChangeLang("uz"))">
+                                    @StringByState("uz")
+                                </MudLink>
+                            </td>
+                            @if (Errors["uz"])
+                            {
+                                <td>  <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Error"></MudIcon>  </td>
+                            }
+
+                        </tr>
+                        <tr @onclick="@(()=>ChangeLang("ru"))">
+                            <td>@L["Russian"]</td>
+                            <td>
+                                <MudLink Disabled=@DisabledLink("ru") OnClick="@(()=>ChangeLang("ru"))">
+                                    @StringByState("ru")
+                                </MudLink>
+                            </td>
+                            @if (Errors["ru"])
+                            {
+                                <td>  <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Error"></MudIcon>  </td>
+                            }
+                        </tr>
+                        <tr @onclick="@(()=>ChangeLang("en"))">
+                            <td>@L["English"]</td>
+                            <td>
+                                <MudLink Disabled=@DisabledLink("en") OnClick="@(()=>ChangeLang("en"))">
+                                    @StringByState("en")
+                                </MudLink>
+                            </td>
+                            @if (Errors["en"])
+                            {
+                                <td>  <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.Error"></MudIcon>  </td>
+                            }
+                        </tr>
+                    </tbody>
+                </MudSimpleTable>
+            </MudItem>
+        </MudGrid>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+
+    [Parameter]
+    public string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("ru");
+
+    [Parameter]
+    public Dictionary<string, bool> Errors { get; set; } = new Dictionary<string, bool> { { "en", false }, { "uz", false }, { "ru", false } };
+
+    [Parameter]
+    public EventCallback<string> LanguageChanged { get; set; }
+
+
+    async Task ChangeLang(string language)
+    {
+        Language = language;
+        await LanguageChanged.InvokeAsync(Language);
+    }
+
+    bool DisabledLink(string language)
+    {
+        if (Language == language)
+            return true;
+        return false;
+    }
+
+    string StringByState(string language) => DisabledLink(language) ? L["CurrentVersion"] : L["Goto"];
+
+}

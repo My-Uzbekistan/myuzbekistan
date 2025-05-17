@@ -1,0 +1,93 @@
+@page "/languages"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject ILanguageService LanguageService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+@inherits MixedStateComponent<TableResponse<LanguageView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Language">
+    <Actions>
+        <MudLink Href="/languages/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="LanguageView">
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Locale">@context.Locale</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    <MudLink Href=@($"/languages/{context.Id}")>
+                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudLink>
+                    @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+                    {
+                        <MudFab @onclick=@(() => Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    }
+                </div>
+            </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<LanguageView>? Items;
+
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Claims = user.Claims;
+        await base.OnInitializedAsync();
+    }
+
+    private string[] SortColumns = new string[] { "Name", "Locale", "Id", };
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en") } };
+    }
+
+    protected override async Task<TableResponse<LanguageView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var languages = await LanguageService.GetAll(MutableState.Value);
+        return languages;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeleteLanguageCommand(Session, Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}

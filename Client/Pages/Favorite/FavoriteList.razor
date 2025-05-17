@@ -1,0 +1,68 @@
+@page "/favorites"
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject IFavoriteService FavoriteService
+@inject UICommander Command
+@inject IJSRuntime jsRuntime
+
+@inherits MixedStateComponent<TableResponse<FavoriteView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Favorite">
+    <Actions>
+        <MudButton Variant="Variant.Filled" Class="me-3" Color="Color.Success" OnClick="ExportToExcel" StartIcon="@Icons.Material.Filled.IosShare">
+            Excel
+        </MudButton>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="FavoriteView">
+            <MudTd DataLabel="Content.Title">@context.ContentView?.Title</MudTd>
+            <MudTd DataLabel="Content.Title">@context.User?.Email</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<FavoriteView>? Items;
+
+    private string[] SortColumns = new string[] { "Content", "Id", };
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en") } };
+    }
+
+    protected override async Task<TableResponse<FavoriteView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var favorites = await FavoriteService.GetAll(MutableState.Value);
+        return favorites;
+
+    }
+
+
+    public async Task ExportToExcel()
+    {
+        var table = await Command.Run(new FavoriteToExcelCommand(Session, MutableState.Value));
+
+        if (!table.HasError)
+        {
+            string now = DateTime.UtcNow.AddHours(5).ToString("yyyy_MM_dd_HH_mm_ss");
+            await jsRuntime.InvokeVoidAsync("saveAsFile", $"{now}.xlsx", table.Value);
+        }
+    }
+
+
+}

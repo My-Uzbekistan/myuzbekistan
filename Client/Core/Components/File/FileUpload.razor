@@ -1,0 +1,76 @@
+@inject NavigationManager Navigator
+@inject IUFileService UFileService
+@namespace Client.Core.Components
+
+<InputFile id="fileInput112" OnChange="OnChanged" hidden multiple accept="@Accept" />
+
+<MudButton HtmlTag="label"
+           Variant="Variant.Filled"
+           Color="Color.Primary"
+           StartIcon="@Icons.Material.Filled.CloudUpload"
+           for="fileInput112">
+    Upload images
+</MudButton>
+
+
+
+<p>Progress: @_percent%</p>
+
+@code {
+    string _percent = "0";
+
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
+
+    readonly CancellationTokenSource _cancelTokenSource = new();
+
+    async void OnChanged(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            _percent = "0";
+
+            var files = e.GetMultipleFiles();
+            int completedCount = 0;
+
+            foreach (var file in files)
+            {
+                var metadata = new Dictionary<string, string>
+                {
+                    ["fileName"] = file.Name,
+                    ["name"] = file.Name,
+                    ["contentType"] = file.ContentType,
+                };
+
+                UFileService.UploadProgress += (s) =>
+                {
+                    _percent = s;
+                    InvokeAsync(StateHasChanged);
+                };
+
+                UFileService.Completed += async (url) =>
+                {
+                    completedCount++;
+
+                    await InvokeAsync(() =>
+                    {
+                        StateHasChanged();
+                        
+                    });
+                };
+
+                UFileService.HadError += (s) => { Console.WriteLine(s.Message); };
+
+                await UFileService.Upload(file.OpenReadStream(file.Size), metadata, _cancelTokenSource.Token);
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+}

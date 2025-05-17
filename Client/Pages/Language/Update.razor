@@ -1,0 +1,47 @@
+@page "/languages/{Id:long}"
+
+@inherits ComputedStateComponent<List<LanguageView>>
+@inject ILanguageService LanguageService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+@{
+    var Model = State.LastNonErrorValue ?? new List<LanguageView>() { };
+}
+
+<Client.Pages.Language._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+
+
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing {get;set;}=false;
+    
+    public async Task OnSubmit(List<LanguageView> entity)
+    {
+       Processing =true;
+     
+     
+       var response = await Command.Run(new UpdateLanguageCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+          navigation.NavigateTo("/languages");
+       }
+
+       Processing=false;
+    }
+
+    protected override async Task<List<LanguageView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await LanguageService.Get(Id,cancellationToken);
+    }
+}

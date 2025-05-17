@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<SourceGenerator_Override>False</SourceGenerator_Override>
+		<SourceGenerator_ApiVersion>False</SourceGenerator_ApiVersion>
+		<FusionVersion>9.8.37</FusionVersion>
+		<PacketVersions>9.0.2</PacketVersions>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.7" />
+		<PackageReference Include="ActualLab.Generators" Version="$(FusionVersion)" />
+		<PackageReference Include="MemoryPack.Generator" Version="1.21.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+		<!--<PackageReference Condition="'$(Configuration)'=='DEBUG'" Include="FusionGenerator" Version="8.0.23" />-->
+		<PackageReference Include="ActualLab.Fusion.EntityFramework" Version="$(FusionVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="$(PacketVersions)" />
+		<PackageReference Include="EF.Audit.Core" Version="1.1.2" />
+		<PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
+		<PackageReference Include="NetTopologySuite.IO.GeoJSON4Stj" Version="4.0.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="$(PacketVersions)" />
+		<PackageReference Include="BackuptaGram" Version="2.1.3" />
+	</ItemGroup>
+	<ItemGroup>
+		<CompilerVisibleProperty Include="SourceGenerator_Override" />
+	</ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Localization\SharedResource.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>SharedResource.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Localization\SharedResource.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>SharedResource.Designer.cs</LastGenOutput>
+	    <CustomToolNamespace>Shared.Localization</CustomToolNamespace>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Localization\SharedResource.ru-RU.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <CustomToolNamespace>Shared.Localization</CustomToolNamespace>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Localization\SharedResource.uz-Latn.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <CustomToolNamespace>Shared.Localization</CustomToolNamespace>
+	  </EmbeddedResource>
+	</ItemGroup>
+</Project>

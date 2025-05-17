@@ -1,0 +1,81 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+@foreach (var current in Model)
+{
+    <EditForm hidden="@(!Language.Equals(current.Locale))" EditContext="@_contexts[current.Locale]" OnSubmit="HandleSubmit">
+        <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+            <Actions>
+                <SaveCancelButton OnCancel='() => PageHistoryState.Back("facilities")' Processing="@Processing" />
+            </Actions>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem xs="8">
+                        <MudPaper Class="pa-4">
+                            <ObjectGraphDataAnnotationsValidator />
+                            <MudTextField @bind-Value="current.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => current.Name)" Required="true" />
+
+                            <input type="hidden" @bind-value="current.Id">
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                        <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
+                            <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => {Model.ForEach(x=>x.IconView = current.IconView);}" />
+                        </MudExpansionPanel>
+                        <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </FormContainer>
+    </EditForm>
+}
+@code {
+
+    string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
+
+    [Parameter]
+    public List<FacilityView> Model { get; set; } = [new FacilityView { Locale = "uz" }, new FacilityView { Locale = "ru" }, new FacilityView { Locale = "en" },];
+    private Dictionary<string, EditContext?> _contexts = new() { { "uz", null }, { "en", null }, { "ru", null } };
+    private Dictionary<string, bool> Errors { get; set; } = new() { { "en", false }, { "uz", false }, { "ru", false } };
+
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<List<FacilityView>> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        foreach (var item in Model)
+        {
+            _contexts[item.Locale] = new(item);
+        }
+    }
+
+    void HandleSubmit(EditContext ctx)
+    {
+        foreach (var item in _contexts)
+        {
+            if (item.Value!.Validate() || item.Key == Language)
+                Errors[item.Key] = false;
+            else
+                Errors[item.Key] = true;
+        }
+        if (Errors.All(x => !x.Value))
+        {
+            OnSubmit.InvokeAsync(Model);
+        }
+    }
+
+    string GetTitle()
+    {
+        return IsNew ? @L["Create"] : @L["Edit"];
+    }
+}

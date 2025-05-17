@@ -1,0 +1,47 @@
+@page "/reviews/{Id:long}"
+
+@inherits ComputedStateComponent<ReviewView>
+@inject IReviewService ReviewService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+@{
+    var Model = State.LastNonErrorValue ?? new ReviewView() { };
+}
+
+<Client.Pages.Review._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+
+
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing {get;set;}=false;
+    
+    public async Task OnSubmit(ReviewView entity)
+    {
+       Processing =true;
+     
+     
+       var response = await Command.Run(new UpdateReviewCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+          navigation.NavigateTo("/reviews");
+       }
+
+       Processing=false;
+    }
+
+    protected override async Task<ReviewView> ComputeState(CancellationToken cancellationToken)
+    {
+        return await ReviewService.Get(Id,cancellationToken);
+    }
+}

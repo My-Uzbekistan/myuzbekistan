@@ -1,0 +1,96 @@
+@namespace Client.Core.Components
+@inject IUFileService UFileService
+
+<MudGrid Style="align-items:center" Class="flex-column mt-5 mb-1">
+    <MudBadge Icon="@Icons.Material.Filled.Clear" Color="Color.Error" Overlap="true" Bordered="true" Visible="@_showClearImage" OnClick="ClearImage">
+        <MudItem @onclick="OpenImageSelect" Style="width:270px; height:150px;" Class="border-dotted border-2 mud-border-primary d-flex justify-center align-center">
+            @if (Value != null)
+            {
+              
+                <MudImage @onclick="OpenDialog" ObjectFit="ObjectFit.Contain" Fluid="true" Src="@(url + Value.Path)" Alt="@Value.Name" Style="max-width:250px; max-height:130px;" />
+            }
+            else
+            {
+                <MudChip T="string" Icon="@Icons.Material.Filled.CloudUpload" IconColor="Color.Warning" Variant="Variant.Text" Color="Color.Warning">Click here to select images</MudChip>
+            }
+        </MudItem>
+    </MudBadge>
+</MudGrid>
+
+
+<ImageSelect @bind-Value="@Value" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" Accept="@Accept" />
+
+<MudDialog @bind-IsVisible="@isImageShow" Options="dialogOptions" Style="min-width:600px; height:auto">
+  <DialogContent>
+     @if (Value != null) 
+     {
+        <MudImage Fluid="true" Src="@(url + Value.Path)" Alt="@Value.Name" />
+     }
+  </DialogContent>
+</MudDialog>
+
+@code {
+
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
+    [Parameter]
+    public string? Label { get; set; }
+
+    [Parameter]
+    public FileView? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<FileView> ValueChanged { get; set; }
+
+    public bool IsImageSelect { get; set; } = false;
+
+    private bool isImageShow = false;
+    private void OpenDialog() => isImageShow = true;
+    private DialogOptions dialogOptions = new() { FullWidth = true };
+
+    private bool _showClearImage = false;
+    string url = string.Empty;
+
+   
+     protected override void OnInitialized()
+    {
+        if (Value != null)
+        {
+            _showClearImage = true;
+        }
+    }
+
+    protected async override Task OnParametersSetAsync()
+    {
+        var urlTask = UFileService.GetFileUrl();
+        url = await urlTask;
+    }
+
+    void OpenImageSelect()
+    {
+        @if (Value == null)
+        {
+            IsImageSelect = true;
+        }
+    }
+
+    void OnImageSelected()
+    {
+        ValueChanged.InvokeAsync(Value);
+        _showClearImage = true;
+        IsImageSelect = false;
+    }
+
+    void ClearImage()
+    {
+        Value = null;
+        ValueChanged.InvokeAsync(null);
+        _showClearImage = false;
+    }
+}
+
+<style>
+    .mud-badge {
+        cursor: pointer;
+    }
+</style>

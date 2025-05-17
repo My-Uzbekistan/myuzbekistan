@@ -1,0 +1,74 @@
+@using System.Linq.Expressions
+@inherits MixedStateComponent<TableResponse<RegionView>,string>
+@inject IRegionService RegionService
+
+@{
+    var data = State.ValueOrDefault ?? new TableResponse<RegionView>();
+}
+<MudSelect T="RegionView"
+           @attributes="Attributes"
+           Variant="Variant.Outlined"
+           Margin="Margin.Dense"
+           Dense="true"
+           Label="@Label"
+           Value="Value ?? data.Items.FirstOrDefault(x=>x.Id == ValueId)"
+           Immediate="true"
+           Required=Required
+           For="For"
+           Clearable
+           ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" >
+
+    @foreach (var item in data.Items)
+    {
+        <MudSelectItem T="RegionView" Value="@item">@item.Name</MudSelectItem>
+    }
+
+</MudSelect>
+@code {
+    [Parameter]
+    public string? Label { get; set; }
+    [Parameter]
+    public RegionView? Value { get; set; }
+
+    [Parameter]
+    public long ValueId { get; set; }
+    [Parameter]
+    public EventCallback<RegionView> ValueChanged { get; set; }
+    [Parameter]
+    public bool Required { get; set; } = false;
+    [Parameter]
+    public Expression<Func<RegionView>>? For { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Attributes { get; set; }
+
+    async Task UpdateValue(RegionView value)
+    {
+        Value = value;
+
+        await ValueChanged.InvokeAsync(Value);
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    protected override MutableState<string?>.Options GetMutableStateOptions()
+        => new() { InitialValue = null };
+
+
+    protected override void OnParametersSet()
+    {
+        if (ValueId != 0 && State?.Value != null)
+        {
+            var Value = State.Value?.Items?.First(x => x.Id == ValueId);
+        }
+        base.OnParametersSet();
+    }
+
+    protected override async Task<TableResponse<RegionView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await RegionService.GetAll(new() { Search = MutableState.Value }, cancellationToken);
+    }
+
+   
+
+
+}

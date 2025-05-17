@@ -1,0 +1,50 @@
+@page "/regions/{Id:long}"
+
+@inherits ComputedStateComponent<List<RegionView>>
+@inject IRegionService RegionService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+@{
+    var Model = State.LastNonErrorValue ?? new List<RegionView>() { };
+}
+@if(Model.Count > 0)
+{
+    <Client.Pages.Region._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false" />
+}
+
+
+
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing {get;set;}=false;
+    
+    public async Task OnSubmit(List<RegionView> entity)
+    {
+       Processing =true;
+     
+     
+       var response = await Command.Run(new UpdateRegionCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+          navigation.NavigateTo("/regions");
+       }
+
+       Processing=false;
+    }
+
+    protected override async Task<List<RegionView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await RegionService.Get(Id,cancellationToken);
+    }
+}

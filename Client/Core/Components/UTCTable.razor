@@ -1,0 +1,90 @@
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject PageHistoryState PageHistoryState
+@typeparam Tclass where Tclass : class
+
+@if ((Values == null && Values?.Items == null) )
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <MudPaper Class="pa-8" Elevation="1" Width="100%">
+        <MudPaper Class="d-flex flex-row-reverse flex-wrap flex-grow-1 gap-4 mb-4" Elevation="0">
+            <MudGrid Justify="Justify.FlexEnd" Style="align-items:baseline">
+                @if (HeadContent != null)
+                {
+                    @HeadContent
+                }
+                <MudItem xs="12" lg="3">
+                    <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Value="@MutableState.Value.Search" Margin="Margin.Dense" Label="@L["Search"]" Variant="Variant.Outlined" Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+        <MudTable Items="Values.Items" T="Tclass" RowsPerPage=MutableState.Value.PageSize  Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
+            <HeaderContent>
+                <TableSorter Columns="SortColumns" MutableState="MutableState" T="Tclass" />
+                <MudTh>@L["Action"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @ChildContent((context))
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>@L["TableBottom"]</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>@L["Loading"]...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudPagination Class="mt-4" Selected="MutableState!.Value.Page" SelectedChanged="PageChanged" Count="Count()" />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment<Tclass> ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public TableResponse<Tclass> Values { get; set; } = null!;
+
+    [Parameter]
+    public string[] SortColumns { get; set; } = null!;
+
+    [Parameter]
+    public IMutableState<TableOptions> MutableState { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? HeadContent { get; set; }
+
+    private void PageChanged(int page)
+    {
+        MutableState.Value.Page = page;
+        InvalidState();
+    }
+
+    private void OnSearch(string text)
+    {
+        MutableState.Value.Search = text;
+        InvalidState();
+    }
+
+    private void InvalidState()
+    {
+        PageHistoryState.SetPage(MutableState);
+        MutableState.Invalidate();
+    }
+
+    int Count() => (Values.TotalItems + MutableState.Value.PageSize - 1) / MutableState.Value.PageSize;
+
+}
+
+
+
+
+

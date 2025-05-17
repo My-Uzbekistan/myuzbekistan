@@ -1,0 +1,80 @@
+@page  "/payments" 
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject IPaymentService PaymentService
+
+@inherits MixedStateComponent<TableResponse<PaymentView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Payment">
+    <Actions>
+        <MudLink Href="/payments/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items  SortColumns="SortColumns" MutableState=MutableState Tclass="PaymentView">
+                <MudTd DataLabel="UserId">@context.UserId</MudTd>
+                <MudTd DataLabel="PaymentMethod">@context.PaymentMethod</MudTd>
+                <MudTd DataLabel="Amount">@context.Amount</MudTd>
+                <MudTd DataLabel="PaymentStatus">@context.PaymentStatus</MudTd>
+                <MudTd DataLabel="TransactionId">@context.TransactionId</MudTd>
+                <MudTd DataLabel="CallbackData">@context.CallbackData</MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/payments/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+
+    private TableResponse<PaymentView>? Items ;
+    
+    private string[] SortColumns = new string[] {"UserId","PaymentMethod","Amount","PaymentStatus","TransactionId","CallbackData","Id",};
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+    }
+
+    protected override async Task<TableResponse<PaymentView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var payments = await PaymentService.GetAll(MutableState.Value);
+        return payments;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeletePaymentCommand(Session,Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}

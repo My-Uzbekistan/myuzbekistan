@@ -1,0 +1,36 @@
+﻿@using MudBlazor
+<div style="background-color:var(--mud-palette-appbar-background)">
+    <MudContainer Class="pl-5 pr-5 py-0 d-flex mb-4 text-center align-center justify-center " MaxWidth="@MaxWidth">
+        <div> @Title </div>
+        <MudDivider Vertical="true" FlexItem="true" Class="ml-2"/>
+        <Breadcrumb/>
+        <MudSpacer/>
+        @Actions
+    </MudContainer>
+
+</div >
+
+<MudContainer Class="pl-5 pr-5 d-flex mb-4 text-center align-center justify-center flex-column" MaxWidth="@MaxWidth">
+    @ChildContent
+</MudContainer>
+
+
+@code
+{
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public MaxWidth MaxWidth { get; set; } = MaxWidth.Medium;
+    
+    [Parameter]
+    public string? Title { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Title ??= L["Add something"];
+    }
+}

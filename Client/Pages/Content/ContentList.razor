@@ -1,0 +1,219 @@
+@page "/categories/{CategoryId:long}/contents"
+@page "/more/{CategoryId:long}/contents"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject UInjector UInjector
+@inject IContentService ContentService
+@inject ICategoryService CategoryService
+@inject PageHistoryState PageHistoryState
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ICurrencyService currencyService
+
+@inherits MixedStateComponent<TableResponse<ContentView>,TableOptions>
+@{
+    Items = State.GetValue(UInjector);
+}
+
+<ListContainer Title="Content">
+    <Actions>
+        <MudLink Href="@($"{routePath}/{CategoryId}/contents/create")">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="ContentView">
+            <HeadContent>
+                <MudItem xs="12" lg="3">
+                    <_RegionEntitySimpleSelect ValueId="regionId" ValueChanged="(RegionView? regionView) => {
+                        MutableState.Value.RegionId = regionView?.Id;
+                        PageHistoryState.SetPage(MutableState);
+                    }"></_RegionEntitySimpleSelect>
+                </MudItem>
+            </HeadContent>
+            <ChildContent>
+                @if (SortColumns.Contains("Title"))
+                {
+                    <MudTd DataLabel="Title">@context.Title</MudTd>
+                }
+                @if (SortColumns.Contains("Description")) 
+                {
+                    <MudTd DataLabel="Description">@context.Description</MudTd>
+                 }
+
+                @if (SortColumns.Contains("PhotosCount"))
+                {
+                    <MudTd DataLabel="PhotosCount">
+                        @context.PhotosView?.Count
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("Photos"))
+                {
+                    <MudTd DataLabel="Photos">
+                        <ImagesView Files="@context.PhotosView?.ToList()" />
+                    </MudTd>
+                }
+                
+                @if (SortColumns.Contains("Photo"))
+                {
+                    <MudTd DataLabel="Photo">
+                        <ImageView fileEntity="@context.PhotoView" />
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("Languages"))
+                {
+                    <MudTd DataLabel="Languages">
+                        @string.Join(" ", context.Languages?.Select(x => x.Name)?.ToList() ?? new List<string>())
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("AverageCheck"))
+                {
+                    <MudTd DataLabel="AverageCheck">
+                        <MudRating SelectedValue="context.AverageCheck"
+                                   ReadOnly="true"
+                                   MaxValue="4" FullIcon="@Icons.Material.Filled.AttachMoney" EmptyIcon="@Icons.Material.Filled.AttachMoney"
+                                   FullIconColor="Color.Warning" EmptyIconColor="Color.Default" />
+                    </MudTd>
+                }
+                @if (SortColumns.Contains("RatingAverage"))
+                {
+                    <MudTd DataLabel="RatingAverage">@context.RatingAverage</MudTd>
+                }
+                @if (SortColumns.Contains("Price"))
+                {
+                    <MudTd DataLabel="Price">@context.Price</MudTd>
+                }
+                @if (SortColumns.Contains("PriceInDollar"))
+                {
+                    <MudTd DataLabel="PriceInDollar">@context.PriceInDollar</MudTd>
+                }
+                @if (SortColumns.Contains("Address"))
+                {
+                    <MudTd DataLabel="Address">@context.Address</MudTd>
+                }
+                @if (SortColumns.Contains("Recommended"))
+                {
+                    <MudTd DataLabel="Recommended">@context.Recommended</MudTd>
+                }
+                @if (SortColumns.Contains("Id"))
+                {
+                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                }
+
+                <MudTd>
+                    <div style="display:flex; gap:7px; " class="d-flex justify-end">
+                        <MudLink Href=@($"{routePath}/{CategoryId}/contents/{context.Id}")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudLink>
+                        @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))
+                        {
+                         <MudFab @onclick=@(()=>Delete(context.Id)) Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />    
+                        }
+                    </div>
+                </MudTd>
+            </ChildContent>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+    private string? routePath;
+    private long regionId;
+    [Parameter] public long CategoryId { get; set; }
+    private TableResponse<ContentView>? Items;
+
+    
+
+    private string[] SortColumns = new string[] { "Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
+
+    protected override void OnInitialized()
+    {
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        if (routePath == "more")
+        {
+            SortColumns = ["Title", "Description", "Photo", "Id"];
+        }
+        else
+        {
+            SortColumns = ["Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
+        }
+        navigation.LocationChanged += Navigation_LocationChanged;
+        base.OnInitialized();
+    }
+
+    public IEnumerable<Claim> Claims { get; set; } = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        Claims = user.Claims;
+        await currencyService.GetUsdCourse();
+        await base.OnInitializedAsync();
+    }
+
+    private void Navigation_LocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        MutableState.Value.IsMore = e.Location.Contains("/more");
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        if (routePath == "more")
+        {
+            SortColumns = ["Title", "Description", "Photo", "Id"];
+        }
+        else
+        {
+            SortColumns = ["Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id"];
+        }
+        StateHasChanged();
+        MutableState.Invalidate();
+    }
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("region-id", out var regionIdString);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        long.TryParse(regionIdString, out regionId);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en"), Search = searchParam, RegionId = regionId } };
+    }
+
+    protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        var category = await CategoryService.Get(CategoryId, cancellationToken);
+        var contents = await ContentService.GetAll(CategoryId, MutableState.Value);
+        var catField = category.First().Fields;
+        string[] constatnFields = ["Title", "Id","PhotosCount", "RatingAverage", "Recommended"];
+        if(routePath == "more")
+        {
+            constatnFields = ["Title", "Id", "RatingAverage", "Recommended"];
+        }
+        SortColumns = SortColumns.Where(x => constatnFields.Contains(x) || Bitwise.Is(catField, (ContentFields)Enum.Parse(typeof(ContentFields), x))).ToArray();
+        
+
+
+        return contents;
+
+    }
+
+    private async Task Delete(long Id, CancellationToken cancellationToken = default)
+    {
+        bool? result = await _dialogService.ShowMessageBox(
+        @L["DeleteConfirmation"],
+        @L["UnDoneDelete"],
+        yesText: "Delete!", cancelText: @L["Cancel"]);
+        if (result ?? false)
+        {
+            await commander.Run(new DeleteContentCommand(Session, Id));
+            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+        }
+    }
+}

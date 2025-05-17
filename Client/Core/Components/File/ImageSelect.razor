@@ -1,0 +1,156 @@
+@using System.Linq.Expressions
+@inject IFileService FileService
+@inject IUFileService UFileService
+@inject Session Session
+@namespace Client.Core.Components
+@inherits MixedStateComponent<TableResponse<FileView>, TableOptions>
+
+@{
+    Images = State.LastNonErrorValue ?? new TableResponse<FileView>() { };
+}
+
+<MudDialog Visible="@IsImageSelect" VisibleChanged="OnVisibleChanged" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">List of Images</MudText>
+        <MudSpacer />
+        <FileUpload Accept="@Accept" />
+    </TitleContent>
+    <DialogContent>
+        <MudGrid Justify="Justify.SpaceEvenly" Spacing="2" Style="max-height: 520px; overflow-x:hidden; overflow-y:scroll; min-height: 200px">
+            @if (Images?.Items?.Count() > 0)
+            {
+                @foreach (var image in Images.Items)
+                {
+                    <MudItem xs="3" @onclick="@(() => UpdateValue(image))"
+                             Style="width:230px; height:170px; margin-bottom:10px;"
+                             Class="@StyleFor(image.Id)">
+                        <MudImage ObjectFit="ObjectFit.Contain"
+                                  Src="@(url + image.Path)"
+                                  Alt="@image.Name"
+                                  Style="max-width:200px; max-height:130px;" />
+                    </MudItem>
+                }
+            }
+            else
+            {
+                <MudItem Class="d-flex align-center">
+                    <MudChip T="string"
+                             Icon="@Icons.Material.Filled.CloudUpload"
+                             IconColor="Color.Warning"
+                             Variant="Variant.Text"
+                             Color="Color.Warning">
+                        No Images Found! Upload Your First Image
+                    </MudChip>
+                </MudItem>
+            }
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Submit"
+                   Class="px-10">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [Parameter]
+    public FileView? Value
+    {
+        get => SelectedValues?.FirstOrDefault();
+        set
+        {
+            SelectedValues = value != null ? new List<FileView> { value } : new();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<FileView> ValueChanged { get; set; }
+    [Parameter]
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";
+
+    [Parameter]
+    public bool IsImageSelect { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsImageSelectChanged { get; set; }
+
+    [Parameter]
+    public bool Multiple { get; set; } = false;
+
+    [Parameter]
+    public List<FileView> SelectedValues { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<List<FileView>> SelectedValuesChanged { get; set; }
+
+    [Parameter]
+    public EventCallback ImageSelected { get; set; }
+
+    TableResponse<FileView>? Images { get; set; }
+
+    DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    string url = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        url = await UFileService.GetFileUrl();
+    }
+
+    void UpdateValue(FileView value)
+    {
+        if (Multiple)
+        {
+            if (SelectedValues.Any(x => x.Id == value.Id))
+                SelectedValues.RemoveAll(x => x.Id == value.Id);
+            else
+                SelectedValues.Add(value);
+        }
+        else
+        {
+            SelectedValues.Clear();
+            SelectedValues.Add(value);
+        }
+
+        StateHasChanged();
+    }
+
+    async Task Submit()
+    {
+        if (!Multiple && SelectedValues.Count == 1)
+        {
+            await ValueChanged.InvokeAsync(SelectedValues[0]);
+        }
+        await SelectedValuesChanged.InvokeAsync(SelectedValues);
+        await ImageSelected.InvokeAsync();
+    }
+
+    protected override async Task<TableResponse<FileView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await FileService.GetAll(new TableOptions
+        {
+            Page = 1,
+            PageSize = 1000,
+            SortLabel = "Id",
+            SortDirection = 1,
+            Search = ""
+        }, cancellationToken);
+    }
+
+    string StyleFor(long id)
+    {
+        return SelectedValues.Any(x => x.Id == id)
+            ? "border-dotted border-2 mud-border-success"
+            : "";
+    }
+
+    private async void OnVisibleChanged(bool isVisible)
+    {
+        IsImageSelect = isVisible;
+        await IsImageSelectChanged.InvokeAsync(IsImageSelect);
+        StateHasChanged();
+    }
+}

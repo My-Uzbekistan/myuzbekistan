@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<Context SessionId=@SessionId>
+    <CascadingValue Name="IsDark" Value="IsDark">
+            <Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._discovery).Assembly }">
+                <Found Context="routeData">
+                    <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Client.Core.Layout.MainLayout)" />
+                    <FocusOnNavigate RouteData="@routeData" Selector="h1"  />
+                </Found>
+                <NotFound>
+                    <PageTitle>Not found</PageTitle>
+                    <LayoutView Layout="@typeof(Client.Core.Layout.MainLayout)">
+                        <p role="alert">Sorry, there's nothing at this address.</p>
+                    </LayoutView>
+                </NotFound>
+            </Router>
+    </CascadingValue>
+</Context>
+
+@code {
+
+    [Parameter]
+    public string SessionId { get; set; } = Session.Default.Id;
+
+    [Parameter]
+    public bool IsDark { get; set; } = false;
+
+
+}

@@ -1,0 +1,32 @@
+@namespace Client.Core.Components
+@inject IUFileService UFileService
+
+@if (fileEntity != null)
+{
+   
+    @if (fileEntity.Type == UFileTypes.Image)
+    {
+
+        <MudImage Fluid="true" Src="@(url + fileEntity.Path)" Height="50" Width="60" />
+    }
+    else if (fileEntity.Type == UFileTypes.File)
+    {
+        <MudLink Href="@(url + fileEntity.Path)">@fileEntity.Name</MudLink>
+    }
+}
+
+
+@code {
+
+    [Parameter]
+    public FileView? fileEntity { get; set; }
+
+    string url = string.Empty;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        var urlTask = UFileService.GetFileUrl();
+        url = await urlTask;
+    }
+
+}

@@ -1,0 +1,50 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => PageHistoryState.Back("payments")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudNumericField  @bind-Value="Model.UserId" AutoFocus="true" Label="UserId" Variant="Variant.Text" For="@(() => Model.UserId)"Required="true"/>                                
+                            <MudTextField  @bind-Value="Model.PaymentMethod" Label="PaymentMethod" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.PaymentMethod)"/>
+                            <MudTextField  @bind-Value="Model.TransactionId" Label="TransactionId" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.TransactionId)"/>
+                            <MudTextField  @bind-Value="Model.CallbackData" Label="CallbackData" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CallbackData)"/>
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>
+@code {
+    [Parameter]
+    public PaymentView Model { get; set; } = new();
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<PaymentView> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+   
+    string GetTitle()
+    {
+      return IsNew ? @L["Create"] : @L["Edit"] ;
+    }
+}

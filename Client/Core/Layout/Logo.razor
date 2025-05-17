@@ -1,0 +1,7 @@
+@namespace Client.Core.Layout
+<img src="/Images/logo.png" style="@(Style ?? "width: 100%; padding:12px")" />
+
+@code {
+    [Parameter] public string? Style { get; set; } 
+    [Parameter] public string? Class { get; set; }
+}

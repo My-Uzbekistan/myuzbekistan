@@ -1,0 +1,137 @@
+﻿@page "/"
+@inject IContentStatisticService StatisticService
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Админ-панель статистики</MudText>
+
+    <MudGrid>
+        <MudItem xs="6">
+            <MudStack Class="mb-6">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2">@L["categories"] </MudText>
+                            <MudText Typo="Typo.h5">@Summary?.CategoryCount</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2"> @L["contents"] </MudText>
+                            <MudText Typo="Typo.h5">@Summary?.ContentPerCategory.Sum(x => x.ContentCount)</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2"> @L["Facilities"] </MudText>
+                            <MudText Typo="Typo.h5">@Summary?.FacilityCount</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2">@L["users"]</MudText>
+                            <MudText Typo="Typo.h5">@Summary?.UserCount</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.subtitle2">@L["files"] (MB)</MudText>
+                            <MudText Typo="Typo.h5">@Summary?.TotalFileSizeInMb</MudText>
+                        </MudCardContent>
+                    </MudCard>
+            </MudStack>
+        </MudItem>
+
+        <MudItem xs="6">
+            <MudGrid Class="mb-6">
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6">График контента по категориям</MudText>
+                    <MudPaper Class="doc-section-component-container">
+                        <MudChart ChartType="ChartType.Pie"
+                                  InputData="Summary?.ContentPerCategory.Select(x => (double)x.ContentCount).ToArray() ?? []"
+                                  InputLabels="@CategoryLabels"
+                                  ChartOptions="new ChartOptions { ShowToolTips = true, }"
+                                  AxisChartOptions="new AxisChartOptions { MatchBoundsToSize = true }"
+                                  CanHideSeries="true"
+                                  Width="350px" Height="350px" />
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.h6">Фильтр по дате</MudText>
+        <MudDateRangePicker StartText="С" EndText="По" @bind-DateRange="DateRange" Class="mb-4" />
+        <MudButton OnClick="LoadStatistics" Variant="Variant.Filled" Color="Color.Primary">Применить</MudButton>
+    </MudPaper>
+
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.h6">Запросы по датам</MudText>
+        <MudTable T="CategoryRequestByDate" Items="@FilteredRequests" Hover="true">
+            <HeaderContent>
+                <MudTh>Категория</MudTh>
+                <MudTh>Место</MudTh>
+                <MudTh>Дата</MudTh>
+                <MudTh>Количество</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.CategoryName</MudTd>
+                <MudTd>@context.ContentName</MudTd>
+                <MudTd>@context.Date.ToShortDateString()</MudTd>
+                <MudTd>@context.Count</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    StatisticSummaryView? Summary;
+    DateRange DateRange = new(DateTime.Today.AddDays(-30), DateTime.Today);
+
+    private ChartOptions AxisOptions = new()
+    {
+        ShowLegend = true,
+        ShowToolTips = true,
+        YAxisLines = true,
+        XAxisLines = true,
+        YAxisRequireZeroPoint = true,
+    };
+
+    private ChartSeries[] CategorySeries => new[]
+    {
+        new ChartSeries
+        {
+            Name = "Контенты",
+            Data = Summary?.ContentPerCategory.Select(x => (double)x.ContentCount).ToArray() ?? [],
+            Visible=true,
+            ShowDataMarkers = true
+
+        }
+    };
+
+    private ChartSeries[] FavoriteSeries => new[]
+    {
+        new ChartSeries
+        {
+            Name = "Избранное",
+            Data = Summary?.FavoritePerContent.Select(x => (double)x.Count).Take(5).ToArray() ?? []
+        }
+    };
+
+    private string[] CategoryLabels => Summary?.ContentPerCategory.Select(x => x.CategoryName).ToArray() ?? [];
+
+    protected override async Task OnInitializedAsync() => await LoadStatistics();
+
+    private async Task LoadStatistics()
+    {
+        var filter = new StatisticFilter
+        {
+            StartDate = DateRange.Start?.StartOfDay().ToUniversalTime(),
+            EndDate = DateRange.End?.EndOfDay().ToUniversalTime()
+        };
+
+        Summary = await StatisticService.GetSummary(filter);
+    }
+
+    private IEnumerable<CategoryRequestByDate> FilteredRequests =>
+        Summary?.RequestsByDate.OrderByDescending(x => x.Date) ?? Enumerable.Empty<CategoryRequestByDate>();
+}

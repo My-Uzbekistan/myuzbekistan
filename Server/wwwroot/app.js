@@ -1,0 +1,1 @@
+﻿Upload it to your Cloud folder in the Cloud Code Functions section.In your Public folder, create a subfolder named well - known and upload the apple - developer - domain - association.txt in it.

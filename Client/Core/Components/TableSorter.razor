@@ -1,0 +1,31 @@
+﻿@typeparam T
+
+@foreach (var item in Columns)
+{
+    <MudTh>
+        <MudTableSortLabel SortLabel="@item" SortDirectionChanged='(SortDirection dir) => SortTable(dir, item)' T="T"> @L[@item.Replace("_field","")]</MudTableSortLabel>
+    </MudTh>
+}
+
+
+@code {
+    [Parameter]
+    public string[] Columns { get; set; } = null!;
+
+    [Parameter]
+    public IMutableState<TableOptions> MutableState { get; set; } = null!;
+
+    public void SortTable(SortDirection dir, string label)
+    {
+        MutableState.Value.SortDirection = (int)dir;
+        MutableState.Value.SortLabel = label;
+
+        if (dir == SortDirection.None)
+        {
+            MutableState.Value.SortDirection = 1;
+            MutableState.Value.SortLabel = Columns[0];
+        }
+        MutableState.Invalidate();
+    }
+
+}

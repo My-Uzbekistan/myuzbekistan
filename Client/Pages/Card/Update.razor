@@ -1,0 +1,47 @@
+@page "/cards/{Id:long}"
+
+@inherits ComputedStateComponent<CardView>
+@inject ICardService CardService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+@{
+    var Model = State.LastNonErrorValue ?? new CardView() { };
+}
+
+<Client.Pages.Card._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false"/>
+
+
+
+@code {
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing {get;set;}=false;
+
+    public async Task OnSubmit(CardView entity)
+    {
+        Processing =true;
+
+
+        var response = await Command.Run(new UpdateCardCommand(Session,entity));
+        if(response.HasError)
+        {
+            Snackbar.Add(@L["Error"]+" : "+response.Error?.Message,Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+            navigation.NavigateTo("/cards");
+        }
+
+        Processing=false;
+    }
+
+    protected override async Task<CardView> ComputeState(CancellationToken cancellationToken)
+    {
+        return new CardView { };  //await CardService.Get(Id,cancellationToken);
+    }
+}

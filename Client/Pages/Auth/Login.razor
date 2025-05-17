@@ -1,0 +1,30 @@
+﻿@page "/Account/Login"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Logging
+@using MudBlazor.StaticInput
+@using MudBlazorWebApp1.Components.Account
+@using myuzbekistan.Shared
+
+@layout AuthLayout
+
+
+<LoginComponent />
+
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null && HttpMethods.IsGet(httpContext.Request.Method))
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await httpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
+}

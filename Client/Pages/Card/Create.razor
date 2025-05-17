@@ -1,0 +1,31 @@
+@page "/cards/create"
+
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+
+<Client.Pages.Card._Form OnSubmit="OnSubmit" Processing="@Processing" IsNew="true"/>
+
+@code {
+ 
+    public bool Processing {get;set;} = false;
+
+    public async Task OnSubmit(CardView entity)
+    {
+       Processing = true;
+       
+
+       var response= await Command.Run(new CreateCardCommand(Session,entity));
+       if(response.HasError)
+       {
+          Snackbar.Add(@L["Error"]+" : "+response.Error?.Message, Severity.Error);
+       }
+       else
+       {
+          Snackbar.Add(@L["SuccessCreate"], Severity.Success);
+          navigation.NavigateTo("/cards");
+       }
+       Processing = false;
+    }
+}

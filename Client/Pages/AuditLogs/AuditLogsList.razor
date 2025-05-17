@@ -1,0 +1,126 @@
+﻿@page "/logs"
+@inject UICommander commander
+@inject Session Session
+@inject NavigationManager navigation
+@inject ISnackbar Snackbar
+@inject IDialogService _dialogService
+@inject IAuditLogsService service
+@inject PageHistoryState PageHistoryState
+
+@inherits MixedStateComponent<TableResponse<AuditLogView>,TableOptions>
+@{
+    var error = State.Error;
+    Items = State.LastNonErrorValue;
+}
+
+<PageTitle>Logs</PageTitle>
+<ListContainer Title="@L["Logs"]">
+    <ChildContent>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState=MutableState Tclass="AuditLogView">
+            <HeadContent>
+                <MudItem xs="12" lg="2">
+                    <MudSelect ValueChanged="@((v)=>ChangedDate(v))" Margin="Margin.Dense" T="DateTypes" Label=@L["TimePeriod"] Variant="Variant.Outlined" AutoFocus="false">
+                        <MudSelectItem T="DateTypes" Value=DateTypes.All>@L["All"]</MudSelectItem>
+                        <MudSelectItem T="DateTypes" Value=DateTypes.Today>@L["Today"]</MudSelectItem>
+                        <MudSelectItem T="DateTypes" Value=DateTypes.Yesterday>@L["Yesterday"]</MudSelectItem>
+                        <MudSelectItem T="DateTypes" Value=DateTypes.Week>@L["Week"]</MudSelectItem>
+                        <MudSelectItem T="DateTypes" Value=DateTypes.Month>@L["Month"]</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" lg="3">
+                    <MudDateRangePicker @ref="_picker" Margin="Margin.Dense" Variant=Variant.Outlined Label=@L["FromTo"] DateRange=_dateRange DateRangeChanged="@((e)=>ChangeDateRange(e))" >
+                        <PickerActions>
+                            <MudButton Class="mr-auto align-self-start" OnClick="@(() => _picker!.ClearAsync())">Clear</MudButton>
+                            <MudButton OnClick="@(() => _picker!.CloseAsync(false))">Cancel</MudButton>
+                            <MudButton Color="Color.Primary" OnClick="@(() => _picker!.CloseAsync())">Ok</MudButton>
+                        </PickerActions>
+                    </MudDateRangePicker>
+                </MudItem>
+            </HeadContent>
+            <ChildContent>
+                <MudTd DataLabel="User">@context.User</MudTd>
+                <MudTd DataLabel="TableName">@context.TableName</MudTd>
+                <MudTd DataLabel="Operation">@context.Operation</MudTd>
+                <MudTd DataLabel="OldValues">@context.OldValues</MudTd>
+                <MudTd DataLabel="NewValues">@context.NewValues</MudTd>
+                <MudTd DataLabel="CreatedAt">@context.Created.AddHours(-5).ToString("MM/dd/yyyy HH:mm")</MudTd>
+            </ChildContent>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>
+
+@code {
+    private DateTime Date { get; set; }
+    private DateRange _dateRange { get; set; } = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    private TableResponse<AuditLogView>? Items;
+    private MudDateRangePicker? _picker;
+    private string[] SortColumns = new string[] { "User", "Table", "Operation", "OldValue", "NewValue", "DateOfCreation" };
+
+    protected override MutableState<TableOptions>.Options GetMutableStateOptions()
+    {
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
+        QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
+        int count = 1;
+        int.TryParse(_initialCount, out count);
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Number", SortDirection = 1, Search = searchParam } };
+    }
+
+    protected override async Task<TableResponse<AuditLogView>> ComputeState(CancellationToken cancellationToken = default)
+    {
+        return await service.GetAll(MutableState.Value);
+    }
+    void ChangeDateRange(DateRange date)
+    {
+        _dateRange = date;
+        if (date is null)
+        {
+            MutableState.Value.From = null;
+            MutableState.Value.To = null;
+        }
+        else
+        {
+            MutableState.Value.From = DateOnly.FromDateTime((DateTime)date.Start!);
+            MutableState.Value.To = DateOnly.FromDateTime((DateTime)date.End!);
+        }
+        InvalidState();
+    }
+    void ChangedDate(DateTypes type)
+    {
+        var today = DateTime.Now;
+        switch (type)
+        {
+            case DateTypes.All:
+                MutableState.Value.From = null;
+                MutableState.Value.To = null;
+                break;
+            case DateTypes.Today:
+                MutableState.Value.From = DateOnly.FromDateTime(today);
+                MutableState.Value.To = DateOnly.FromDateTime(today.AddDays(1));
+                break;
+            case DateTypes.Yesterday:
+                MutableState.Value.From = DateOnly.FromDateTime(today.AddDays(-1));
+                MutableState.Value.To = DateOnly.FromDateTime(today);
+                break;
+            case DateTypes.Week:
+                MutableState.Value.From = DateOnly.FromDateTime(StartOfWeek(today, DayOfWeek.Monday));
+                MutableState.Value.To = DateOnly.FromDateTime(today);
+                break;
+            case DateTypes.Month:
+                MutableState.Value.From = DateOnly.FromDateTime(new DateTime(today.Year, today.Month, 1));
+                MutableState.Value.To = DateOnly.FromDateTime(DateTime.Now);
+                break;
+        }
+        InvalidState();
+    }
+    public DateTime StartOfWeek(DateTime dt, DayOfWeek startOfWeek)
+    {
+        int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+        return dt.AddDays(-1 * diff).Date;
+    }
+    private void InvalidState()
+    {
+        PageHistoryState.SetPage(MutableState);
+        MutableState.Invalidate();
+    }
+}

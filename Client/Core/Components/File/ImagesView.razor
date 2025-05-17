@@ -1,0 +1,75 @@
+@namespace Client.Core.Components
+@inject IUFileService UFileService
+
+@if (Files?.Count > 0)
+{
+    @if (Files[0].Type == UFileTypes.Image)
+    {
+        <MudImage Fluid="true" @onclick="@OpenDialog" Src="@(url + Files[0].Path)" Height="50" Width="60" />
+    }
+    else if (Files[0].Type == UFileTypes.File)
+    {
+        <MudButton @onclick="@OpenDialog">Open Files</MudButton>
+    }
+}
+
+
+
+<MudDialog @bind-IsVisible="visible" Options="dialogOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> List of picture
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudCarousel Class="mud-width-full" Style="height:200px;" ShowArrows="true" ShowBullets="true" AutoCycle="true" TData="object">
+          @if(Files != null)
+          {
+            @foreach (var file in Files)
+            {
+                <MudCarouselItem Transition="Transition.Slide" Color="@Color.Transparent">
+                    <div class="d-flex" style="height:100%">
+                        @if (file.Type == UFileTypes.Image)
+                        {
+                                
+                            <MudImage Fluid="true" Src="@(url + file.Path)" />
+                        }
+                        else
+                        {
+                            <MudList T="string" Clickable="true">
+                                <MudListItem Text="@file.Name">
+                                    <MudLink Href="@file.Path">@file.Name</MudLink>
+                                </MudListItem>
+                                <MudDivider />
+                            </MudList>
+                        }
+                    </div>
+                </MudCarouselItem>
+            }
+          }
+        </MudCarousel>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    [Parameter]
+    public List<FileView>? Files { get; set; }
+
+    string url = string.Empty;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        var urlTask = UFileService.GetFileUrl();
+        url = await urlTask;
+    }
+    private bool visible;
+    private void OpenDialog() => visible = true;
+    void Submit() => visible = false;
+
+    private DialogOptions dialogOptions = new() { FullWidth = true };
+}

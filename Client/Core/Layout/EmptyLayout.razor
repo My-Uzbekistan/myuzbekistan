@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Globalization;
+@using MudBlazor
+@using ActualLab.Fusion.Authentication
+@using ActualLab.Fusion.Blazor
+@using ActualLab.Fusion.UI
+@using System.Runtime.InteropServices
+
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject Session Session
+@inject UIActionFailureTracker UIActionFailureTracker
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+@rendermode InteractiveServer
+
+
+@{
+    var failures = UIActionFailureTracker.Items;
+}
+
+<MudThemeProvider Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode"
+                  IsDarkModeChanged="LayoutService.SetDarkMode" />
+<MudPopoverProvider />
+<MudDialogProvider FullWidth="true" MaxWidth="MaxWidth.ExtraSmall" />
+<MudSnackbarProvider />
+@Body

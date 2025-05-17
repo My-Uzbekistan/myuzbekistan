@@ -1,0 +1,29 @@
+﻿@using ActualLab.Fusion.Blazor
+@using ActualLab.Fusion.Blazor.Authentication
+@using ActualLab.OS
+@implements IDisposable
+@inject BlazorCircuitContext BlazorCircuitContext
+@inject ISessionResolver SessionProvider
+
+<CascadingAuthState UsePresenceReporter="true">
+    @ChildContent
+</CascadingAuthState>
+
+@code {
+    [Parameter]
+    public string SessionId { get; set; } = Session.Default.Id;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+
+    protected override void OnInitialized()
+    {
+        SessionProvider.Session = new Session(SessionId);
+
+        
+    }
+
+    public void Dispose()
+        => BlazorCircuitContext.Dispose();
+}

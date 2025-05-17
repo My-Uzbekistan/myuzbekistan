@@ -1,0 +1,119 @@
+﻿@page "/error/{Status}"
+@using System.Text
+@using System.Diagnostics
+@layout EmptyLayout
+@inject UInjector _injector
+
+@{
+    var exception = _injector.Exception;
+}
+
+<MudContainer>
+    <MudGrid Class="mt-5">
+        <MudItem xs="12" lg="12">
+            <MudPaper Elevation="2" Class="pa-4">
+
+                <MudLink Class="mb-5">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="@NavigateBack">
+                        @if (string.IsNullOrEmpty(_injector.BackUrl) || _injector.BackUrl == "/")
+                        {
+                            @L["GoHome"]
+                        }
+                        else
+                        {
+                            @L["Back"]
+                        }
+                    </MudButton>
+                </MudLink>
+
+                <MudGrid>
+                    <MudItem xs="12" lg="12">
+                        <MudText style="font-size:90px; font-weight: bold; text-align: center;">@Status</MudText>
+                    </MudItem>
+                    <MudItem xs="12" lg="12">
+                        @if (Debugger.IsAttached)
+                        {
+                            var message = @GetMessage();
+                            if (message.Contains("🛑"))
+                            {
+                                <MudText Typo="Typo.body1">
+                                    <pre style="max-width: 100%; font-size:20px; white-space: pre-wrap; word-wrap: break-word;">
+                                        @message
+                                    </pre>
+                                </MudText>
+                            }
+                            else
+                            {
+                                <MudText Typo="Typo.body1" Class="mt-2" style="text-align: center">
+                                    <pre style="max-width: 100%; font-size:26px; white-space: pre-wrap; word-wrap: break-word; text-align: center">
+                                        @message
+                                                    </pre>
+                                </MudText>
+                            }
+                        }
+                        else
+                        {
+                            <MudText Class="mt-5" style="text-align: center" Typo="Typo.h5">@L[Status] </MudText>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string Status { get; set; } = "500";
+
+    private string GetMessage()
+    {
+        var ex = _injector.Exception;
+        if (ex is null)
+        {
+            return Status switch
+            {
+                "400" => "Bad Request",
+                "403" => "You are not authorized to access this page",
+                "404" => "Page not found",
+                "500" => "Internal Server Error",
+                _ => "Something went wrong"
+            };
+        }
+
+        string? stackTrace = ex.StackTrace;
+        var sb = new StringBuilder();
+
+        sb.AppendLine();
+        sb.AppendLine($"🛑{ex.GetType().Name}: {ex.Message}");
+        if (ex.InnerException != null)
+        {
+            sb.AppendLine("Inner Exception: " + ex.InnerException.Message);
+        }
+        sb.AppendLine();
+
+        if (stackTrace != null)
+        {
+            sb.AppendLine("🪲Source:");
+            foreach (var line in stackTrace.Split('\n'))
+            {
+                sb.AppendLine(line.Trim());
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    Dictionary<string, string> ErrorTypes = new Dictionary<string, string>
+    {
+        { "400", "Images/400.png" },
+        { "403", "Images/403.png" },
+        { "404", "Images/404.png" },
+        { "500", "Images/500.png" }
+    };
+
+    private void NavigateBack()
+    {
+        _injector.NavigationManager.NavigateTo(_injector.BackUrl);
+    }
+}

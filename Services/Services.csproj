@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<FusionVersion>9.8.37</FusionVersion>
+		<PacketVersions>9.0.2</PacketVersions>
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ActualLab.Fusion.EntityFramework" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Generators" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Blazor.Authentication" Version="$(FusionVersion)" />
+		<PackageReference Include="ActualLab.Fusion.Ext.Services" Version="$(FusionVersion)" />
+		<PackageReference Include="ClosedXML" Version="0.104.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(PacketVersions)" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(PacketVersions)" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(PacketVersions)" />
+		<PackageReference Include="Riok.Mapperly" Version="4.1.0" />
+		<PackageReference Include="Coravel" Version="6.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Data\Migrations\Identity\" />
+	</ItemGroup>
+</Project>

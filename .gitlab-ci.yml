@@ -1,0 +1,41 @@
+stages:
+  - build
+  - deploy
+
+docker-build:
+  stage: build
+  only:
+    - development
+    - master
+  variables:
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - docker login -u $CI_DEPENDENCY_PROXY_USER -p $CI_DEPENDENCY_PROXY_PASSWORD $CI_DEPENDENCY_PROXY_SERVER
+  script: 
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - if [ "$CI_COMMIT_BRANCH" == "development" ]; then docker build -f dev.Dockerfile --cache-from "$CI_REGISTRY_IMAGE:latest-dev" -t $CI_REGISTRY_IMAGE:dev-$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE:latest-dev . ; fi
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then docker build --cache-from "$CI_REGISTRY_IMAGE:latest" -t $CI_REGISTRY_IMAGE:prod-$CI_COMMIT_SHA  -t $CI_REGISTRY_IMAGE:latest . ; fi
+    - if [ "$CI_COMMIT_BRANCH" == "development" ]; then docker push $CI_REGISTRY_IMAGE:dev-$CI_COMMIT_SHA ; fi
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then docker push $CI_REGISTRY_IMAGE:prod-$CI_COMMIT_SHA ; fi
+
+
+
+deploy-to-swarm:
+  stage: deploy
+  only:
+    - development
+    - master
+  variables:
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_CERT_PATH: "/certs/client"
+    DOCKER_HOST: tcp://newmanager:2376
+  environment:
+    name: $CI_COMMIT_BRANCH
+    url:  http://{manager_ip_address} 
+
+  script:
+    - docker login -u deployer -p $HUB_REGISTRY_PASSWORD $CI_REGISTRY
+    - if [ "$CI_COMMIT_BRANCH" == "development" ]; then docker stack deploy -c dev-docker-compose.yml $CI_PROJECT_NAME-dev --with-registry-auth ; fi
+    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then docker stack deploy -c docker-compose.yml $CI_PROJECT_NAME --with-registry-auth ; fi
+    - docker logout

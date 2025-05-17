@@ -1,0 +1,21 @@
+﻿@inject ISnackbar Snackbar
+
+@if (Exception != null)
+{
+   @ShowSnackbar();
+}
+
+@code {
+
+    public async Task<string> ShowSnackbar()
+    {
+        Snackbar.Add(Exception?.Message, Severity.Error);
+        await Dismissed.InvokeAsync();
+        return "";
+    }
+
+    [Parameter]
+    public Exception? Exception { get; set; }
+    [Parameter]
+    public EventCallback Dismissed { get; set; }
+}

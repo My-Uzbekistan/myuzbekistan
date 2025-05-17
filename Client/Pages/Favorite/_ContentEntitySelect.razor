@@ -1,0 +1,62 @@
+@using System.Linq.Expressions
+@inherits MixedStateComponent<TableResponse<ContentView>,string>
+@inject IContentService ContentService
+
+@{
+    var data = State.ValueOrDefault ?? new TableResponse<ContentView>();
+}
+<MudAutocomplete T="ContentView" 
+@attributes="Attributes"
+Value="Value"
+Immediate="true"
+Required=Required
+For="For"
+ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Title" SearchFunc="Search"  />
+
+@code {
+    [Parameter]
+    public ContentView? Value { get; set; }
+    [Parameter]
+    public EventCallback<ContentView> ValueChanged { get; set; }
+    [Parameter]
+    public bool Required { get; set; }=false;
+    [Parameter]
+    public Expression<Func<ContentView>>? For { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? Attributes { get; set; }
+
+    async Task UpdateValue(ContentView value)
+    {
+        Value = value;
+
+        await ValueChanged.InvokeAsync(Value);
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    protected override MutableState<string?>.Options GetMutableStateOptions()
+        => new() { InitialValue = null };
+
+    protected override async Task<TableResponse<ContentView>> ComputeState(CancellationToken cancellationToken)
+    {
+        if (Value != null)
+        {
+            return await ContentService.GetAll(Value.CategoryId, new() { Search = MutableState.Value }, cancellationToken);
+        }
+        return new TableResponse<ContentView>();
+
+        
+    }
+
+    private async Task<IEnumerable<ContentView>> Search(string value,CancellationToken cancellationToken)
+    {
+        MutableState.Set(value);
+        MutableState.Invalidate();
+
+        await Task.Delay(30);
+
+        return  State?.ValueOrDefault?.Items?.ToList() ?? new List<ContentView>();
+    }
+
+
+}

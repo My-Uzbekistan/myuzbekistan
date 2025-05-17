@@ -1,0 +1,80 @@
+﻿<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-4">@L["Contact_ManageContacts"]</MudText>
+
+    @foreach (var contact in Contacts)
+    {
+        <MudGrid Class="mb-3" AlignItems="AlignItems.Center">
+            <MudItem xs="12" md="2">
+ 
+                <MudSelect T="string" @bind-Value="contact.Icon" SelectedValuesChanged="@(async ()=> {
+                    contact.Name = L[contact.Icon.Replace(".png","")];
+                    await Changed();
+
+})" Label="@L["Contact_ContactType"]">
+                    <MudSelectItem Value="@("/Images/telegram.png")">@L["Telegram"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/phone.png")">@L["Phone"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/instagram.png")">@L["Instagram"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/whatsapp.png")">@L["WhatsApp"]</MudSelectItem>
+                    <MudSelectItem Value="@("/Images/site.png")">@L["Site"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                @if (contact.Icon == "/Images/phone.png" || contact.Icon == "/Images/whatsapp.png" || contact.Icon == "/Images/telegram.png")
+                {
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" 
+                                  
+                                  Adornment="Adornment.Start"
+                                   Label="@L["Contact_PhoneNumber"]" />
+                }
+                else if (contact.Icon == "/Images/site.png")
+                {
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Site"]" />
+                }
+                else
+                {
+                    <MudTextField @bind-Value="contact.Contact" TextChanged="Changed" Label="@L["Contact_Username"]"   />
+                }
+            </MudItem>
+
+            <MudItem xs="12" md="2">
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => RemoveContact(contact))" />
+            </MudItem>
+        </MudGrid>
+    }
+
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" OnClick="AddContact">
+        @L["Contact_AddContact"]
+    </MudButton>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public List<CallInformation> Contacts { get; set; } = new();
+    [Parameter]
+    public EventCallback<List<CallInformation>> ContactsChange { get; set; }
+
+    private async Task AddContact()
+    {
+        Contacts.Add(new CallInformation
+            {
+                Contact = string.Empty,
+                Name = L["Phone"],
+                Icon = "/Images/phone.png" // Значение по умолчанию
+            });
+
+        await ContactsChange.InvokeAsync(Contacts);
+
+    }
+
+    private async Task Changed()
+    {
+        await ContactsChange.InvokeAsync(Contacts);
+    }
+
+    private async Task RemoveContact(CallInformation contact)
+    {
+        Contacts.Remove(contact);
+        await ContactsChange.InvokeAsync(Contacts);
+    }
+}

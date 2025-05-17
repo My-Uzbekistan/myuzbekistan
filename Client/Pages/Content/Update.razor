@@ -1,0 +1,62 @@
+@page "/categories/{CategoryId:long}/contents/{Id:long}"
+@page "/more/{CategoryId:long}/contents/{Id:long}"
+
+@inherits ComputedStateComponent<List<ContentView>>
+@inject IContentService ContentService
+@inject UICommander Command
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject Session Session
+@inject PageHistoryState PageHistoryState
+
+
+@{
+    var Model = State.LastNonErrorValue ?? new List<ContentView>() { };
+}
+
+<Client.Pages.Content._Form OnSubmit="OnSubmit" Model="Model" Processing="@Processing" IsNew="false" CategoryId="CategoryId" />
+
+
+
+@code {
+    [Parameter]
+    public long CategoryId { get; set; }
+    [Parameter]
+    public long Id { get; set; }
+
+    public bool Processing { get; set; } = false;
+
+    private bool IsCategories;
+    private string? routePath;
+
+    protected override void OnInitialized()
+    {
+        routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
+        IsCategories = navigation.Uri.Contains("/categories/");
+    }
+
+    public async Task OnSubmit(List<ContentView> entity)
+    {
+        Processing = true;
+
+
+        var response = await Command.Run(new UpdateContentCommand(Session, entity));
+        if (response.HasError)
+        {
+            Snackbar.Add(@L["Error"] + " : " + response.Error?.Message, Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add(@L["SuccessUpdate"], Severity.Success);
+            PageHistoryState.Back($"{routePath}/{CategoryId}/contents");
+            // navigation.NavigateTo($"/{routePath}/{CategoryId}/contents");
+        }
+
+        Processing = false;
+    }
+
+    protected override async Task<List<ContentView>> ComputeState(CancellationToken cancellationToken)
+    {
+        return await ContentService.Get(Id, cancellationToken);
+    }
+}

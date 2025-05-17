@@ -1,0 +1,62 @@
+@inject ISnackbar Snackbar
+@inject NavigationManager navigation
+@inject PageHistoryState PageHistoryState
+
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => PageHistoryState.Back("cards")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudNumericField  @bind-Value="Model.CardId" AutoFocus="true" Label="CardId" Variant="Variant.Text" For="@(() => Model.CardId)"Required="true"/>                                
+                            <MudNumericField  @bind-Value="Model.UserId" AutoFocus="false" Label="UserId" Variant="Variant.Text" For="@(() => Model.UserId)"Required="true"/>                                
+                            <MudTextField  @bind-Value="Model.ExpirationDate" Label="ExpirationDate" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.ExpirationDate)"/>
+                            <MudNumericField  @bind-Value="Model.ApplicationId" AutoFocus="false" Label="ApplicationId" Variant="Variant.Text" For="@(() => Model.ApplicationId)"Required="true"/>                                
+                            <MudTextField  @bind-Value="Model.PayerId" Label="PayerId" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.PayerId)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.CardPan" Label="CardPan" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CardPan)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.CardToken" Label="CardToken" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CardToken)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Phone" Label="Phone" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Phone)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.HolderName" Label="HolderName" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.HolderName)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Pinfl" Label="Pinfl" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Pinfl)"/>
+                            <MudTextField  @bind-Value="Model.Ps" Label="Ps" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Ps)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Status" Label="Status" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Status)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.AddedOn" Label="AddedOn" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.AddedOn)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.CardStatus" Label="CardStatus" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CardStatus)"/>
+                            <MudTextField  @bind-Value="Model.SmsInform" Label="SmsInform" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.SmsInform)"/>
+                            <MudSwitch @bind-Checked="Model.IsMulticard" For="@(() => Model.IsMulticard)"Required="true"/>
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>
+@code {
+    [Parameter]
+    public CardView Model { get; set; } = new();
+
+    [Parameter]
+    public bool IsNew { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<CardView> OnSubmit { get; set; }
+
+    [Parameter]
+    public bool Processing { get; set; }
+
+    
+    private async void OnValidSubmit(EditContext context)
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+   
+    string GetTitle()
+    {
+      return IsNew ? @L["Create"] : @L["Edit"] ;
+    }
+}
