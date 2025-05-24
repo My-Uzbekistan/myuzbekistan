@@ -1,0 +1,11 @@
+@inherits MixedStateComponent<TableResponse<MerchantView>, string>
+@{
+    var data = State.GetValue(Injector);
+}
+<MudAutocomplete T="MerchantView" 
+                 @attributes="Attributes"
+                 Value="Value"
+                 Immediate="true"
+                 Required=Required
+                 For="For"
+                 ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" SearchFunc="Search"  />

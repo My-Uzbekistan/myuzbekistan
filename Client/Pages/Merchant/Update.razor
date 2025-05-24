@@ -1,0 +1,10 @@
+@page "/merchants/{Id:long}"
+@inherits ComputedStateComponent<MerchantView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.Merchant._Form OnSubmit="OnSubmit" 
+                                    Model="Model" 
+                                    Processing="@Processing" 
+                                    IsNew="false"/>

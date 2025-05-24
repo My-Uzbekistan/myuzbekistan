@@ -1,0 +1,11 @@
+@inherits MixedStateComponent<TableResponse<FileView>, string>
+@{
+    var data = State.GetValue(Injector);
+}
+<MudAutocomplete T="FileView" 
+                 @attributes="Attributes"
+                 Value="Value"
+                 Immediate="true"
+                 Required=Required
+                 For="For"
+                 ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" SearchFunc="Search"  />

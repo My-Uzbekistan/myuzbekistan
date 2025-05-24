@@ -390,4 +390,7 @@
   <data name="PasswordRequired" xml:space="preserve">
     <value>Parol talab qilinadi</value>
   </data>
+  <data name="Merchants" xml:space="preserve">
+    <value>Merchantlar</value>
+  </data>
 </root>

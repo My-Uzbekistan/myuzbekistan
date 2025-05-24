@@ -493,6 +493,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Merchants.
+        /// </summary>
+        public static string Merchants {
+            get {
+                return ResourceManager.GetString("Merchants", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to More.
         /// </summary>
         public static string More {
