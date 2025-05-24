@@ -161,14 +161,20 @@ public partial class WeatherView
     public string IconUrl { get; set; } = null!;
 }
 
-public class WeatherRequest
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class WeatherRequest
 {
     [Required]
     [JsonPropertyName("lat")]
+    [property: DataMember]
     public double Lat { get; set; }
     [JsonPropertyName("lon")]
     [Required]
+    [property: DataMember]
     public double Lon { get; set; }
+
+    [property: DataMember]
     [JsonPropertyName("lang")]
     public string? Lang { get; set; } 
 }

@@ -9,15 +9,16 @@ namespace myuzbekistan.Services;
 
 public class WeatherService(IConfiguration configuration) : IWeatherService
 {
-    public async virtual Task<WeatherView> GetWeather(WeatherRequest request, CancellationToken cancellationToken = default)
+    public async virtual Task<WeatherView> GetWeather(double lat, double lon, string lang, CancellationToken cancellationToken = default)
     {
-        var url = configuration.GetValue<string>("WeatherApi:Url") ;
-        var key = configuration.GetValue<string>("WeatherApi:Key") ;
         await Invalidate();
+        var url = configuration.GetValue<string>("WeatherApi:Url");
+        var key = configuration.GetValue<string>("WeatherApi:Key");
+
         var client = new HttpClient();
-        
-        var response = await client.GetFromJsonAsync<WeatherResponse>($"{url}?q={request.Lat},{request.Lon}&key={key}&lang=ru"
-            ,cancellationToken: cancellationToken);
+
+        var response = await client.GetFromJsonAsync<WeatherResponse>($"{url}?q={lat},{lon}&key={key}&lang=ru"
+            , cancellationToken: cancellationToken);
         return response == null ? throw new Exception("Weather data not found") : response.MapToView();
     }
 

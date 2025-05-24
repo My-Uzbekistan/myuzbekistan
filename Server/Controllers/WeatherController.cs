@@ -13,7 +13,7 @@ namespace Server.Controllers
         public async Task<WeatherView> GetWeather([FromQuery] WeatherRequest request, CancellationToken cancellationToken)
         {
             request.Lang ??= LangHelper.currentLocale;
-            return await weatherService.GetWeather(request, cancellationToken);
+            return await weatherService.GetWeather(request.Lat, request.Lon, request.Lang, cancellationToken);
         }
     }
 }
