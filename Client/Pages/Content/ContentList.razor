@@ -59,11 +59,17 @@
                         <ImagesView Files="@context.PhotosView?.ToList()" />
                     </MudTd>
                 }
-                
                 @if (SortColumns.Contains("Photo"))
                 {
                     <MudTd DataLabel="Photo">
                         <ImageView fileEntity="@context.PhotoView" />
+                    </MudTd>
+                }
+
+                @if (SortColumns.Contains("Order"))
+                {
+                    <MudTd DataLabel="Order">
+                        @context.Order
                     </MudTd>
                 }
                 @if (SortColumns.Contains("Languages"))
@@ -127,9 +133,7 @@
     private long regionId;
     [Parameter] public long CategoryId { get; set; }
     private TableResponse<ContentView>? Items;
-
-    
-
+ 
     private string[] SortColumns = new string[] { "Title", "PhotosCount",  "Photos", "Photo", "Languages", "AverageCheck", "RatingAverage", "Price", "PriceInDollar", "Address", "Recommended", "Id" };
 
     protected override void OnInitialized()
@@ -137,7 +141,7 @@
         routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
         if (routePath == "more")
         {
-            SortColumns = ["Title", "Description", "Photo", "Id"];
+            SortColumns = ["Title", "Description", "Photo","Order", "Id"];
         }
         else
         {
@@ -164,7 +168,7 @@
         routePath = navigation.Uri.Contains("/categories") ? "categories" : "more";
         if (routePath == "more")
         {
-            SortColumns = ["Title", "Description", "Photo", "Id"];
+            SortColumns = ["Title", "Description", "Photo","Order", "Id"];
         }
         else
         {
@@ -194,7 +198,7 @@
         string[] constatnFields = ["Title", "Id","PhotosCount", "RatingAverage", "Recommended"];
         if(routePath == "more")
         {
-            constatnFields = ["Title", "Id", "RatingAverage", "Recommended"];
+            constatnFields = ["Title", "Id", "RatingAverage", "Recommended","Order"];
         }
         SortColumns = SortColumns.Where(x => constatnFields.Contains(x) || Bitwise.Is(catField, (ContentFields)Enum.Parse(typeof(ContentFields), x))).ToArray();
         

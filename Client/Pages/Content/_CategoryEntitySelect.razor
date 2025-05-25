@@ -11,18 +11,25 @@
                  Immediate="true"
                  Required=Required
                  For="For"
+                 Label="@Label"
+                 MaxItems="150"
+                 Variant="Variant.Outlined"
+                 Margin="Margin.Dense"
                  ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" SearchFunc="Search"  />
 
 @code {
     [Parameter]
     public CategoryView? Value { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
     [Parameter]
     public EventCallback<CategoryView> ValueChanged { get; set; }
     [Parameter]
     public bool Required { get; set; }=false;
     [Parameter]
     public Expression<Func<CategoryView>>? For { get; set; }
-    
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? Attributes { get; set; }
 
@@ -39,7 +46,9 @@
 
     protected override async Task<TableResponse<CategoryView>> ComputeState(CancellationToken cancellationToken)
     {
-        return await CategoryService.GetAll(new() { Search = MutableState.Value }, cancellationToken);
+        var res = await CategoryService.GetAll(new() { Search = MutableState.Value, WithoutExpand = true, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("ru")  }, cancellationToken);
+
+        return res;
     }
 
     private async Task<IEnumerable<CategoryView>> Search(string value,CancellationToken cancellationToken)

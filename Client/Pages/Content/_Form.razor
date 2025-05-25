@@ -84,6 +84,14 @@
                             <MudExpansionPanels Class="mb-3">
                                 <MudExpansionPanel Text="@L["Settings"]" Gutters="true" Expanded="true">
                                     <MudStack>
+                                        <_CategoryEntitySelect Label="@L["Categories"]" @bind-Value="current.CategoryView"
+                                        
+                                        @bind-Value:after="() =>  Model.ForEach(x=>{
+                                            x.CategoryView = current.CategoryView;
+                                            x.CategoryId = current.CategoryId;
+
+                                        })"
+                                        ></_CategoryEntitySelect>
                                         <MudSelect T="ContentStatus" @bind-Value=current.Status @bind-Value:after="() => { OnChangeStatus(current.Status); }"  Label="@L["Status"]" Margin="Margin.Dense" Variant="Variant.Outlined">
                                             <MudSelectItem T="ContentStatus" Value="ContentStatus.Active">@L["Active"]</MudSelectItem>
                                             <MudSelectItem T="ContentStatus" Value="ContentStatus.Inactive">@L["InActive"]</MudSelectItem>
@@ -141,10 +149,10 @@
                                     }" />
                                     }
 
-                                    @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
-                                    {
+                                    @* @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
+                                    { *@
                                         <MudNumericField Label=@L["Order"] @bind-Value="current.Order" @bind-Value:after="() => { Model.ForEach(x => { x.Order = current.Order; }); }"></MudNumericField>
-                                    }
+                                    @* } *@
 
                                     @if (Bitwise.Is(categoryView.Fields, ContentFields.Location))
                                     {

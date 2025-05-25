@@ -146,8 +146,11 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         {
             category = category.Where(x => x.ViewType != ViewType.More);
         }
-
-        category = category.Include(x => x.Contents).Include(x => x.Icon);
+        if (!options.WithoutExpand)
+        {
+            category = category.Include(x => x.Contents).Include(x => x.Icon);
+        }
+        
         var count = await category.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await category.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<CategoryView>() { Items = items.MapToViewList(), TotalItems = count };

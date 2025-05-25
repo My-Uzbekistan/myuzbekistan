@@ -11,6 +11,7 @@ public sealed partial record TableOptions
     [property: DataMember] public string? Lang { get; set; } 
     [property: DataMember] public long? RegionId { get; set; } 
     [property: DataMember] public bool? IsMore { get; set; } 
+    [property: DataMember] public bool WithoutExpand { get; set; }
 
     [property: DataMember] public int PageSize { get; set; } = 15;
 
