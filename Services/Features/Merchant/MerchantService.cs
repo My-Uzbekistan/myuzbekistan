@@ -21,7 +21,8 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         if (!string.IsNullOrEmpty(options.Search))
         {
             merchant = merchant.Where(s => 
-                     s.Name !=null && s.Name.Contains(options.Search)
+                     s.BrandName !=null && s.BrandName.Contains(options.Search)
+                    || s.Name !=null && s.Name.Contains(options.Search)
                     || s.Phone !=null && s.Phone.Contains(options.Search)
                     || s.Email !=null && s.Email.Contains(options.Search)
                     || s.Address !=null && s.Address.Contains(options.Search)
@@ -29,7 +30,10 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
                     || s.Contract !=null && s.Contract.Contains(options.Search)
                     || s.Inn.Contains(options.Search)
                     || s.Mfi !=null && s.Mfi.Contains(options.Search)
-                    || s.CurrentAccount.Contains(options.Search)
+                    || s.AccountNumber.Contains(options.Search)
+                    || s.Responsible.Contains(options.Search)
+                    || s.TypeOfService.Contains(options.Search)
+                    || s.MXIKCode.Contains(options.Search)
             );
         }
 
@@ -134,6 +138,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
     private static void Sorting(ref IQueryable<MerchantEntity> merchant, TableOptions options) 
         => merchant = options.SortLabel switch
         {
+            "BrandName" => merchant.Ordering(options, o => o.BrandName),
             "Name" => merchant.Ordering(options, o => o.Name),
             "Phone" => merchant.Ordering(options, o => o.Phone),
             "Email" => merchant.Ordering(options, o => o.Email),
@@ -142,12 +147,16 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             "Contract" => merchant.Ordering(options, o => o.Contract),
             "Inn" => merchant.Ordering(options, o => o.Inn),
             "Mfi" => merchant.Ordering(options, o => o.Mfi),
-            "CurrentAccount" => merchant.Ordering(options, o => o.CurrentAccount),
+            "AccountNumber" => merchant.Ordering(options, o => o.AccountNumber),
             "Discount" => merchant.Ordering(options, o => o.Discount),
             "IsVat" => merchant.Ordering(options, o => o.IsVat),
             "Image" => merchant.Ordering(options, o => o.Image),
             "IsActive" => merchant.Ordering(options, o => o.IsActive),
             "Parent" => merchant.Ordering(options, o => o.Parent),
+            "PayDay" => merchant.Ordering(options, o => o.PayDay),
+            "Responsible" => merchant.Ordering(options, o => o.Responsible),
+            "TypeOfService" => merchant.Ordering(options, o => o.TypeOfService),
+            "MXIKCode" => merchant.Ordering(options, o => o.MXIKCode),
             "Id" => merchant.Ordering(options, o => o.Id),
             _ => merchant.OrderBy(o => o.Id),
         
