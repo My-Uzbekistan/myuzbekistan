@@ -15,5 +15,12 @@ namespace Server.Controllers
             request.Lang ??= LangHelper.currentLocale;
             return await weatherService.GetWeather(request.Lat, request.Lon, request.Lang, cancellationToken);
         }
+
+        [HttpGet("region")]
+        public async Task<WeatherView> GetWeatherByRegionId([FromQuery] WeatherByRegionRequest request, CancellationToken cancellationToken)
+        {
+            request.Lang ??= LangHelper.currentLocale;
+            return await weatherService.GetWeatherByRegion(request.RegionId, request.Lang, cancellationToken);
+        }
     }
 }

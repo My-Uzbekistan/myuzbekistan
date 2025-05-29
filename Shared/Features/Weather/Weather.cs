@@ -179,6 +179,20 @@ public partial class WeatherRequest
     public string? Lang { get; set; } 
 }
 
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class WeatherByRegionRequest
+{
+    [Required]
+    [JsonPropertyName("regionId")]
+    [property: DataMember]
+    public long RegionId { get; set; }
+
+    [property: DataMember]
+    [JsonPropertyName("lang")]
+    public string? Lang { get; set; }
+}
+
 
 
 
