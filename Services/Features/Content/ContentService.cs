@@ -292,8 +292,14 @@ public class ContentService(IServiceProvider services, ICategoryService category
                     ),
                     'Photo',  f."Path",
                     'Contacts', jsonb_build_object('Name', COALESCE(cat."FieldNames"->>'Contacts', 'Contacts') , 'Value', c."Contacts"),
-
+                    'Region', r."Name",
+                    'RegionId', r."Id",
                     'RatingAverage', c."RatingAverage",
+                    'ReviewCount', (
+                    SELECT COUNT(*)
+                    FROM "Reviews" rev
+                    WHERE rev."ContentEntityId" = c."Id" AND rev."ContentEntityLocale" = c."Locale"
+                    ),
                     'AverageCheck', c."AverageCheck",
                     'Price',  c."Price",
                     'PriceInDollar',  c."PriceInDollar",
@@ -308,6 +314,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
                 ) AS "Value"
                 FROM "Contents" c
                 LEFT JOIN "Categories" cat ON cat."Id" = c."CategoryId" AND cat."Locale" = c."Locale"
+                LEFT JOIN "Regions" r ON r."Id" = c."RegionId" AND r."Locale" = c."RegionLocale"
                 LEFT JOIN "Files" f ON f."Id" = c."PhotoId"
                 WHERE c."Id" = {ContentId} AND c."Locale" = '{CultureInfo.CurrentCulture.TwoLetterISOLanguageName}'
                 """);

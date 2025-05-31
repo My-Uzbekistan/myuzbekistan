@@ -79,11 +79,11 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         if (options.RegionId is null || options.RegionId == 1)
         {
 
-         return   contentEntities.Where(content =>
-                            string.IsNullOrEmpty(options.Search) ||
-                            content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
-                            (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
-                            .Where(content =>content.Status == ContentStatus.Active);
+            return contentEntities.Where(content =>
+                               string.IsNullOrEmpty(options.Search) ||
+                               content.Title.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+                               (content.Address != null && content.Address.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase)))
+                               .Where(content => content.Status == ContentStatus.Active);
         }
 
         return contentEntities.Where(content =>
@@ -150,7 +150,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         {
             category = category.Include(x => x.Contents).Include(x => x.Icon);
         }
-        
+
         var count = await category.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await category.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<CategoryView>() { Items = items.MapToViewList(), TotalItems = count };

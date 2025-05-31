@@ -33,6 +33,9 @@ public partial class MainPageContent
     [property: DataMember] public decimal PriceInDollar { get; set; }
     [property: DataMember] public ViewType viewType { get; set; }
     [property: DataMember] public bool isFavorite { get; set; }
+    [property: DataMember] public int distanse { get; set; }
+    [property: DataMember] public int reviewCount { get; set; }
+
 
 
 }
