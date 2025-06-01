@@ -393,4 +393,46 @@
   <data name="Merchants" xml:space="preserve">
     <value>Merchants</value>
   </data>
+  <data name="BrandName" xml:space="preserve">
+    <value>BrandName</value>
+  </data>
+  <data name="OrganizationName" xml:space="preserve">
+    <value>OrganizationName</value>
+  </data>
+  <data name="AccountNumber" xml:space="preserve">
+    <value>AccountNumber</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="ServiceType" xml:space="preserve">
+    <value>ServiceType</value>
+  </data>
+  <data name="IsVat" xml:space="preserve">
+    <value>IsVat</value>
+  </data>
+  <data name="PayDay" xml:space="preserve">
+    <value>PayDay</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Mfo" xml:space="preserve">
+    <value>MFO</value>
+  </data>
+  <data name="Inn" xml:space="preserve">
+    <value>INN</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Contract percentage</value>
+  </data>
+  <data name="Logo" xml:space="preserve">
+    <value>Logo</value>
+  </data>
+  <data name="MXIK" xml:space="preserve">
+    <value>MXIK</value>
+  </data>
+  <data name="WorkTime" xml:space="preserve">
+    <value>WorkTime</value>
+  </data>
 </root>

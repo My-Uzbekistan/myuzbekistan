@@ -1,18 +1,11 @@
-using ActualLab.Async;
-using ActualLab.Fusion;
-using ActualLab.Fusion.EntityFramework;
-using Microsoft.EntityFrameworkCore;
 using myuzbekistan.Services;
-using myuzbekistan.Shared;
-using System.ComponentModel.DataAnnotations;
-using System.Reactive;
 
-public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IMerchantService 
+public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IMerchantService
 {
     #region Queries
 
     [ComputeMethod]
-    public async virtual Task<TableResponse<MerchantView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<TableResponse<MerchantView>> GetAll(long? merchantCategoryId, TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -20,30 +13,26 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         if (!string.IsNullOrEmpty(options.Search))
         {
-            merchant = merchant.Where(s => 
-                     s.BrandName !=null && s.BrandName.Contains(options.Search)
-                    || s.Name !=null && s.Name.Contains(options.Search)
-                    || s.Phone !=null && s.Phone.Contains(options.Search)
-                    || s.Email !=null && s.Email.Contains(options.Search)
-                    || s.Address !=null && s.Address.Contains(options.Search)
-                    || s.Description !=null && s.Description.Contains(options.Search)
-                    || s.Contract !=null && s.Contract.Contains(options.Search)
-                    || s.Inn.Contains(options.Search)
-                    || s.Mfi !=null && s.Mfi.Contains(options.Search)
-                    || s.AccountNumber.Contains(options.Search)
+            merchant = merchant.Where(s =>
+                     s.Name != null && s.Name.Contains(options.Search)
+                    || s.Description != null && s.Description.Contains(options.Search)
+                    || s.Address != null && s.Address.Contains(options.Search)
+                    || s.MXIK != null && s.MXIK.Contains(options.Search)
+                    || s.WorkTime != null && s.WorkTime.Contains(options.Search)
+                    || s.Phone != null && s.Phone.Contains(options.Search)
                     || s.Responsible.Contains(options.Search)
-                    || s.TypeOfService.Contains(options.Search)
-                    || s.MXIKCode.Contains(options.Search)
             );
         }
+        if (merchantCategoryId.HasValue && merchantCategoryId.Value > 0)
+            merchant = merchant.Where(x => x.MerchantCategory.Id == merchantCategoryId);
 
         Sorting(ref merchant, options);
-        
-        merchant = merchant.Include(x => x.Image);
-        merchant = merchant.Include(x => x.Parent);
+
+        merchant = merchant.Include(x => x.Logo);
+        merchant = merchant.Include(x => x.MerchantCategory);
         var count = await merchant.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await merchant.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-        return new TableResponse<MerchantView>(){ Items = items.MapToViewList(), TotalItems = count };
+        return new TableResponse<MerchantView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
     [ComputeMethod]
@@ -52,11 +41,11 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var merchant = await dbContext.Merchants
-            .Include(x => x.Image)
-            .Include(x => x.Parent)
+            .Include(x => x.Logo)
+            .Include(x => x.MerchantCategory)
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw  new ValidationException("MerchantEntity Not Found");
-        
+            ?? throw new ValidationException("MerchantEntity Not Found");
+
         return merchant.MapToView();
     }
 
@@ -74,8 +63,8 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         MerchantEntity merchant = new();
-        Reattach(merchant, command.Entity, dbContext); 
-        
+        Reattach(merchant, command.Entity, dbContext);
+
         dbContext.Update(merchant);
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -90,13 +79,13 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var merchant = await dbContext.Merchants
-            .Include(x=>x.Image)
-            .Include(x=>x.Parent)
+            .Include(x => x.Logo)
+            .Include(x => x.MerchantCategory)
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw  new ValidationException("MerchantEntity Not Found");
+            ?? throw new ValidationException("MerchantEntity Not Found");
 
         Reattach(merchant, command.Entity, dbContext);
-        
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -109,10 +98,10 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var merchant = await dbContext.Merchants
-            .Include(x=>x.Image)
-            .Include(x=>x.Parent)
+            .Include(x => x.Logo)
+            .Include(x => x.MerchantCategory)
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw  new ValidationException("MerchantEntity Not Found");
+            ?? throw new ValidationException("MerchantEntity Not Found");
         dbContext.Remove(merchant);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -127,39 +116,30 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
     {
         MerchantMapper.From(merchantView, merchant);
 
-        if(merchant.Image != null)
-        merchant.Image = dbContext.Files
-        .First(x => x.Id == merchant.Image.Id);
-        if(merchant.Parent != null)
-        merchant.Parent = dbContext.Merchants
-        .First(x => x.Id == merchant.Parent.Id);
+        if (merchant.Logo != null)
+            merchant.Logo = dbContext.Files
+            .First(x => x.Id == merchant.Logo.Id);
+        if (merchant.MerchantCategory != null)
+            merchant.MerchantCategory = dbContext.MerchantCategories
+            .First(x => x.Id == merchant.MerchantCategory.Id);
     }
 
-    private static void Sorting(ref IQueryable<MerchantEntity> merchant, TableOptions options) 
+    private static void Sorting(ref IQueryable<MerchantEntity> merchant, TableOptions options)
         => merchant = options.SortLabel switch
         {
-            "BrandName" => merchant.Ordering(options, o => o.BrandName),
+            "Logo" => merchant.Ordering(options, o => o.Logo),
             "Name" => merchant.Ordering(options, o => o.Name),
-            "Phone" => merchant.Ordering(options, o => o.Phone),
-            "Email" => merchant.Ordering(options, o => o.Email),
-            "Address" => merchant.Ordering(options, o => o.Address),
             "Description" => merchant.Ordering(options, o => o.Description),
-            "Contract" => merchant.Ordering(options, o => o.Contract),
-            "Inn" => merchant.Ordering(options, o => o.Inn),
-            "Mfi" => merchant.Ordering(options, o => o.Mfi),
-            "AccountNumber" => merchant.Ordering(options, o => o.AccountNumber),
-            "Discount" => merchant.Ordering(options, o => o.Discount),
-            "IsVat" => merchant.Ordering(options, o => o.IsVat),
-            "Image" => merchant.Ordering(options, o => o.Image),
-            "IsActive" => merchant.Ordering(options, o => o.IsActive),
-            "Parent" => merchant.Ordering(options, o => o.Parent),
-            "PayDay" => merchant.Ordering(options, o => o.PayDay),
+            "Address" => merchant.Ordering(options, o => o.Address),
+            "Mfi" => merchant.Ordering(options, o => o.MXIK),
+            "WorkTime" => merchant.Ordering(options, o => o.WorkTime),
+            "Phone" => merchant.Ordering(options, o => o.Phone),
             "Responsible" => merchant.Ordering(options, o => o.Responsible),
-            "TypeOfService" => merchant.Ordering(options, o => o.TypeOfService),
-            "MXIKCode" => merchant.Ordering(options, o => o.MXIKCode),
+            "Status" => merchant.Ordering(options, o => o.Status),
+            "MerchantCategory" => merchant.Ordering(options, o => o.MerchantCategory),
             "Id" => merchant.Ordering(options, o => o.Id),
             _ => merchant.OrderBy(o => o.Id),
-        
+
         };
 
     #endregion

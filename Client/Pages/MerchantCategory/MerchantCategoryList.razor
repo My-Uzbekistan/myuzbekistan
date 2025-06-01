@@ -1,0 +1,59 @@
+@page "/merchantcategories"
+@inherits MixedStateComponent<TableResponse<MerchantCategoryView>, TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="MerchantCategory">
+    <Actions>
+        <MudLink Href="/merchantcategories/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values="@Items" SortColumns="@SortColumns" MutableState="@MutableState" Tclass="MerchantCategoryView">
+            <MudTd DataLabel="Logo">
+                <ImageView fileEntity="@context.LogoView" />
+            </MudTd>
+            <MudTd DataLabel="BrandName">@context.BrandName</MudTd>
+            <MudTd DataLabel="OrganizationName">
+            <MudLink Underline="Underline.None" Href="@($"/merchantcategories/{context.Id}/merchants")">
+                <MudButton Variant="Variant.Text"
+                           StartIcon="@Icons.Material.TwoTone.GridView"
+                           Color="Color.Primary"
+                           Style="text-transform:none;width:max-content">
+                    @context.OrganizationName
+                </MudButton>
+            </MudLink>
+            </MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Inn">@context.Inn</MudTd>
+            <MudTd DataLabel="AccountNumber">@context.AccountNumber</MudTd>
+            <MudTd DataLabel="MfO">@context.MfO</MudTd>
+            <MudTd DataLabel="Contract">@context.Contract</MudTd>
+            <MudTd DataLabel="Discount">@context.Discount</MudTd>
+            <MudTd DataLabel="PayDay">@context.PayDay</MudTd>
+            <MudTd DataLabel="ServiceType">@context.ServiceType</MudTd>
+            <MudTd DataLabel="Phone">@context.Phone</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Address">@context.Address</MudTd>
+            <MudTd DataLabel="IsVat">@context.IsVat</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel=Merchants.Name>
+                @string.Join(" ", context.MerchantsView?.Select(x => x.Name)?.ToList() ?? new List<string?>())
+            </MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    <MudLink Href=@($"/merchantcategories/{context.Id}")>
+                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudLink>
+                    <MudFab @onclick=@(() => Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                </div>
+            </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>

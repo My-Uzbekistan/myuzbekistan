@@ -1,8 +1,8 @@
-@inherits MixedStateComponent<TableResponse<MerchantView>, string>
+@inherits MixedStateComponent<TableResponse<MerchantCategoryView>, string>
 @{
     var data = State.GetValue(Injector);
 }
-<MudAutocomplete T="MerchantView" 
+<MudAutocomplete T="MerchantCategoryView" 
                  @attributes="Attributes"
                  Value="Value"
                  Immediate="true"

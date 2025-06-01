@@ -1,0 +1,19 @@
+public interface IMerchantCategoryService : IComputeService
+{
+    [ComputeMethod]
+    Task<TableResponse<MerchantCategoryView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
+    Task<MerchantCategoryView> Get(long Id, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task Create(CreateMerchantCategoryCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task Update(UpdateMerchantCategoryCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task Delete(DeleteMerchantCategoryCommand command, CancellationToken cancellationToken = default);
+
+    Task<Unit> Invalidate() { return TaskExt.UnitTask; }
+}

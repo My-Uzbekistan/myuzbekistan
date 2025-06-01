@@ -1,7 +1,3 @@
-using ActualLab.Fusion;
-using MemoryPack;
-using System.Runtime.Serialization;
-
 [DataContract, MemoryPackable]
 public partial record CreateMerchantCommand([property: DataMember] Session Session, [property: DataMember] MerchantView Entity) : ISessionCommand<MerchantView>; 
 

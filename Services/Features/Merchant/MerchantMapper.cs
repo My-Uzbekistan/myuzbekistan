@@ -1,6 +1,3 @@
-using myuzbekistan.Shared;
-using Riok.Mapperly.Abstractions;
-
 [Mapper]
 public static partial class MerchantMapper 
 {
@@ -12,15 +9,15 @@ public static partial class MerchantMapper
 
     #region Internal
     [UserMapping(Default = true)]
-    [MapProperty("Image", "ImageView")]
-    [MapProperty("Parent", "ParentView")]
+    [MapProperty("Logo", "LogoView")]
+    [MapProperty("MerchantCategory", "MerchantCategoryView")]
     private static partial MerchantView To(this MerchantEntity src);
     private static partial List<MerchantView> ToList(this List<MerchantEntity> src);
-    [MapProperty("ImageView", "Image")]
-    [MapProperty("ParentView", "Parent")]
+    [MapProperty("LogoView", "Logo")]
+    [MapProperty("MerchantCategoryView", "MerchantCategory")]
     private static partial MerchantEntity From(this MerchantView MerchantView);
-    [MapProperty("ImageView", "Image")]
-    [MapProperty("ParentView", "Parent")]
+    [MapProperty("LogoView", "Logo")]
+    [MapProperty("MerchantCategoryView", "MerchantCategory")]
     public static partial void From(MerchantView personView, MerchantEntity personEntity);
 
     #endregion

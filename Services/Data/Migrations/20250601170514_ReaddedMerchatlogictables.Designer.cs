@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +12,14 @@ using myuzbekistan.Shared;
 
 #nullable disable
 
-namespace Services.Migrations
+namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250601170514_ReaddedMerchatlogictables")]
+    partial class ReaddedMerchatlogictables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -763,11 +766,11 @@ namespace Services.Migrations
                     b.Property<long?>("LogoId")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("MXIK")
-                        .HasColumnType("text");
-
-                    b.Property<long>("MerchantCategoryId")
+                    b.Property<long?>("MerchantCategoryId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Mfi")
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -1051,9 +1054,7 @@ namespace Services.Migrations
 
                     b.HasOne("myuzbekistan.Shared.MerchantCategoryEntity", "MerchantCategory")
                         .WithMany("Merchants")
-                        .HasForeignKey("MerchantCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MerchantCategoryId");
 
                     b.Navigation("Logo");
 

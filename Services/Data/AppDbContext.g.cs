@@ -16,5 +16,6 @@ public partial class AppDbContext : DbContextBase
     public DbSet<PaymentEntity> Payments { get; protected set; } = null!;
     public DbSet<RegionEntity> Regions { get; protected set; } = null!;
     public DbSet<ReviewEntity> Reviews { get; protected set; } = null!;
+    public DbSet<MerchantCategoryEntity> MerchantCategories { get; protected set; } = null!;
     public DbSet<MerchantEntity> Merchants { get; protected set; } = null!;
 }

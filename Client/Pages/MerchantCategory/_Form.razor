@@ -1,0 +1,33 @@
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+        <Actions>
+            <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("merchantcategories")' Processing="@Processing" />
+        </Actions>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="8">
+                    <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                        <ImageSelectView @bind-Value="Model.LogoView" />
+                        <MudTextField @bind-Value="Model.BrandName" Label="@L["BrandName"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.BrandName)" />
+                        <MudTextField @bind-Value="Model.OrganizationName" Label="@L["OrganizationName"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.OrganizationName)" />
+                        <MudTextField @bind-Value="Model.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" />
+                        <MudTextField @bind-Value="Model.Inn" Label="@L["Inn"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Inn)" Required="true" />
+                        <MudTextField @bind-Value="Model.AccountNumber" Label="@L["AccountNumber"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.AccountNumber)" Required="true" />
+                        <MudTextField @bind-Value="Model.MfO" Label="@L["Mfo"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.MfO)" />
+                        <MudTextField @bind-Value="Model.Contract" Label="@L["Contract"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Contract)" />
+                        <MudTextField @bind-Value="Model.ServiceType" Label="@L["ServiceType"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.ServiceType)" Required="true" />
+                        <MudTextField @bind-Value="Model.Phone" Label="@L["Phone"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Phone)" />
+                        <MudTextField @bind-Value="Model.Email" Label="@L["Email"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Email)" />
+                        <MudTextField @bind-Value="Model.Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
+                        <MudSwitch Color="Color.Primary" Label="@L["IsVat"]" @bind-Checked="Model.IsVat" For="@(() => Model.IsVat)" Required="true" />
+                        <MudSwitch Color="Color.Primary" Label="@L["Status"]" @bind-Checked="Model.Status" For="@(() => Model.Status)" Required="true" />
+
+                        <input type="hidden" @bind-value="Model.Id">
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </FormContainer>
+</EditForm>

@@ -393,4 +393,46 @@
   <data name="Merchants" xml:space="preserve">
     <value>Merchantlar</value>
   </data>
+  <data name="BrandName" xml:space="preserve">
+    <value>Brendi</value>
+  </data>
+  <data name="OrganizationName" xml:space="preserve">
+    <value>Tashkilot nomi</value>
+  </data>
+  <data name="AccountNumber" xml:space="preserve">
+    <value>Hisob raqami</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>Shartnoma</value>
+  </data>
+  <data name="ServiceType" xml:space="preserve">
+    <value>Xizmat ko'rsatish turi</value>
+  </data>
+  <data name="IsVat" xml:space="preserve">
+    <value>NDS</value>
+  </data>
+  <data name="PayDay" xml:space="preserve">
+    <value>To'lov amalga oshirish kuni</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Mfo" xml:space="preserve">
+    <value>MFO</value>
+  </data>
+  <data name="Inn" xml:space="preserve">
+    <value>INN</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Shartnoma foizi</value>
+  </data>
+  <data name="Logo" xml:space="preserve">
+    <value>Logotip</value>
+  </data>
+  <data name="MXIK" xml:space="preserve">
+    <value>MXIK kodi</value>
+  </data>
+  <data name="WorkTime" xml:space="preserve">
+    <value>Ish vaqti</value>
+  </data>
 </root>

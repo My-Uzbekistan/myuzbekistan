@@ -1,17 +1,17 @@
-namespace Client.Pages.Merchant;
+namespace Client.Pages.MerchantCategory;
 
 public partial class _Form
 {
     [Inject] UInjector Injector { get; set; } = null!;
 
     [Parameter]
-    public MerchantView Model { get; set; } = new();
+    public MerchantCategoryView Model { get; set; } = new();
 
     [Parameter]
     public bool IsNew { get; set; } = false;
 
     [Parameter]
-    public EventCallback<MerchantView> OnSubmit { get; set; }
+    public EventCallback<MerchantCategoryView> OnSubmit { get; set; }
 
     [Parameter]
     public bool Processing { get; set; }

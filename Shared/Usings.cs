@@ -1,0 +1,15 @@
+﻿global using ActualLab.Fusion;
+global using MemoryPack;
+global using ActualLab.Fusion.Blazor;
+global using System.Runtime.Serialization;
+global using System.ComponentModel.DataAnnotations;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using ActualLab.Async;
+global using ActualLab.CommandR.Configuration;
+global using System.Reactive;
+global using EF.Audit;
+global using Newtonsoft.Json;
+global using System.Security.Claims;
+global using myuzbekistan.Shared;
+global using ActualLab.CommandR;
+global using System.Globalization;

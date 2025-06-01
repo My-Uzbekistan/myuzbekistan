@@ -1,4 +1,4 @@
-@page  "/merchants"
+@page "/merchantcategories/{MerchantCategoryId:long}/merchants"
 @inherits MixedStateComponent<TableResponse<MerchantView>, TableOptions>
 @{
     Items = State.GetValue(Injector);
@@ -6,45 +6,35 @@
 
 <ListContainer Title="Merchant">
     <Actions>
-        <MudLink Href="/merchants/create">
+        <MudLink Href="@($"/merchantcategories/{MerchantCategoryId}/merchants/create")">
             <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
-            @L["Create"]
+                @L["Create"]
             </MudButton>
         </MudLink>
     </Actions>
     <ChildContent>
-        <UTCTable Values="@Items"  SortColumns="@SortColumns" MutableState="@MutableState" Tclass="MerchantView">
-                <MudTd DataLabel="BrandName">@context.BrandName</MudTd>
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="Phone">@context.Phone</MudTd>
-                <MudTd DataLabel="Email">@context.Email</MudTd>
-                <MudTd DataLabel="Address">@context.Address</MudTd>
-                <MudTd DataLabel="Description">@context.Description</MudTd>
-                <MudTd DataLabel="Contract">@context.Contract</MudTd>
-                <MudTd DataLabel="Inn">@context.Inn</MudTd>
-                <MudTd DataLabel="Mfi">@context.Mfi</MudTd>
-                <MudTd DataLabel="AccountNumber">@context.AccountNumber</MudTd>
-                <MudTd DataLabel="Discount">@context.Discount</MudTd>
-                <MudTd DataLabel="IsVat">@context.IsVat</MudTd>
-                <MudTd DataLabel="Image">
-                <ImageView fileEntity="@context.ImageView"/>
-                </MudTd>
-                <MudTd DataLabel="IsActive">@context.IsActive</MudTd>
-                <MudTd DataLabel="Parent.BrandName">@context.ParentView?.BrandName</MudTd>
-                <MudTd DataLabel="PayDay">@context.PayDay</MudTd>
-                <MudTd DataLabel="Responsible">@context.Responsible</MudTd>
-                <MudTd DataLabel="TypeOfService">@context.TypeOfService</MudTd>
-                <MudTd DataLabel="MXIKCode">@context.MXIKCode</MudTd>
-                <MudTd DataLabel="Id">@context.Id</MudTd>
-                       
-                <MudTd Class="d-flex justify-end">
-                    <div style="display:flex; gap:7px;">
-                        <MudLink Href=@($"/merchants/{context.Id }")>
-                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
-                        </MudLink>
-                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
-                    </div>
-                </MudTd>
+        <UTCTable Values="@Items" SortColumns="@SortColumns" MutableState="@MutableState" Tclass="MerchantView">
+            <MudTd DataLabel="Logo">
+                <ImageView fileEntity="@context.LogoView" />
+            </MudTd>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Description">@context.Description</MudTd>
+            <MudTd DataLabel="Address">@context.Address</MudTd>
+            <MudTd DataLabel="MXIK">@context.MXIK</MudTd>
+            <MudTd DataLabel="WorkTime">@context.WorkTime</MudTd>
+            <MudTd DataLabel="Phone">@context.Phone</MudTd>
+            <MudTd DataLabel="Responsible">@context.Responsible</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    <MudLink Href=@($"/merchantcategories/{MerchantCategoryId}/merchants/{context.Id}")>
+                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudLink>
+                    <MudFab @onclick=@(() => Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                </div>
+            </MudTd>
         </UTCTable>
     </ChildContent>
 </ListContainer>

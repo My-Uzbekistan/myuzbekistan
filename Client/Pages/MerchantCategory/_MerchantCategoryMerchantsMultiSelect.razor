@@ -1,0 +1,11 @@
+@inherits ComputedStateComponent<TableResponse<MerchantView>>
+@{
+    var data = State.GetValue(Injector);
+}
+
+<MudSelect T="MerchantView" Label="@Label" @attributes="@Attributes" Required="@Required" MultiSelection="true" SelectedValues="@Value" ToStringFunc="(x) => x?.Name" SelectedValuesChanged="(vl) => UpdateValue(vl.ToList())">
+    @foreach (var item in data.Items)
+    {
+        <MudSelectItem T="MerchantView" Value="@item">@item.Name</MudSelectItem>
+    }
+</MudSelect>

@@ -1,6 +1,6 @@
-namespace Client.Pages.Merchant;
+namespace Client.Pages.MerchantCategory;
 
-public partial class _MerchantFilesSelect : MixedStateComponent<TableResponse<FileView>, string>
+public partial class _MerchantCategoryFilesSelect : MixedStateComponent<TableResponse<FileView>, string>
 {
     [Inject] UInjector Injector { get; set; } = null!;
     [Inject] IFileService FileService { get; set; } = null!;

@@ -4,12 +4,12 @@ using System.Text.Json.Serialization;
 using System.Collections;
 namespace myuzbekistan.Services;
 
-public class TrimNullableConverter<T> : JsonConverter<T>
+public class TrimNullableConverter<T> : System.Text.Json.Serialization.JsonConverter<T>
 {
     public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         // Используем стандартную десериализацию
-        return JsonSerializer.Deserialize<T>(ref reader, options);
+        return System.Text.Json.JsonSerializer.Deserialize<T>(ref reader, options);
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
@@ -49,7 +49,7 @@ public class TrimNullableConverter<T> : JsonConverter<T>
             var namingPolicyValue = options.PropertyNamingPolicy?.ConvertName(property.Name) ?? property.Name;
 
             writer.WritePropertyName(namingPolicyValue);
-            JsonSerializer.Serialize(writer, propValue, options);
+            System.Text.Json.JsonSerializer.Serialize(writer, propValue, options);
         }
 
         writer.WriteEndObject();

@@ -24,7 +24,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
 
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
+        //context.Response.ContentType = "application/json";
 
         var activity = Activity.Current;
         if (activity != null)

@@ -393,4 +393,46 @@
   <data name="Merchants" xml:space="preserve">
     <value>Мерчанты</value>
   </data>
+  <data name="BrandName" xml:space="preserve">
+    <value>Имя бренда</value>
+  </data>
+  <data name="OrganizationName" xml:space="preserve">
+    <value>Организация</value>
+  </data>
+  <data name="AccountNumber" xml:space="preserve">
+    <value>Номер счета</value>
+  </data>
+  <data name="Contract" xml:space="preserve">
+    <value>Договор</value>
+  </data>
+  <data name="ServiceType" xml:space="preserve">
+    <value>Тип услуги</value>
+  </data>
+  <data name="IsVat" xml:space="preserve">
+    <value>НДС</value>
+  </data>
+  <data name="PayDay" xml:space="preserve">
+    <value>Дата платежа</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Eмейл</value>
+  </data>
+  <data name="Mfo" xml:space="preserve">
+    <value>МФО</value>
+  </data>
+  <data name="Inn" xml:space="preserve">
+    <value>ИНН</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Процент контракта</value>
+  </data>
+  <data name="Logo" xml:space="preserve">
+    <value>Логотип</value>
+  </data>
+  <data name="MXIK" xml:space="preserve">
+    <value>Код ИКПУ</value>
+  </data>
+  <data name="WorkTime" xml:space="preserve">
+    <value>Рабочее Время</value>
+  </data>
 </root>

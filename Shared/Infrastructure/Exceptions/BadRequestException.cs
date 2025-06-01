@@ -14,7 +14,7 @@ public class MultiException(MultiErrorWrapper<MultiError> multiErrorWrapper) : S
 public class ErrorResponse(int status, string code, string message)
 {
     //[JsonPropertyName("status")]
-    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     public int Status { get; } = status;
 
     [JsonPropertyName("code")]

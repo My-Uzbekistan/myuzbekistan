@@ -1,14 +1,12 @@
-namespace Client.Pages.Merchant;
+namespace Client.Pages.MerchantCategory;
 
-public partial class MerchantList : MixedStateComponent<TableResponse<MerchantView>, TableOptions>
+public partial class MerchantCategoryList : MixedStateComponent<TableResponse<MerchantCategoryView>, TableOptions>
 {
     [Inject] private UInjector Injector { get; set; } = null!;
-    [Inject] private IMerchantService MerchantService { get; set; } = null!;
+    [Inject] private IMerchantCategoryService MerchantCategoryService { get; set; } = null!;
 
-    [Parameter] public long MerchantCategoryId { get; set; }
-
-    private TableResponse<MerchantView>? Items ;    
-    private readonly string[] SortColumns = ["Logo","Name","Description","Address", "MXIK", "WorkTime","Phone","Responsible","Status","Id",];
+    private TableResponse<MerchantCategoryView>? Items ;    
+    private readonly string[] SortColumns = ["Logo","BrandName","OrganizationName","Description","Inn","AccountNumber","MfO","Contract","Discount","PayDay","ServiceType","Phone","Email","Address","IsVat","Status","Merchants","Id",];
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -19,10 +17,10 @@ public partial class MerchantList : MixedStateComponent<TableResponse<MerchantVi
         return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
     }
 
-    protected override async Task<TableResponse<MerchantView>> ComputeState(CancellationToken cancellationToken = default)
+    protected override async Task<TableResponse<MerchantCategoryView>> ComputeState(CancellationToken cancellationToken = default)
     {
-        var merchants = await MerchantService.GetAll(MerchantCategoryId, MutableState.Value, cancellationToken);
-        return merchants;
+        var merchantcategories = await MerchantCategoryService.GetAll(MutableState.Value, cancellationToken);
+        return merchantcategories;
     }
 
     private async Task Delete(long Id, CancellationToken cancellationToken = default)
@@ -35,7 +33,7 @@ public partial class MerchantList : MixedStateComponent<TableResponse<MerchantVi
         );
         if (result ?? false)
         {
-            await Injector.Commander.Run(new DeleteMerchantCommand(Injector.Session, Id), cancellationToken);
+            await Injector.Commander.Run(new DeleteMerchantCategoryCommand(Injector.Session, Id), cancellationToken);
             Injector.Snackbar.Add(L["SuccessDelete"], Severity.Success);
         }
     }
