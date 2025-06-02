@@ -435,4 +435,7 @@
   <data name="WorkTime" xml:space="preserve">
     <value>Рабочее Время</value>
   </data>
+  <data name="Vat" xml:space="preserve">
+    <value>НДС</value>
+  </data>
 </root>

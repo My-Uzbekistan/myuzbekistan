@@ -435,4 +435,7 @@
   <data name="WorkTime" xml:space="preserve">
     <value>Ish vaqti</value>
   </data>
+  <data name="Vat" xml:space="preserve">
+    <value>NDS</value>
+  </data>
 </root>

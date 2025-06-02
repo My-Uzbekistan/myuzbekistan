@@ -54,8 +54,18 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
 
         logger.LogError(exception, exception.Message);
 
-        context.Response.StatusCode = httpResponse.Status;
-        await context.Response.WriteAsync(JsonSerializer.Serialize(httpResponse));
+        // ✅ Добавляем проверку, чтобы избежать ошибки
+        if (!context.Response.HasStarted)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = httpResponse.Status;
+            await context.Response.WriteAsync(JsonSerializer.Serialize(httpResponse));
+        }
+        else
+        {
+            logger.LogWarning("Ответ уже начался, ошибка не может быть отправлена клиенту.");
+        }
+
 
         if (env.IsProduction())
         {

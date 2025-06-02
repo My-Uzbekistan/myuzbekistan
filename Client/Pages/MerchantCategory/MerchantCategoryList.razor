@@ -39,7 +39,7 @@
             <MudTd DataLabel="Phone">@context.Phone</MudTd>
             <MudTd DataLabel="Email">@context.Email</MudTd>
             <MudTd DataLabel="Address">@context.Address</MudTd>
-            <MudTd DataLabel="IsVat">@context.IsVat</MudTd>
+            <MudTd DataLabel="Vat">@context.Vat</MudTd>
             <MudTd DataLabel="Status">@context.Status</MudTd>
             <MudTd DataLabel=Merchants.Name>
                 @string.Join(" ", context.MerchantsView?.Select(x => x.Name)?.ToList() ?? new List<string?>())

@@ -6,7 +6,7 @@ public partial class MerchantCategoryList : MixedStateComponent<TableResponse<Me
     [Inject] private IMerchantCategoryService MerchantCategoryService { get; set; } = null!;
 
     private TableResponse<MerchantCategoryView>? Items ;    
-    private readonly string[] SortColumns = ["Logo","BrandName","OrganizationName","Description","Inn","AccountNumber","MfO","Contract","Discount","PayDay","ServiceType","Phone","Email","Address","IsVat","Status","Merchants","Id",];
+    private readonly string[] SortColumns = ["Logo","BrandName","OrganizationName","Description","Inn","AccountNumber","MfO","Contract","Discount","PayDay","ServiceType","Phone","Email","Address","Vat","Status","Merchants","Id",];
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {

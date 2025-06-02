@@ -435,4 +435,7 @@
   <data name="WorkTime" xml:space="preserve">
     <value>WorkTime</value>
   </data>
+  <data name="Vat" xml:space="preserve">
+    <value>Vat</value>
+  </data>
 </root>

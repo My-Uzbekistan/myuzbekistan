@@ -17,6 +17,7 @@ public partial class MerchantCategoryView
     [property: DataMember] public string? Email { get; set; }
     [property: DataMember] public string? Address { get; set; }
     [property: DataMember] public bool IsVat { get; set; } 
+    [property: DataMember] public Byte Vat { get; set; } 
     [property: DataMember] public bool Status { get; set; }
     [property: DataMember] public ICollection<MerchantView> MerchantsView { get; set; } = new List<MerchantView>();
     [property: DataMember] public long Id { get; set; }

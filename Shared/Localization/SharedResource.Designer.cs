@@ -979,6 +979,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Vat.
+        /// </summary>
+        public static string Vat {
+            get {
+                return ResourceManager.GetString("Vat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Wait.
         /// </summary>
         public static string Wait {

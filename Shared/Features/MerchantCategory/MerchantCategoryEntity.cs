@@ -17,6 +17,7 @@ public class MerchantCategoryEntity : BaseEntity
     public string? Email { get; set; } = null!;
     public string? Address { get; set; } = null!;
     public bool IsVat { get; set; }
+    public Byte Vat { get; set; }
     public bool Status { get; set; } = false;
     public  List<MerchantEntity> Merchants { get; set; } = new List<MerchantEntity>();
 
