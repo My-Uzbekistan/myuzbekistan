@@ -1,0 +1,23 @@
+﻿@page "/pay/{MerchantId:long}"
+@using Microsoft.AspNetCore.Http
+@inject NavigationManager Navigation
+@inject IHttpContextAccessor HttpContextAccessor
+
+@code {
+    [Parameter] public long MerchantId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var userAgent = HttpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString()?.ToLower();
+
+        var targetUrl = userAgent switch
+        {
+            string ua when ua.Contains("android") => $"/payment/android?merchantId={MerchantId}",
+            string ua when ua.Contains("iphone") || ua.Contains("ipad") || ua.Contains("ios") => $"/payment/ios?merchantId={MerchantId}",
+            null or "" => $"/payment/unknown?merchantId={MerchantId}",
+            _ => $"/payment/unknown?merchantId={MerchantId}"
+        };
+
+        Navigation.NavigateTo(targetUrl, forceLoad: true);
+    }
+}

@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Client.Pages.Merchant;
 
 public partial class MerchantList : MixedStateComponent<TableResponse<MerchantView>, TableOptions>
@@ -39,4 +41,20 @@ public partial class MerchantList : MixedStateComponent<TableResponse<MerchantVi
             Injector.Snackbar.Add(L["SuccessDelete"], Severity.Success);
         }
     }
+
+    private async Task ShowQrDialog(long merchantId)
+    {
+        var baseUrl = Injector.NavigationManager.BaseUri.TrimEnd('/');
+        var qrText = $"{baseUrl}/pay/{merchantId}";
+
+        await Injector.DialogService.ShowMessageBox(
+            title: "QR для оплаты",
+            markupMessage: new MarkupString(
+                $"<img src=\"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={Uri.EscapeDataString(qrText)}\" alt=\"qr\" />" +
+                $"<p style='margin-top:10px;'>Ссылка: <code>{qrText}</code></p>"
+            ),
+            yesText: "Закрыть"
+        );
+    }
+
 }

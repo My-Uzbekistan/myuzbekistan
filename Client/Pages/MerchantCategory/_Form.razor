@@ -9,7 +9,7 @@
                     <MudPaper Class="pa-4">
                         <ObjectGraphDataAnnotationsValidator />
                         <ValidationSummary />
-                        <ImageSelectView @bind-Value="Model.LogoView" />
+                        @* <ImageSelectView @bind-Value="Model.LogoView" />
                         <MudTextField @bind-Value="Model.BrandName" Label="@L["BrandName"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.BrandName)" />
                         <MudTextField @bind-Value="Model.OrganizationName" Label="@L["OrganizationName"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.OrganizationName)" />
                         <MudTextField @bind-Value="Model.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" />
@@ -24,7 +24,37 @@
                         <MudNumericField @bind-Value="Model.PayDay" Label="@L["PayDay"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.PayDay)" />
                         <MudNumericField @bind-Value="Model.Discount" Label="@L["Discount"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Discount)" />
                         <MudNumericField @bind-Checked="Model.IsVat" Label="@L["Vat"]" For="@(() => Model.Vat)" />
-                        <MudSwitch Color="Color.Primary" Label="@L["Status"]" @bind-Checked="Model.Status" For="@(() => Model.Status)"  />
+                        <MudSwitch Color="Color.Primary" Label="@L["Status"]" @bind-Checked="Model.Status" For="@(() => Model.Status)"  /> *@
+
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="@L["Organization"]" Expanded="true">
+                                <MudTextField @bind-Value="Model.BrandName" Label="@L["BrandName"]" For="@(() => Model.BrandName)" />
+                                <MudTextField @bind-Value="Model.OrganizationName" Label="@L["OrganizationName"]" For="@(() => Model.OrganizationName)" />
+                                <MudTextField @bind-Value="Model.Description" Label="@L["Description"]" For="@(() => Model.Description)" />
+                            </MudExpansionPanel>
+
+                            <MudExpansionPanel Text="@L["Financial"]" Expanded="true">
+                                <MudTextField @bind-Value="Model.Inn" Label="@L["Inn"]" For="@(() => Model.Inn)" Required="true" />
+                                <MudTextField @bind-Value="Model.AccountNumber" Label="@L["AccountNumber"]" For="@(() => Model.AccountNumber)" Required="true" />
+                                <MudTextField @bind-Value="Model.MfO" Label="@L["Mfo"]" For="@(() => Model.MfO)" />
+                                <MudTextField @bind-Value="Model.Contract" Label="@L["Contract"]" For="@(() => Model.Contract)" />
+                                <MudTextField @bind-Value="Model.ServiceType" Label="@L["ServiceType"]" For="@(() => Model.ServiceType)" Required="true" />
+                                <MudNumericField @bind-Value="Model.PayDay" Label="@L["PayDay"]" For="@(() => Model.PayDay)" />
+                                <MudNumericField @bind-Value="Model.Discount" Label="@L["Discount"]" For="@(() => Model.Discount)" />
+                                <MudNumericField @bind-Value="Model.Vat" Label="@L["Vat"]" For="@(() => Model.Vat)" />
+                            </MudExpansionPanel>
+
+                            <MudExpansionPanel Text="@L["Contacts"]" Expanded="true">
+                                <MudTextField @bind-Value="Model.Phone" Label="@L["Phone"]" For="@(() => Model.Phone)" />
+                                <MudTextField @bind-Value="Model.Email" Label="@L["Email"]" For="@(() => Model.Email)" />
+                                <MudTextField @bind-Value="Model.Address" Label="@L["Address"]" For="@(() => Model.Address)" />
+                            </MudExpansionPanel>
+
+                            <MudExpansionPanel Text="@L["Settings"]" Expanded="true">
+                                <MudSwitch @bind-Checked="Model.Status" Label="@L["Status"]" For="@(() => Model.Status)" Color="Color.Primary" />
+                                <ImageSelectView @bind-Value="Model.LogoView" />
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
 
                         <input type="hidden" @bind-value="Model.Id">
                     </MudPaper>

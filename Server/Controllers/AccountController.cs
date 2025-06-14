@@ -54,8 +54,8 @@ public class AccountController : ControllerBase
             return NotFound();
         }
 
-        await _commander.Call(new InvalidateUserCommand(_sessionResolver.Session));
         await _userManager.DeleteAsync(user);
+        await _commander.Call(new InvalidateUserCommand(_sessionResolver.Session));
 
         return Ok();
     }

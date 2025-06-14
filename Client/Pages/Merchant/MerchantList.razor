@@ -33,6 +33,7 @@
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>
                     <MudFab @onclick=@(() => Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                    <MudFab @onclick=@(() => ShowQrDialog(@context.Id)) Color="Color.Info" StartIcon="@Icons.Material.Filled.QrCode" Size="Size.Small" IconSize="Size.Small" />
                 </div>
             </MudTd>
         </UTCTable>
