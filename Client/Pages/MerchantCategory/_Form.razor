@@ -1,65 +1,93 @@
-<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
-    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
-        <Actions>
-            <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("merchantcategories")' Processing="@Processing" />
-        </Actions>
-        <ChildContent>
-            <MudGrid>
-                <MudItem xs="8">
-                    <MudPaper Class="pa-4">
-                        <ObjectGraphDataAnnotationsValidator />
-                        <ValidationSummary />
-                        @* <ImageSelectView @bind-Value="Model.LogoView" />
-                        <MudTextField @bind-Value="Model.BrandName" Label="@L["BrandName"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.BrandName)" />
-                        <MudTextField @bind-Value="Model.OrganizationName" Label="@L["OrganizationName"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.OrganizationName)" />
-                        <MudTextField @bind-Value="Model.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" />
-                        <MudTextField @bind-Value="Model.Inn" Label="@L["Inn"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Inn)" Required="true" />
-                        <MudTextField @bind-Value="Model.AccountNumber" Label="@L["AccountNumber"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.AccountNumber)" Required="true" />
-                        <MudTextField @bind-Value="Model.MfO" Label="@L["Mfo"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.MfO)" />
-                        <MudTextField @bind-Value="Model.Contract" Label="@L["Contract"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Contract)" />
-                        <MudTextField @bind-Value="Model.ServiceType" Label="@L["ServiceType"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.ServiceType)" Required="true" />
-                        <MudTextField @bind-Value="Model.Phone" Label="@L["Phone"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Phone)" />
-                        <MudTextField @bind-Value="Model.Email" Label="@L["Email"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Email)" />
-                        <MudTextField @bind-Value="Model.Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
-                        <MudNumericField @bind-Value="Model.PayDay" Label="@L["PayDay"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.PayDay)" />
-                        <MudNumericField @bind-Value="Model.Discount" Label="@L["Discount"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Discount)" />
-                        <MudNumericField @bind-Checked="Model.IsVat" Label="@L["Vat"]" For="@(() => Model.Vat)" />
-                        <MudSwitch Color="Color.Primary" Label="@L["Status"]" @bind-Checked="Model.Status" For="@(() => Model.Status)"  /> *@
+@if (isLoading && Model.All(m => _contexts[m.Locale] != null))
+{
+    @foreach (var current in Model)
+    {
+        <EditForm hidden="@(!Language.Equals(current.Locale))" EditContext="@_contexts[current.Locale]" OnSubmit="OnValidSubmit">
+            <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+                <Actions>
+                    <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("merchantcategories")' Processing="@Processing" />
+                </Actions>
+                <ChildContent>
+                    <ObjectGraphDataAnnotationsValidator />
+                    <ValidationSummary />
+                    <input type="hidden" @bind-value="current.Id">
+                    <MudGrid>
+                        <MudItem md="8" xs="12">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudPaper Class="pa-4">
+                                        <MudTextField @bind-Value="current.BrandName" Label="@L["BrandName"]" For="@(() => current.BrandName)" />
+                                        <MudTextField @bind-Value="current.OrganizationName" Label="@L["OrganizationName"]" For="@(() => current.OrganizationName)" />
+                                        <MudTextField @bind-Value="current.Description" Label="@L["Description"]" For="@(() => current.Description)" />
 
-                        <MudExpansionPanels>
-                            <MudExpansionPanel Text="@L["Organization"]" Expanded="true">
-                                <MudTextField @bind-Value="Model.BrandName" Label="@L["BrandName"]" For="@(() => Model.BrandName)" />
-                                <MudTextField @bind-Value="Model.OrganizationName" Label="@L["OrganizationName"]" For="@(() => Model.OrganizationName)" />
-                                <MudTextField @bind-Value="Model.Description" Label="@L["Description"]" For="@(() => Model.Description)" />
-                            </MudExpansionPanel>
+                                    </MudPaper>
 
-                            <MudExpansionPanel Text="@L["Financial"]" Expanded="true">
-                                <MudTextField @bind-Value="Model.Inn" Label="@L["Inn"]" For="@(() => Model.Inn)" Required="true" />
-                                <MudTextField @bind-Value="Model.AccountNumber" Label="@L["AccountNumber"]" For="@(() => Model.AccountNumber)" Required="true" />
-                                <MudTextField @bind-Value="Model.MfO" Label="@L["Mfo"]" For="@(() => Model.MfO)" />
-                                <MudTextField @bind-Value="Model.Contract" Label="@L["Contract"]" For="@(() => Model.Contract)" />
-                                <MudTextField @bind-Value="Model.ServiceType" Label="@L["ServiceType"]" For="@(() => Model.ServiceType)" Required="true" />
-                                <MudNumericField @bind-Value="Model.PayDay" Label="@L["PayDay"]" For="@(() => Model.PayDay)" />
-                                <MudNumericField @bind-Value="Model.Discount" Label="@L["Discount"]" For="@(() => Model.Discount)" />
-                                <MudNumericField @bind-Value="Model.Vat" Label="@L["Vat"]" For="@(() => Model.Vat)" />
-                            </MudExpansionPanel>
+                                </MudItem>
 
-                            <MudExpansionPanel Text="@L["Contacts"]" Expanded="true">
-                                <MudTextField @bind-Value="Model.Phone" Label="@L["Phone"]" For="@(() => Model.Phone)" />
-                                <MudTextField @bind-Value="Model.Email" Label="@L["Email"]" For="@(() => Model.Email)" />
-                                <MudTextField @bind-Value="Model.Address" Label="@L["Address"]" For="@(() => Model.Address)" />
-                            </MudExpansionPanel>
 
-                            <MudExpansionPanel Text="@L["Settings"]" Expanded="true">
-                                <MudSwitch @bind-Checked="Model.Status" Label="@L["Status"]" For="@(() => Model.Status)" Color="Color.Primary" />
-                                <ImageSelectView @bind-Value="Model.LogoView" />
-                            </MudExpansionPanel>
-                        </MudExpansionPanels>
+                                <MudItem xs="12">
+                                    <MudGrid>
+                                        <MudItem md="6" xs="12">
+                                            <MudPaper Class="pa-4">
+                                                <MudText Typo="Typo.h6" Class="mb-4">@L["Contacts"]</MudText>
+                                                <MudTextField @bind-Value="current.Phone" @bind-Value:after="() => { Model.ForEach(x => x.Phone = current.Phone); }" Label="@L["Phone"]" For="@(() => current.Phone)" />
+                                                <MudTextField @bind-Value="current.Email" @bind-Value:after="() => { Model.ForEach(x => x.Email = current.Email); }" Label="@L["Email"]" For="@(() => current.Email)" />
+                                                <MudTextField @bind-Value="current.Address" @bind-Value:after="() => { Model.ForEach(x => x.Address = current.Address); }" Label="@L["Address"]" For="@(() => current.Address)" />
 
-                        <input type="hidden" @bind-value="Model.Id">
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
-        </ChildContent>
-    </FormContainer>
-</EditForm>
+                                            </MudPaper>
+                                        </MudItem>
+                                        <MudItem md="6" xs="12">
+                                            <MudPaper Class="pa-4">
+                                                <MudText Typo="Typo.h6" Class="mb-2">@L["Photo"]</MudText>
+
+                                                <ImageSelectView @bind-Value="current.LogoView" @bind-Value:after="() => { Model.ForEach(x => x.LogoView = current.LogoView); }" />
+                                            </MudPaper>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+
+                                <MudItem xs="12">
+                                    <MudGrid>
+                                    <MudItem md="6" xs="12">
+                                        <MudPaper Class="pa-4">
+                                                <MudTextField @bind-Value="current.Inn" @bind-Value:after="() => { Model.ForEach(x => x.Inn = current.Inn); }" Label="@L["Inn"]" For="@(() => current.Inn)" Required="true" />
+                                                <MudTextField @bind-Value="current.AccountNumber" @bind-Value:after="() => { Model.ForEach(x => x.AccountNumber = current.AccountNumber); }" Label="@L["AccountNumber"]" For="@(() => current.AccountNumber)" Required="true" />
+                                                <MudTextField @bind-Value="current.MfO" @bind-Value:after="() => { Model.ForEach(x => x.MfO = current.MfO); }" Label="@L["Mfo"]" For="@(() => current.MfO)" />
+                                                <MudTextField @bind-Value="current.Contract" @bind-Value:after="() => { Model.ForEach(x => x.Contract = current.Contract); }" Label="@L["Contract"]" For="@(() => current.Contract)" />
+
+                                        </MudPaper>
+                                    </MudItem>
+
+                                    <MudItem md="6" xs="12">
+                                        <MudPaper Class="pa-4">
+                                                @* <AutoCompleteWithCreate T="string"
+                                                                        Label="Choose or Add City"
+                                                                        @bind-Value="SelectedCity"
+                                                                        SearchFunc="SearchCities"
+                                                                        CreateFunc="(s => s)"
+                                                                        OnCreate="HandleNewCity" /> *@
+                                                <_ServiceTypeSelect Label="@L["ServiceType"]" @bind-Value="current.ServiceType" @bind-Value:after="() => { Model.ForEach(x => x.ServiceType = current.ServiceType); }" />
+                                                <MudNumericField @bind-Value="current.PayDay" @bind-Value:after="() => { Model.ForEach(x => x.PayDay = current.PayDay); }" Label="@L["PayDay"]" For="@(() => current.PayDay)" />
+                                                <MudNumericField @bind-Value="current.Discount" @bind-Value:after="() => { Model.ForEach(x => x.Discount = current.Discount); }" Label="@L["Discount"]" For="@(() => current.Discount)" />
+                                                <MudNumericField @bind-Value="current.Vat" @bind-Value:after="() => { Model.ForEach(x => x.Vat = current.Vat); }" Label="@L["Vat"]" For="@(() => current.Vat)" />
+
+                                        </MudPaper>
+                                    </MudItem>
+                                    </MudGrid>
+                                </MudItem>
+
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                            <MudPaper class="pa-4 mb-2">
+                                <MudSwitch @bind-Checked="current.Status" @bind-Checked:after="() => { Model.ForEach(x => x.Status = current.Status); }" Label="@L["Status"]" For="@(() => current.Status)" Color="Color.Primary" />
+                            </MudPaper>
+                            <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
+                        </MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </FormContainer>
+        </EditForm>
+
+    }
+}

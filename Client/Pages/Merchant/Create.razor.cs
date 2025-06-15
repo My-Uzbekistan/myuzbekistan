@@ -9,11 +9,15 @@ public partial class Create
     public bool Processing { get; set; } = false;
 
 
-    public async Task OnSubmit(MerchantView entity)
+    public async Task OnSubmit(List<MerchantView> entity)
     {
         Processing = true;
         var merchantCategory = await merchantCategoryService.Get(MerchantCategoryId);
-        entity.MerchantCategoryView = merchantCategory;
+        foreach (var item in entity)
+        {
+            item.MerchantCategoryView = merchantCategory.First(x=>x.Locale == item.Locale);
+        }
+
         var response = await Injector.Commander.Run(new CreateMerchantCommand(Injector.Session, entity));
         if (response.HasError)
         {

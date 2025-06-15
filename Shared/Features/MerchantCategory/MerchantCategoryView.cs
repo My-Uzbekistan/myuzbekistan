@@ -1,7 +1,10 @@
+
+using Point = NetTopologySuite.Geometries.Point;
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class MerchantCategoryView
 {
+    [property: DataMember] public string Locale { get; set; } = null!;
     [property: DataMember] public FileView? LogoView { get; set; } 
     [property: DataMember] public string? BrandName { get; set; }
     [property: DataMember] public string? OrganizationName { get; set; }
@@ -12,7 +15,7 @@ public partial class MerchantCategoryView
     [property: DataMember] public string? Contract { get; set; }
     [property: DataMember] public short Discount { get; set; }
     [property: DataMember] public Byte PayDay { get; set; }
-    [property: DataMember] public string ServiceType { get; set; } = null!;
+    [property: DataMember, Required] public ServiceTypeView ServiceType { get; set; } = null!;  
     [property: DataMember] public string? Phone { get; set; }
     [property: DataMember] public string? Email { get; set; }
     [property: DataMember] public string? Address { get; set; }

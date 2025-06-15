@@ -1,5 +1,5 @@
 @page "/merchantcategories/{MerchantCategoryId:long}/merchants/create"
 
-<Client.Pages.Merchant._Form OnSubmit="OnSubmit" 
+<Client.Pages.Merchant._Form OnSubmit="OnSubmit" MerchantCategoryId="MerchantCategoryId"
 									Processing="@Processing" 
 									IsNew="true"/>

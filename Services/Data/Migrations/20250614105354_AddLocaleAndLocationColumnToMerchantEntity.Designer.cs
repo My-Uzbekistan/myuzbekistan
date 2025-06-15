@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +12,14 @@ using myuzbekistan.Shared;
 
 #nullable disable
 
-namespace Services.Migrations
+namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250614105354_AddLocaleAndLocationColumnToMerchantEntity")]
+    partial class AddLocaleAndLocationColumnToMerchantEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -729,10 +732,7 @@ namespace Services.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
-                    b.Property<long>("ServiceTypeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("ServiceTypeLocale")
+                    b.Property<string>("ServiceType")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -748,8 +748,6 @@ namespace Services.Migrations
                     b.HasKey("Id", "Locale");
 
                     b.HasIndex("LogoId");
-
-                    b.HasIndex("ServiceTypeId", "ServiceTypeLocale");
 
                     b.ToTable("MerchantCategories");
                 });
@@ -934,32 +932,6 @@ namespace Services.Migrations
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("myuzbekistan.Shared.ServiceTypeEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Locale")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id", "Locale");
-
-                    b.ToTable("ServiceTypes");
-                });
-
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUserIdentity<string>", b =>
                 {
                     b.HasOne("ActualLab.Fusion.Authentication.Services.DbUser<string>", null)
@@ -1087,15 +1059,7 @@ namespace Services.Migrations
                         .WithMany()
                         .HasForeignKey("LogoId");
 
-                    b.HasOne("myuzbekistan.Shared.ServiceTypeEntity", "ServiceType")
-                        .WithMany()
-                        .HasForeignKey("ServiceTypeId", "ServiceTypeLocale")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Logo");
-
-                    b.Navigation("ServiceType");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.MerchantEntity", b =>

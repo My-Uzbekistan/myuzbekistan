@@ -1,12 +1,12 @@
-namespace Client.Pages.MerchantCategory;
+namespace Client.Pages.ServiceType;
 
-public partial class MerchantCategoryList : MixedStateComponent<TableResponse<MerchantCategoryView>, TableOptions>
+public partial class ServiceTypeList : MixedStateComponent<TableResponse<ServiceTypeView>, TableOptions>
 {
     [Inject] private UInjector Injector { get; set; } = null!;
-    [Inject] private IMerchantCategoryService MerchantCategoryService { get; set; } = null!;
+    [Inject] private IServiceTypeService ServiceTypeService { get; set; } = null!;
 
-    private TableResponse<MerchantCategoryView>? Items ;    
-    private readonly string[] SortColumns = ["Logo","BrandName","OrganizationName","Description","Inn","AccountNumber","MfO","Contract","Discount","PayDay","ServiceType","Phone","Email","Address","Vat","Status","Merchants","Id",];
+    private TableResponse<ServiceTypeView>? Items ;    
+    private readonly string[] SortColumns = ["Name","Locale","Id",];
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
@@ -17,10 +17,10 @@ public partial class MerchantCategoryList : MixedStateComponent<TableResponse<Me
         return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam, Lang = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("en") } };
     }
 
-    protected override async Task<TableResponse<MerchantCategoryView>> ComputeState(CancellationToken cancellationToken = default)
+    protected override async Task<TableResponse<ServiceTypeView>> ComputeState(CancellationToken cancellationToken = default)
     {
-        var merchantcategories = await MerchantCategoryService.GetAll(MutableState.Value, cancellationToken);
-        return merchantcategories;
+        var servicetypes = await ServiceTypeService.GetAll(MutableState.Value, cancellationToken);
+        return servicetypes;
     }
 
     private async Task Delete(long Id, CancellationToken cancellationToken = default)
@@ -33,7 +33,7 @@ public partial class MerchantCategoryList : MixedStateComponent<TableResponse<Me
         );
         if (result ?? false)
         {
-            await Injector.Commander.Run(new DeleteMerchantCategoryCommand(Injector.Session, Id), cancellationToken);
+            await Injector.Commander.Run(new DeleteServiceTypeCommand(Injector.Session, Id), cancellationToken);
             Injector.Snackbar.Add(L["SuccessDelete"], Severity.Success);
         }
     }

@@ -1,7 +1,9 @@
+using Point = NetTopologySuite.Geometries.Point;
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class MerchantView
 {
+    [property: DataMember] public string Locale { get; set; } = null!;
     [property: DataMember] public FileView? LogoView { get; set; } 
     [property: DataMember] public string? Name { get; set; }
     [property: DataMember] public string? Description { get; set; }
@@ -13,6 +15,8 @@ public partial class MerchantView
     [property: DataMember] public bool Status { get; set; }
     [property: DataMember] public MerchantCategoryView? MerchantCategoryView { get; set; } 
     [property: DataMember] public long Id { get; set; }
+    [property: DataMember, MemoryPackAllowSerialize, JsonConverter(typeof(NetTopologySuite.IO.Converters.GeometryConverter))] public Point? Location { get; set; }
+
 
     public override bool Equals(object? o)
     {

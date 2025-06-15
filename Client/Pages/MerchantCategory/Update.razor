@@ -1,10 +1,13 @@
 @page "/merchantcategories/{Id:long}"
-@inherits ComputedStateComponent<MerchantCategoryView>
+@inherits ComputedStateComponent<List<MerchantCategoryView>>
 @{
     var Model = State.GetValue(Injector);
 }
 
-<Client.Pages.MerchantCategory._Form OnSubmit="OnSubmit" 
-                                    Model="Model" 
-                                    Processing="@Processing" 
-                                    IsNew="false"/>
+@if(Model.Count > 0)
+{
+    <Client.Pages.MerchantCategory._Form OnSubmit="OnSubmit"
+                                         Model="Model"
+                                         Processing="@Processing"
+                                         IsNew="false" />
+}

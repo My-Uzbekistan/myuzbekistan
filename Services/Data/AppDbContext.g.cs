@@ -18,4 +18,5 @@ public partial class AppDbContext : DbContextBase
     public DbSet<ReviewEntity> Reviews { get; protected set; } = null!;
     public DbSet<MerchantCategoryEntity> MerchantCategories { get; protected set; } = null!;
     public DbSet<MerchantEntity> Merchants { get; protected set; } = null!;
+    public DbSet<ServiceTypeEntity> ServiceTypes { get; protected set; } = null!;
 }

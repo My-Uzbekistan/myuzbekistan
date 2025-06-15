@@ -26,6 +26,13 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         if (merchantCategoryId.HasValue && merchantCategoryId.Value > 0)
             merchant = merchant.Where(x => x.MerchantCategory.Id == merchantCategoryId);
 
+        #region Search by Language
+
+        if (!String.IsNullOrEmpty(options.Lang))
+            merchant = merchant.Where(x => x.Locale.Equals(options.Lang));
+
+        #endregion
+
         Sorting(ref merchant, options);
 
         merchant = merchant.Include(x => x.Logo);
@@ -36,23 +43,24 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
     }
 
     [ComputeMethod]
-    public async virtual Task<MerchantView> Get(long Id, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MerchantView>> Get(long Id, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var merchant = await dbContext.Merchants
             .Include(x => x.Logo)
             .Include(x => x.MerchantCategory)
-            .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
+            .Where(x => x.Id == Id)
+            .ToListAsync(cancellationToken)
             ?? throw new ValidationException("MerchantEntity Not Found");
 
-        return merchant.MapToView();
+        return merchant.MapToViewList();
     }
 
     #endregion
 
     #region Mutations
-
+    long maxId;
     public async virtual Task Create(CreateMerchantCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
@@ -62,10 +70,16 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        MerchantEntity merchant = new();
-        Reattach(merchant, command.Entity, dbContext);
+        maxId = dbContext.Categories.Count() == 0 ? 0 : dbContext.Categories.Max(x => x.Id);
+        maxId++;
+        foreach (var item in command.Entity)
+        {
+            MerchantEntity category = new MerchantEntity();
+            Reattach(category, item, dbContext);
+            category.Id = maxId;
+            dbContext.Add(category);
 
-        dbContext.Update(merchant);
+        }
         await dbContext.SaveChangesAsync(cancellationToken);
 
     }
@@ -78,14 +92,18 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var merchant = await dbContext.Merchants
-            .Include(x => x.Logo)
-            .Include(x => x.MerchantCategory)
-            .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw new ValidationException("MerchantEntity Not Found");
+        var merch = command.Entity.First();
+        var merchant = dbContext.Merchants
+        .Include(x => x.Logo)
+        .Where(x => x.Id == merch.Id).ToList();
 
-        Reattach(merchant, command.Entity, dbContext);
+        if (merchant == null) throw new ValidationException("MerchantEntity Not Found");
 
+        foreach (var item in command.Entity)
+        {
+            Reattach(merchant.First(x => x.Locale == item.Locale), item, dbContext);
+            dbContext.Update(merchant.First(x => x.Locale == item.Locale));
+        }
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -97,12 +115,14 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var merchant = await dbContext.Merchants
-            .Include(x => x.Logo)
-            .Include(x => x.MerchantCategory)
-            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw new ValidationException("MerchantEntity Not Found");
-        dbContext.Remove(merchant);
+       
+
+        var merchants = dbContext.Merchants
+       .Include(x => x.Logo)
+       .Where(x => x.Id == command.Id)
+       .ToList();
+        if (merchants == null) throw new ValidationException("MerchantCategoryEntity Not Found");
+        dbContext.RemoveRange(merchants);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
     #endregion

@@ -1,6 +1,6 @@
 namespace Client.Pages.MerchantCategory;
 
-public partial class Update : ComputedStateComponent<MerchantCategoryView>
+public partial class Update : ComputedStateComponent<List<MerchantCategoryView>>
 {
     [Inject] UInjector Injector { get; set; } = null!;
     [Inject] IMerchantCategoryService MerchantCategoryService { get; set; } = null!;
@@ -10,7 +10,7 @@ public partial class Update : ComputedStateComponent<MerchantCategoryView>
 
     public bool Processing { get; set; } = false;
 
-    public async Task OnSubmit(MerchantCategoryView entity)
+    public async Task OnSubmit(List<MerchantCategoryView> entity)
     {
         Processing = true;
 
@@ -28,7 +28,7 @@ public partial class Update : ComputedStateComponent<MerchantCategoryView>
         Processing = false;
     }
 
-    protected override async Task<MerchantCategoryView> ComputeState(CancellationToken cancellationToken)
+    protected override async Task<List<MerchantCategoryView>> ComputeState(CancellationToken cancellationToken)
     {
         return await MerchantCategoryService.Get(Id, cancellationToken);
     }

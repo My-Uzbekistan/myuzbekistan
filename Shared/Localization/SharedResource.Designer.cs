@@ -241,6 +241,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Contacts.
+        /// </summary>
+        public static string Contacts {
+            get {
+                return ResourceManager.GetString("Contacts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Content Count.
         /// </summary>
         public static string ContentCount {
@@ -282,6 +291,15 @@ namespace Shared.Localization {
         public static string CreatedAt {
             get {
                 return ResourceManager.GetString("CreatedAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current Version.
+        /// </summary>
+        public static string CurrentVersion {
+            get {
+                return ResourceManager.GetString("CurrentVersion", resourceCulture);
             }
         }
         
@@ -525,6 +543,15 @@ namespace Shared.Localization {
         public static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string Locale {
+            get {
+                return ResourceManager.GetString("Locale", resourceCulture);
             }
         }
         
@@ -795,6 +822,15 @@ namespace Shared.Localization {
         public static string RequiredError {
             get {
                 return ResourceManager.GetString("RequiredError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Responsible.
+        /// </summary>
+        public static string Responsible {
+            get {
+                return ResourceManager.GetString("Responsible", resourceCulture);
             }
         }
         

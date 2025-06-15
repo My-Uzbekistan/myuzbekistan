@@ -27,7 +27,7 @@
             <MudTd DataLabel="Status">@context.Status</MudTd>
             <MudTd DataLabel="Id">@context.Id</MudTd>
 
-            <MudTd Class="d-flex justify-end">
+            <MudTd >
                 <div style="display:flex; gap:7px;">
                     <MudLink Href=@($"/merchantcategories/{MerchantCategoryId}/merchants/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />

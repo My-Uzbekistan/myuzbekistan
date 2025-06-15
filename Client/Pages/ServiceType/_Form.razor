@@ -1,0 +1,27 @@
+@foreach (var Model in Model)
+{
+    <EditForm hidden="@(!Language.Equals(Model.Locale))" EditContext="@_contexts[Model.Locale]" OnSubmit="HandleSubmit">
+        <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+            <Actions>
+                <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("service-types")' Processing="@Processing" />
+            </Actions>
+            <ChildContent>
+                <MudGrid>
+                    <MudItem md="8" xs="12">
+                        <MudPaper Class="pa-4">
+                            <ObjectGraphDataAnnotationsValidator />
+                            <ValidationSummary />
+                            <MudTextField @bind-Value="Model.Name" Label="Name" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Name)" Required="true" />
+                            @* <MudTextField @bind-Value="Model.Locale" Label="Locale" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Locale)" Required="true" /> *@
+                            <input type="hidden" @bind-value="Model.Id">
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                        <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </FormContainer>
+    </EditForm>
+}

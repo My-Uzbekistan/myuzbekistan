@@ -1,4 +1,4 @@
-namespace Client.Pages.MerchantCategory;
+namespace Client.Pages.ServiceType;
 
 public partial class Create
 {
@@ -6,10 +6,10 @@ public partial class Create
 
     public bool Processing { get; set; } = false;
 
-    public async Task OnSubmit(List<MerchantCategoryView> entity)
+    public async Task OnSubmit(List<ServiceTypeView> entity)
     {
         Processing = true;
-        var response = await Injector.Commander.Run(new CreateMerchantCategoryCommand(Injector.Session, entity));
+        var response = await Injector.Commander.Run(new CreateServiceTypeCommand(Injector.Session, entity));
         if (response.HasError)
         {
             Injector.Snackbar.Add(L["Error"] + " : " + response.Error?.Message, Severity.Error);
@@ -19,7 +19,7 @@ public partial class Create
         else
         {
             Injector.Snackbar.Add(L["SuccessCreate"], Severity.Success);
-            Injector.NavigationManager.NavigateTo("/merchantcategories");
+            Injector.NavigationManager.NavigateTo("/service-types");
         }
         Processing = false;
     }

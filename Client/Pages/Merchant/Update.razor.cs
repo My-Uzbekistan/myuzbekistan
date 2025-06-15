@@ -1,6 +1,6 @@
 namespace Client.Pages.Merchant;
 
-public partial class Update : ComputedStateComponent<MerchantView>
+public partial class Update : ComputedStateComponent<List<MerchantView>>
 {
     [Inject] UInjector Injector { get; set; } = null!;
     [Inject] IMerchantService MerchantService { get; set; } = null!;
@@ -12,11 +12,14 @@ public partial class Update : ComputedStateComponent<MerchantView>
 
     public bool Processing { get; set; } = false;
 
-    public async Task OnSubmit(MerchantView entity)
+    public async Task OnSubmit(List<MerchantView> entity)
     {
         Processing = true;
         var merchantCategory = await merchantCategoryService.Get(MerchantCategoryId);
-        entity.MerchantCategoryView = merchantCategory;
+        foreach (var item in entity)
+        {
+            item.MerchantCategoryView = merchantCategory.First(x => x.Locale == item.Locale);
+        }
         var response = await Injector.Commander.Run(new UpdateMerchantCommand(Injector.Session, entity));
         if (response.HasError)
         {
@@ -25,13 +28,13 @@ public partial class Update : ComputedStateComponent<MerchantView>
         else
         {
             Injector.Snackbar.Add(L["SuccessUpdate"], Severity.Success);
-            Injector.NavigationManager.NavigateTo("/merchants");
+            Injector.NavigationManager.NavigateTo($"/merchantcategories/{MerchantCategoryId}/merchants");
         }
 
         Processing = false;
     }
 
-    protected override async Task<MerchantView> ComputeState(CancellationToken cancellationToken)
+    protected override async Task<List<MerchantView>> ComputeState(CancellationToken cancellationToken)
     {
         return await MerchantService.Get(Id, cancellationToken);
     }

@@ -212,7 +212,6 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         .Include(x => x.Icon)
         .Where(x => x.Id == command.Id)
         .ToList();
-        ;
         if (category == null) throw new ValidationException("CategoryEntity Not Found");
         dbContext.RemoveRange(category);
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -1,0 +1,51 @@
+﻿@typeparam T
+
+<MudAutocomplete T="T"
+                 @bind-Value="Value"
+                 Label="@Label"
+                 Variant="Variant.Outlined"
+                 Dense="true"
+                 ResetValueOnEmptyText="false"
+                 ToStringFunc="ToStringFunc"
+                 SearchFunc="SearchItems"
+                 CoerceText="true"
+                 Clearable="true"
+                 Adornment="Adornment.End"
+                 AdornmentIcon="@Icons.Material.Filled.Add"
+                 OnAdornmentClick="@(() => TryCreateItemAsync(InputText))">
+</MudAutocomplete>
+
+<style>
+    .mud-popover-provider > .mud-overlay {
+        display:none;
+    }
+</style>
+
+@code {
+    [Parameter] public T? Value { get; set; }
+    [Parameter] public EventCallback<T?> ValueChanged { get; set; }
+
+    [Parameter] public string Label { get; set; } = "Select or create...";
+    [Parameter] public Func<string, Task<IEnumerable<T>>> SearchFunc { get; set; } = default!;
+    [Parameter] public Func<string, T> CreateFunc { get; set; } = default!;
+    [Parameter] public Func<T, string> ToStringFunc { get; set; } = x => x?.ToString() ?? "";
+    [Parameter] public EventCallback<T> OnCreate { get; set; }
+
+    private string InputText { get; set; } = string.Empty;
+
+    private Task<IEnumerable<T>> SearchItems(string value,CancellationToken cancellationToken)
+    {
+        InputText = value;
+        return SearchFunc.Invoke(value);
+    }
+
+    private async Task TryCreateItemAsync(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+
+        var newItem = CreateFunc(value);
+        await OnCreate.InvokeAsync(newItem);
+        Value = newItem;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

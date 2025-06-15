@@ -4,7 +4,7 @@ public interface IMerchantCategoryService : IComputeService
     Task<TableResponse<MerchantCategoryView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
-    Task<MerchantCategoryView> Get(long Id, CancellationToken cancellationToken = default);
+    Task<List<MerchantCategoryView>> Get(long Id, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Create(CreateMerchantCategoryCommand command, CancellationToken cancellationToken = default);

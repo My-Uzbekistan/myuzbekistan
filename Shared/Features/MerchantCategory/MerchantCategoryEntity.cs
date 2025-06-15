@@ -1,7 +1,11 @@
-﻿namespace myuzbekistan.Shared;
+﻿using Microsoft.EntityFrameworkCore;
 
+namespace myuzbekistan.Shared;
+
+[PrimaryKey(nameof(MerchantCategoryEntity.Id), nameof(MerchantCategoryEntity.Locale))]
 public class MerchantCategoryEntity : BaseEntity
 {
+    public string Locale { get; set; } = null!;
     public FileEntity? Logo { get; set; } = null!;
     public string? BrandName { get; set; } = null!;
     public string? OrganizationName { get; set; } = null!;
@@ -12,7 +16,7 @@ public class MerchantCategoryEntity : BaseEntity
     public string? Contract { get; set; } = null!;
     public short Discount { get; set; } = 0;
     public byte PayDay { get; set; }
-    public string ServiceType { get; set; } = null!;
+    public ServiceTypeEntity ServiceType { get; set; } = null!;
     public string? Phone { get; set; } = null!;
     public string? Email { get; set; } = null!;
     public string? Address { get; set; } = null!;

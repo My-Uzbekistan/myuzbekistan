@@ -1,27 +1,51 @@
-<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
-    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
-        <Actions>
-            <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("merchants")' Processing="@Processing" />
-        </Actions>
-        <ChildContent>
-            <MudGrid>
-                <MudItem xs="8">
-                    <MudPaper Class="pa-4">
-                        <ObjectGraphDataAnnotationsValidator />
-                        <ValidationSummary />
-                        <ImageSelectView @bind-Value="Model.LogoView" />
-                        <MudTextField @bind-Value="Model.Name" Label="@L["Name"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Name)" />
-                        <MudTextField @bind-Value="Model.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Description)" />
-                        <MudTextField @bind-Value="Model.Address" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Address)" />
-                        <MudTextField @bind-Value="Model.MXIK" Label="@L["MXIK"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.MXIK)" />
-                        <MudTextField @bind-Value="Model.WorkTime" Label="@L["WorkTime"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.WorkTime)" />
-                        <MudTextField @bind-Value="Model.Phone" Label="@L["Phone"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Phone)" />
-                        <MudTextField @bind-Value="Model.Responsible" Label="@L["Responsible"]" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Responsible)" Required="true" />
-                        <MudSwitch Color="Color.Primary" Label="@L["Status"]"  @bind-Checked="Model.Status" For="@(() => Model.Status)" Required="true" />
-                        <input type="hidden" @bind-value="Model.Id">
-                    </MudPaper>
-                </MudItem>
-            </MudGrid>
-        </ChildContent>
-    </FormContainer>
-</EditForm>
+@if (isLoading && Model.All(m => _contexts[m.Locale] != null))
+{
+    @foreach (var current in Model)
+    {
+        <EditForm hidden="@(!Language.Equals(current.Locale))" EditContext="@_contexts[current.Locale]" OnSubmit="OnValidSubmit">
+            <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+                <Actions>
+                    <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back($"merchantcategories/{MerchantCategoryId}/merchants")' Processing="@Processing" />
+                </Actions>
+                <ChildContent>
+                    <MudGrid>
+                        <MudItem md="8" xs="12">
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudPaper Class="pa-4">
+                                        <ObjectGraphDataAnnotationsValidator />
+                                        <ValidationSummary />
+                                        <ImageSelectView @bind-Value="current.LogoView" @bind-Value:after="() => { Model.ForEach(x => x.LogoView = current.LogoView); }" />
+                                        <MudTextField @bind-Value="current.Name" Label="@L["Name"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Name)" />
+                                        <MudTextField @bind-Value="current.Description" Label="@L["Description"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Description)" />
+
+                                        <input type="hidden" @bind-value="current.Id">
+                                       
+
+                                    </MudPaper>
+                                </MudItem>
+                                <MudItem xs="12">
+                                    <MudPaper Class="pa-4">
+                                        <MudTextField @bind-Value="current.Address" @bind-Value:after="() => { Model.ForEach(x => x.Address = current.Address); }" Label="@L["Address"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Address)" />
+                                        <MudTextField @bind-Value="current.MXIK" @bind-Value:after="() => { Model.ForEach(x => x.MXIK = current.MXIK); }" Label="@L["MXIK"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.MXIK)" />
+                                        <MudTextField @bind-Value="current.WorkTime" @bind-Value:after="() => { Model.ForEach(x => x.WorkTime = current.WorkTime); }" Label="@L["WorkTime"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.WorkTime)" />
+                                        <MudTextField @bind-Value="current.Phone" @bind-Value:after="() => { Model.ForEach(x => x.Phone = current.Phone); }" Label="@L["Phone"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Phone)" />
+                                        <MudTextField @bind-Value="current.Responsible" @bind-Value:after="() => { Model.ForEach(x => x.Responsible = current.Responsible); }" Label="@L["Responsible"]" AutoFocus="false" Variant="Variant.Text" For="@(() => current.Responsible)" Required="true" />
+                                    </MudPaper>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                        <MudItem md="4" xs="12" Class="order-md-1 order-0">
+                            <MudPaper class="pa-4 mb-2 d-flex">
+
+                                <Client.Pages.Content._PlacesForm @bind-Location="current.Location" @bind-Location:after="() => { Model.ForEach(x => x.Location = current.Location); }" />
+                                <MudSwitch @bind-Checked="current.Status" @bind-Checked:after="() => { Model.ForEach(x => x.Status = current.Status); }" Label="@L["Status"]" For="@(() => current.Status)" Color="Color.Primary" />
+                            </MudPaper>
+                            <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
+                        </MudItem>
+                    </MudGrid>
+                </ChildContent>
+            </FormContainer>
+        </EditForm>
+    }
+}

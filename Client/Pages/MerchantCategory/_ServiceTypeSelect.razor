@@ -1,0 +1,13 @@
+@inherits MixedStateComponent<TableResponse<ServiceTypeView>, string>
+@{
+    var data = State.GetValue(Injector);
+}
+<MudAutocomplete T="ServiceTypeView" 
+                 @attributes="Attributes"
+                 Value="Value"
+                 Label="@Label"
+                 Immediate="true"
+                 MaxItems="150"
+                 Required=Required
+                 For="For"
+                 ValueChanged="UpdateValue" ToStringFunc="(x)=>x?.Name" SearchFunc="Search"  />

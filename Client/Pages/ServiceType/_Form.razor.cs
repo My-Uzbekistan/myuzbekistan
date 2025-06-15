@@ -1,43 +1,34 @@
-using Client.Core.Layout;
-
-
-namespace Client.Pages.Merchant;
-
+namespace Client.Pages.ServiceType;
 
 public partial class _Form
 {
-    [Parameter]
-    public long MerchantCategoryId { get; set; }
-    private bool isLoading = true;
     string Language { get; set; } = CultureInfo.CurrentCulture.Name.Split("-").FirstOrDefault("uz");
+
     [Parameter]
-    public List<MerchantView> Model { get; set; } = [new MerchantView { Locale = "uz" }, new MerchantView { Locale = "ru" }, new MerchantView { Locale = "en" },];
+    public List<ServiceTypeView> Model { get; set; } = [new ServiceTypeView { Locale = "uz" }, new ServiceTypeView { Locale = "ru" }, new ServiceTypeView { Locale = "en" },];
     private Dictionary<string, EditContext?> _contexts = new() { { "uz", null }, { "en", null }, { "ru", null } };
     private Dictionary<string, bool> Errors { get; set; } = new() { { "en", false }, { "uz", false }, { "ru", false } };
 
     [Inject] UInjector Injector { get; set; } = null!;
 
-
     [Parameter]
     public bool IsNew { get; set; } = false;
 
     [Parameter]
-    public EventCallback<List<MerchantView>> OnSubmit { get; set; }
+    public EventCallback<List<ServiceTypeView>> OnSubmit { get; set; }
 
     [Parameter]
     public bool Processing { get; set; }
 
     protected override void OnInitialized()
     {
-        
+        base.OnInitialized();
         foreach (var item in Model)
         {
-            _contexts[item.Locale] = new EditContext(item);
+            _contexts[item.Locale] = new(item);
         }
-        base.OnInitialized();
     }
-
-    private void OnValidSubmit(EditContext context)
+    void HandleSubmit(EditContext ctx)
     {
         foreach (var item in _contexts)
         {
@@ -52,5 +43,5 @@ public partial class _Form
         }
     }
 
-    private string GetTitle() => IsNew ? L["Create"] : L["Edit"];
+    private string GetTitle() => IsNew ? L["Create"] : L["Edit"] ;
 }
