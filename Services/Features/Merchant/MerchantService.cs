@@ -36,7 +36,11 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         Sorting(ref merchant, options);
 
         merchant = merchant.Include(x => x.Logo);
-        merchant = merchant.Include(x => x.MerchantCategory);
+        merchant = merchant.
+             Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.ServiceType)
+            .Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.Logo);
         var count = await merchant.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await merchant.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<MerchantView>() { Items = items.MapToViewList(), TotalItems = count };
@@ -50,6 +54,9 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         var merchant = await dbContext.Merchants
             .Include(x => x.Logo)
             .Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.ServiceType)
+            .Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.Logo)
             .Where(x => x.Id == Id)
             .ToListAsync(cancellationToken)
             ?? throw new ValidationException("MerchantEntity Not Found");
@@ -115,7 +122,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-       
+
 
         var merchants = dbContext.Merchants
        .Include(x => x.Logo)

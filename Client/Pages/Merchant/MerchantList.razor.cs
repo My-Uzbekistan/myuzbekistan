@@ -18,7 +18,7 @@ public partial class MerchantList : MixedStateComponent<TableResponse<MerchantVi
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var _initialCount);
         QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchParam);
         _ = int.TryParse(_initialCount, out int count);
-        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam } };
+        return new() { InitialValue = new TableOptions() { Page = count == 0 ? 1 : count, PageSize = 15, SortLabel = "Id", SortDirection = 1, Search = searchParam , Lang = LangHelper.currentLocale } };
     }
 
     protected override async Task<TableResponse<MerchantView>> ComputeState(CancellationToken cancellationToken = default)

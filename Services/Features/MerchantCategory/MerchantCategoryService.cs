@@ -38,6 +38,7 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
 
         merchantcategory = merchantcategory.Include(x => x.Logo);
         merchantcategory = merchantcategory.Include(x => x.Merchants);
+        merchantcategory = merchantcategory.Include(x => x.ServiceType);
         var count = await merchantcategory.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await merchantcategory.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<MerchantCategoryView>() { Items = items.MapToViewList(), TotalItems = count };
@@ -51,6 +52,7 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
         var merchantcategory = await dbContext.MerchantCategories
             .Include(x => x.Logo)
             .Include(x => x.Merchants)
+            .Include(x => x.ServiceType)
             .Where(x => x.Id == Id).ToListAsync(cancellationToken: cancellationToken);
 
         return merchantcategory == null ? throw new ValidationException("MerchantCategoryEntity Not Found") : merchantcategory.MapToViewList();
@@ -97,6 +99,7 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
         var category = dbContext.MerchantCategories
         .Include(x => x.Merchants)
         .Include(x => x.Logo)
+        .Include(x => x.ServiceType)
         .Where(x => x.Id == cat.Id).ToList();
 
         if (category == null) throw new ValidationException("MerchantCategoryEntity Not Found");
@@ -121,6 +124,7 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
         var category = dbContext.MerchantCategories
        .Include(x => x.Merchants)
        .Include(x => x.Logo)
+       .Include(x => x.ServiceType)
        .Where(x => x.Id == command.Id)
        .ToList();
         if (category == null) throw new ValidationException("MerchantCategoryEntity Not Found");
@@ -141,6 +145,11 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
         if (merchantcategory.Logo != null)
             merchantcategory.Logo = dbContext.Files
             .First(x => x.Id == merchantcategory.Logo.Id);
+
+        if (merchantcategory.ServiceType != null)
+            merchantcategory.ServiceType = dbContext.ServiceTypes
+            .First(x => x.Id == merchantcategoryView.ServiceType.Id);
+
         if (merchantcategory.Merchants != null)
             merchantcategory.Merchants = dbContext.Merchants
             .Where(x => merchantcategory.Merchants.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
