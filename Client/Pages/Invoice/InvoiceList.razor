@@ -1,0 +1,19 @@
+@page  "/invoices"
+@inherits MixedStateComponent<TableResponse<InvoiceView>, TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="Invoice">
+    
+    <ChildContent>
+        <UTCTable Values="@Items"  SortColumns="@SortColumns" MutableState="@MutableState" Tclass="InvoiceView">
+                <MudTd DataLabel="Amount">@context.Amount</MudTd>
+                <MudTd DataLabel="Currency">@context.Currency</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="User">@context.User</MudTd>
+                <MudTd DataLabel="MerchantEntity.Name">@context.MerchantView?.Name</MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>

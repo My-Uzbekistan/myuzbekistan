@@ -47,6 +47,46 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
     }
 
     [ComputeMethod]
+    public async virtual Task<TableResponse<MerchantView>> GetAllByApi(TableOptions options, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var merchant = from s in dbContext.Merchants select s;
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            merchant = merchant.Where(s =>
+                     s.Name != null && s.Name.Contains(options.Search)
+                    || s.Description != null && s.Description.Contains(options.Search)
+                    || s.Address != null && s.Address.Contains(options.Search)
+                    || s.MXIK != null && s.MXIK.Contains(options.Search)
+                    || s.WorkTime != null && s.WorkTime.Contains(options.Search)
+                    || s.Phone != null && s.Phone.Contains(options.Search)
+                    || s.Responsible.Contains(options.Search)
+            );
+        }
+
+        #region Search by Language
+
+        if (!String.IsNullOrEmpty(options.Lang))
+            merchant = merchant.Where(x => x.Locale.Equals(options.Lang));
+
+        #endregion
+
+        Sorting(ref merchant, options);
+
+        merchant = merchant.Include(x => x.Logo);
+        merchant = merchant.
+             Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.ServiceType)
+            .Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.Logo);
+        var count = await merchant.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
+        var items = await merchant.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+        return new TableResponse<MerchantView>() { Items = items.MapToViewList(), TotalItems = count };
+    }
+
+    [ComputeMethod]
     public async virtual Task<List<MerchantView>> Get(long Id, CancellationToken cancellationToken = default)
     {
         await Invalidate();

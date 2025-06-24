@@ -70,7 +70,7 @@ public class AccountController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new { Name = user.UserName, Balance = user.Balance / 100 });
+        return Ok(new { Name = user.UserName, Balance = user.Balance});
 
     }
 

@@ -26,6 +26,7 @@ public static class FusionServerExtension
         fusion.AddService<IMerchantCategoryService, MerchantCategoryService>();
         fusion.AddService<IWeatherService, WeatherService>();
         fusion.AddService<IServiceTypeService, ServiceTypeService>();
+        fusion.AddService<IInvoiceService, InvoiceService>();
 
         return fusion;
     }
