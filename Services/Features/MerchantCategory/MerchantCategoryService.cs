@@ -1,3 +1,4 @@
+﻿using DocumentFormat.OpenXml.Office.Word;
 using myuzbekistan.Services;
 
 public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IMerchantCategoryService
@@ -73,7 +74,7 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
         }
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        maxId = dbContext.Categories.Count() == 0 ? 0 : dbContext.Categories.Max(x => x.Id);
+        maxId = dbContext.MerchantCategories.Count() == 0 ? 0 : dbContext.MerchantCategories.Max(x => x.Id);
         maxId++;
         foreach (var item in command.Entity)
         {
@@ -142,16 +143,23 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
             return;
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var merchants = dbContext.MerchantCategories
+        var merchants = await dbContext.MerchantCategories
         .Include(x => x.Logo)
-        .Where(x => x.Token == command.Token).ToList();
+        .Where(x => x.Token == command.Token).ToListAsync();
 
 
-        foreach (var item in merchants)
+        foreach (var mc in merchants)
         {
-            item.ChatIds.Add(command.ChatId);
+            // гарантируем, что коллекция не null
+            var ids = mc.ChatIds ?? new List<string?>();
+
+            if (!ids.Contains(command.ChatId))
+                mc.ChatIds = ids.Append(command.ChatId).ToList(); // ← новая ссылка
         }
 
+        dbContext.UpdateRange(merchants);
+
+        dbContext.ChangeTracker.DetectChanges();
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 

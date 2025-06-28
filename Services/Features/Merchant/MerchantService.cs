@@ -117,7 +117,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        maxId = dbContext.Categories.Count() == 0 ? 0 : dbContext.Categories.Max(x => x.Id);
+        maxId = dbContext.Merchants.Count() == 0 ? 0 : dbContext.Merchants.Max(x => x.Id);
         maxId++;
         foreach (var item in command.Entity)
         {

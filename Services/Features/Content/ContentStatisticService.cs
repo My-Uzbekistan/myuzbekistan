@@ -1,5 +1,6 @@
 using ActualLab.Fusion.Authentication;
 using ActualLab.Fusion.EntityFramework;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using myuzbekistan.Shared;
@@ -11,6 +12,7 @@ public class ContentStatisticService(
     IServiceProvider services,
     ICategoryService categoryService,
     ILogger<ContentService> logger,
+    IDbContextFactory<ApplicationDbContext> dbContextFactory,
     IAuth auth)
     : DbServiceBase<AppDbContext>(services), IContentStatisticService
 {
@@ -33,7 +35,7 @@ public class ContentStatisticService(
                 ContentCount = g.Count()
             }).ToListAsync(cancellationToken);
 
-        var userCount = await dbContext.Users.CountAsync(cancellationToken);
+        var userCount = await dbContextFactory.CreateDbContext().Users.CountAsync(cancellationToken);
 
         var contentRequests = dbContext.ContentRequests.AsQueryable();
         var favorites = dbContext.Favorites.AsQueryable();
