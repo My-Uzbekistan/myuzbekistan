@@ -27,13 +27,15 @@
             <MudTd DataLabel="Status">@context.Status</MudTd>
             <MudTd DataLabel="Id">@context.Id</MudTd>
 
-            <MudTd >
+            <MudTd>
                 <div style="display:flex; gap:7px;">
                     <MudLink Href=@($"/merchantcategories/{MerchantCategoryId}/merchants/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>
                     <MudFab @onclick=@(() => Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
                     <MudFab @onclick=@(() => ShowQrDialog(@context.Id)) Color="Color.Info" StartIcon="@Icons.Material.Filled.QrCode" Size="Size.Small" IconSize="Size.Small" />
+                    <GenerateTokenDialog CurrentToken="context.Token"
+                                         OnSave="(string token) => OnTokenSaved(token,context)" />
                 </div>
             </MudTd>
         </UTCTable>

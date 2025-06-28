@@ -22,7 +22,10 @@ public class MerchantEntity : BaseEntity
     public string Responsible { get; set; } = null!;
     public bool Status { get; set; } = false;
 
-    
+    public string? Token { get; set; }
+    public List<string?> ChatIds { get; set; } = new List<string?>();
+
+
     public MerchantCategoryEntity MerchantCategory { get; set; } = null!;
     public Point? Location { get; set; }
 }

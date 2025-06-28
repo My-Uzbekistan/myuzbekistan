@@ -12,6 +12,16 @@ public interface IMerchantCategoryService : IComputeService
     [CommandHandler]
     Task Update(UpdateMerchantCategoryCommand command, CancellationToken cancellationToken = default);
 
+
+    [CommandHandler]
+    Task UpdateToken(UpdateMerchantCategoryTokenCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task AddChatId(MerchantCategoryAddChatIdCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task ClearChatId(MerchantCategoryClearChatIdCommand command, CancellationToken cancellationToken = default);
+
     [CommandHandler]
     Task Delete(DeleteMerchantCategoryCommand command, CancellationToken cancellationToken = default);
 

@@ -15,6 +15,8 @@ public partial class MerchantView
     [property: DataMember] public bool Status { get; set; }
     [property: DataMember] public MerchantCategoryView? MerchantCategoryView { get; set; } 
     [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public string? Token { get; set; }
+    [property: DataMember] public List<string?> ChatIds { get; set; } = new List<string?>();
     [property: DataMember, MemoryPackAllowSerialize, JsonConverter(typeof(NetTopologySuite.IO.Converters.GeometryConverter))] public Point? Location { get; set; }
 
 

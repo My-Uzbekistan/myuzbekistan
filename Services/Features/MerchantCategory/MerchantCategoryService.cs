@@ -112,6 +112,69 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
+
+    public async virtual Task UpdateToken(UpdateMerchantCategoryTokenCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var merchants = dbContext.MerchantCategories
+        .Include(x => x.Logo)
+        .Where(x => x.Id == command.MerchantId).ToList();
+
+
+        foreach (var item in merchants)
+        {
+            item.Token = command.Token;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async virtual Task AddChatId(MerchantCategoryAddChatIdCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var merchants = dbContext.MerchantCategories
+        .Include(x => x.Logo)
+        .Where(x => x.Token == command.Token).ToList();
+
+
+        foreach (var item in merchants)
+        {
+            item.ChatIds.Add(command.ChatId);
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async virtual Task ClearChatId(MerchantCategoryClearChatIdCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var merchants = dbContext.MerchantCategories
+        .Where(x => x.Id == command.MerchantCategoryId).ToList();
+
+        foreach (var item in merchants)
+        {
+            item.ChatIds.Clear();
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public async virtual Task Delete(DeleteMerchantCategoryCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)

@@ -24,6 +24,9 @@ public partial class MerchantCategoryView
     [property: DataMember] public bool Status { get; set; }
     [property: DataMember] public ICollection<MerchantView> MerchantsView { get; set; } = new List<MerchantView>();
     [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public string? Token { get; set; }
+
+    [property: DataMember] public List<string?> ChatIds { get; set; } = new List<string?>();
 
     public override bool Equals(object? o)
     {

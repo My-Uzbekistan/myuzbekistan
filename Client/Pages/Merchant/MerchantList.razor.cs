@@ -1,3 +1,4 @@
+using myuzbekistan.Shared;
 using System.Text;
 
 namespace Client.Pages.Merchant;
@@ -6,6 +7,7 @@ public partial class MerchantList : MixedStateComponent<TableResponse<MerchantVi
 {
     [Inject] private UInjector Injector { get; set; } = null!;
     [Inject] private IMerchantService MerchantService { get; set; } = null!;
+
 
     [Parameter] public long MerchantCategoryId { get; set; }
 
@@ -40,6 +42,13 @@ public partial class MerchantList : MixedStateComponent<TableResponse<MerchantVi
             await Injector.Commander.Run(new DeleteMerchantCommand(Injector.Session, Id), cancellationToken);
             Injector.Snackbar.Add(L["SuccessDelete"], Severity.Success);
         }
+    }
+
+
+    private async Task OnTokenSaved(string token, MerchantView merchant)
+    {
+        var command = new UpdateMerchantTokenCommand(Injector.Session, merchant.Id, token);
+        await Injector.Commander.Run(command); // ваш метод сохранения
     }
 
     private async Task ShowQrDialog(long merchantId)

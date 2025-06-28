@@ -37,4 +37,10 @@ public partial class MerchantCategoryList : MixedStateComponent<TableResponse<Me
             Injector.Snackbar.Add(L["SuccessDelete"], Severity.Success);
         }
     }
+
+    private async Task OnTokenSaved(string token, MerchantCategoryView merchant)
+    {
+        var command = new UpdateMerchantCategoryTokenCommand(Injector.Session, merchant.Id, token);
+        await Injector.Commander.Run(command); // ваш метод сохранения
+    }
 }

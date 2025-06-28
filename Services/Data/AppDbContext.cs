@@ -67,6 +67,16 @@ public partial class AppDbContext : DbContextBase
             .HasIndex(c => c.PhotoId) // ������ ��� ������������
             .IsUnique(false);
 
+        modelBuilder.Entity<MerchantEntity>()
+            .Property(x => x.ChatIds)
+            .HasColumnType("text[]")
+            .HasDefaultValueSql("'{}'");
+
+        modelBuilder.Entity<MerchantCategoryEntity>()
+            .Property(x => x.ChatIds)
+            .HasColumnType("text[]")
+            .HasDefaultValueSql("'{}'");
+
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

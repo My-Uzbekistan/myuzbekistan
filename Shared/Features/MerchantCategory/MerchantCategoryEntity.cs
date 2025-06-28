@@ -23,6 +23,9 @@ public class MerchantCategoryEntity : BaseEntity
     public bool IsVat { get; set; }
     public Byte Vat { get; set; }
     public bool Status { get; set; } = false;
+
+    public string? Token { get; set; }
+    public List<string?> ChatIds { get; set; } = new List<string?>();
     public  List<MerchantEntity> Merchants { get; set; } = new List<MerchantEntity>();
 
 }

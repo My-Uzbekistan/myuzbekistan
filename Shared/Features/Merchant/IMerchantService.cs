@@ -16,6 +16,15 @@ public interface IMerchantService : IComputeService
     Task Update(UpdateMerchantCommand command, CancellationToken cancellationToken = default);
 
     [CommandHandler]
+    Task UpdateToken(UpdateMerchantTokenCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task AddChatId(MerchantAddChatIdCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task ClearChatId(MerchantClearChatIdCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
     Task Delete(DeleteMerchantCommand command, CancellationToken cancellationToken = default);
 
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
