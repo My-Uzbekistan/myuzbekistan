@@ -1,0 +1,10 @@
+@page "/simcountries/{Id:long}"
+@inherits ComputedStateComponent<SimCountryView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.SimCountry._Form OnSubmit="OnSubmit" 
+                                    Model="Model" 
+                                    Processing="@Processing" 
+                                    IsNew="false"/>

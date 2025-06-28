@@ -21,9 +21,7 @@ public  sealed class TelegramBotService : BackgroundService
         _sp = sp;
         _cfg = cfg;
         var token = _cfg["Telegram:BotToken"];
-        if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidOperationException("Telegram bot token missing");
-
+        if(token != null)
         _bot = new TelegramBotClient(token);
     }
 
@@ -31,7 +29,7 @@ public  sealed class TelegramBotService : BackgroundService
     public async Task NotifyAsync(string chatId, string message, CancellationToken ct = default)
     {
         if (_bot is null)
-            throw new InvalidOperationException("Бот ещё не инициализирован");
+            return;
 
         await _bot.SendMessage(chatId, message, cancellationToken: ct);
     }
@@ -39,7 +37,7 @@ public  sealed class TelegramBotService : BackgroundService
     /* ------------------ запуск ------------------ */
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        
+        if (_bot == null) return;
         
 
         // Обработчики polling'а

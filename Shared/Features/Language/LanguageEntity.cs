@@ -3,6 +3,7 @@
 namespace myuzbekistan.Shared;
 
 [PrimaryKey(nameof(FacilityEntity.Id), nameof(FacilityEntity.Locale))]
+[SkipGeneration]
 public partial class LanguageEntity:BaseEntity
 {
     public string Name { get; set; } = null!;

@@ -9,6 +9,7 @@ using Point = NetTopologySuite.Geometries.Point;
 namespace myuzbekistan.Shared;
 
 [PrimaryKey(nameof(MerchantEntity.Id), nameof(MerchantEntity.Locale))]
+[SkipGeneration]
 public class MerchantEntity : BaseEntity
 {
     public string Locale { get; set; } = null!;

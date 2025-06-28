@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace myuzbekistan.Shared;
-
+[SkipGeneration]
 public partial class FileEntity : BaseEntity
 {
 

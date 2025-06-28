@@ -1,0 +1,23 @@
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("simcountries")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudTextField  @bind-Value="Model.Locale" Label="Locale" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Locale)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Name" Label="Name" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Name)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Title" Label="Title" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Title)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Code" Label="Code" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Code)"Required="true"/>
+                            <MudSwitch Color="Color.Primary" @bind-Value="Model.Status" For="@(() => Model.Status)"Required="true"/>
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>

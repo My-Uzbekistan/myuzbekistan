@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace myuzbekistan.Shared;
 
 [Index(nameof(UserId))]
+[SkipGeneration]
 public partial class CardEntity : BaseEntity
 {
     public long? CardId { get; set; }

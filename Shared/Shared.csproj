@@ -16,11 +16,11 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 
-		<!--<PackageReference Condition="'$(Configuration)'=='DEBUG'" Include="FusionGenerator" Version="8.0.23" />-->
+		<!--<PackageReference Condition="'$(Configuration)'=='DEBUG'" Include="FusionGenerator" Version="8.2.1" />-->
 		<PackageReference Include="ActualLab.Fusion.EntityFramework" Version="$(FusionVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(PacketVersions)" />
 		<PackageReference Include="Microsoft.Extensions.Identity.Core" Version="$(PacketVersions)" />
-		<PackageReference Include="EF.Audit.Core" Version="1.1.2" />
+		<PackageReference Include="EF.Audit.Core" Version="1.1.8" />
 		<PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
 		<PackageReference Include="NetTopologySuite.IO.GeoJSON4Stj" Version="4.0.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="$(PacketVersions)" />

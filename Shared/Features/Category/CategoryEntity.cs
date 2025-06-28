@@ -5,6 +5,7 @@ using System.Net.Mime;
 namespace myuzbekistan.Shared;
 
 [PrimaryKey(nameof(CategoryEntity.Id), nameof(CategoryEntity.Locale))]
+[SkipGeneration]
 public partial class CategoryEntity : BaseEntity
 {
     public string Name { get; set; } = null!;

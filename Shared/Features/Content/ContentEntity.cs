@@ -12,6 +12,7 @@ using Point = NetTopologySuite.Geometries.Point;
 namespace myuzbekistan.Shared;
 
 [PrimaryKey(nameof(ContentEntity.Id), nameof(ContentEntity.Locale))]
+[SkipGeneration]
 public class ContentEntity : BaseEntity
 {
     

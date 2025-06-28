@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace myuzbekistan.Shared;
-
+[SkipGeneration]
 public partial class FavoriteEntity : BaseEntity
 {
     public ContentEntity Content { get; set; } = null!;
