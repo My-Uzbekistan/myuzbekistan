@@ -10,22 +10,28 @@ using System.Text.Json.Serialization;
 namespace myuzbekistan.Services;
 
 
-public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContextAccessor contextAccessor, IPaymentService paymentService, ICommander commander, ISessionResolver sessionResolver)
+public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContextAccessor contextAccessor, IPaymentService paymentService, ICommander commander, ISessionResolver sessionResolver, IConfiguration configuration)
 {
     public static DateTime? ExpiredAt { get; set; }
     public static string? Token { get; set; } = null!;
-    public static string Url = "https://dev-mesh.multicard.uz";
+    
+
     public async Task GetToken()
     {
         if (ExpiredAt != null && ExpiredAt > DateTime.UtcNow)
             return;
+        
+        var body = new StringContent($$"""
+            {
+                "application_id": "{{configuration["Multicard:ApplicationId"]}}",
+                "secret":"{{configuration["Multicard:Secret"]}}"
 
-        var body = new StringContent("{\"application_id\":\"rhmt_test\",\"secret\":\"Pw18axeBFo8V7NamKHXX\"}",
-            Encoding.UTF8, "application/json");
+            }
+            """, Encoding.UTF8, "application/json");
 
         var client = httpClientFactory.CreateClient("multicard");
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, Url + "/auth")
+        var response = await client.SendAsync(new HttpRequestMessage(HttpMethod.Post, client.BaseAddress + "auth")
         {
             Content = body
         });
@@ -72,7 +78,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
 
     public async Task<MultiBindCardResponse> BindCard(MultiBindCardRequest multiBindCard)
     {
-        var resultString = await SendPostRequestAsync(Url + "/payment/card", multiBindCard, HttpMethod.Post);
+        var resultString = await SendPostRequestAsync(configuration["Multicard:Url"] + "payment/card", multiBindCard, HttpMethod.Post);
 
         var content = JsonSerializer.Deserialize<MultiWrapper<MultiBindCardResponse>>(resultString)!;
         return content.Data!;
@@ -81,7 +87,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
 
     public async Task<CardView> ConfirmBindCard(string cardToken, string otp)
     {
-        var resultString = await SendPostRequestAsync(Url + $"/payment/card/{cardToken}", new { otp }, HttpMethod.Put);
+        var resultString = await SendPostRequestAsync(configuration["Multicard:Url"] + $"payment/card/{cardToken}", new { otp }, HttpMethod.Put);
 
         var content = JsonSerializer.Deserialize<MultiWrapper<CardView>>(resultString)!;
         return content.Data!;
@@ -98,11 +104,8 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
         Total = amount,
     };
 
-    //private int storeId = 1720;
-    private int storeId = 6;
-
-    
-
+    private int storeId = 1720;
+    //private int storeId = 6;
 
     public async Task<string> CreateInvoice(decimal amount)
     {
@@ -118,7 +121,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
 
 
         };
-        var resultString = await SendPostRequestAsync(Url + "/payment/invoice", paymentRequest, HttpMethod.Post);
+        var resultString = await SendPostRequestAsync(configuration["Multicard:Url"] + "payment/invoice", paymentRequest, HttpMethod.Post);
         var content = JsonSerializer.Deserialize<MultiWrapper<MultiPaymentResponse>>(resultString);
 
         return content?.Data!.Uuid ?? throw new Exception("Failed to create payments");
@@ -144,7 +147,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
             Ofd = [GetOfd(amount)]
         };
 
-        var resultString = await SendPostRequestAsync(Url + "/payment", paymentRequest, HttpMethod.Post);
+        var resultString = await SendPostRequestAsync(configuration["Multicard:Url"] + "payment", paymentRequest, HttpMethod.Post);
         var content = JsonSerializer.Deserialize<MultiWrapper<MultiPaymentResponse>>(resultString);
         var session = await sessionResolver.GetSession();
         await commander.Call(new CreatePaymentCommand(session, new PaymentView
@@ -170,7 +173,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
             }
             """, Encoding.UTF8, "application/json");
 
-        var resultString = await SendPostRequestAsync(Url + $"/payment/{paymentId}", body, HttpMethod.Put);
+        var resultString = await SendPostRequestAsync(configuration["Multicard:Url"] + $"payment/{paymentId}", body, HttpMethod.Put);
         var paymentResponse = JsonSerializer.Deserialize<MultiWrapper<MultiPaymentResponse>>(resultString)?.Data; 
         var session = await sessionResolver.GetSession();
         var payment = await paymentService.GetByTransactionId(paymentId);

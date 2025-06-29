@@ -27,8 +27,8 @@ public class MultiTokenResponse
     [JsonPropertyName("token")]
     [JsonProperty("token")]
     public string? Token { get; set; }
-    [JsonPropertyName("expire_at")]
-    [JsonProperty("expire_at")]
+    [JsonPropertyName("expiry")]
+    [JsonProperty("expiry")]
     public DateTime? ExpiredAt { get; set; }
 }
 

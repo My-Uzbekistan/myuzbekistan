@@ -40,16 +40,26 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
         }
         else
         {
-             httpResponse = exception.Message switch
+             httpResponse = exception switch
             {
-                "004" => new ErrorResponse(400, "004", "Identification face spoofing"),
-                "005" => new ErrorResponse(400, "005", "Identification face"),
-                "006" => new ErrorResponse(400, "006", "Identification data"),
-                "401" => new ErrorResponse(400, "401", "Service Returned Invalid Response"),
-                "5000" => new ErrorResponse(400, "5000", "Limit sim card"),
-                "5009" => new ErrorResponse(400, "5009", "Financial obligations"),
-                _ => new ErrorResponse(500, "500", exception.Message),
+                MultiException e when e.MultiErrorWrapper?.Error != null =>
+                    new ErrorResponse(400, e.MultiErrorWrapper.Error.Code, e.MultiErrorWrapper.Error.Details),
+
+                MultiException =>
+                    new ErrorResponse(500, "500", "MultiException without details"),
+
+                _ => exception.Message switch
+                {
+                    "004" => new ErrorResponse(400, "004", "Identification face spoofing"),
+                    "005" => new ErrorResponse(400, "005", "Identification face"),
+                    "006" => new ErrorResponse(400, "006", "Identification data"),
+                    "401" => new ErrorResponse(400, "401", "Service Returned Invalid Response"),
+                    "5000" => new ErrorResponse(400, "5000", "Limit sim card"),
+                    "5009" => new ErrorResponse(400, "5009", "Financial obligations"),
+                    _ => new ErrorResponse(500, "500", exception.Message ?? "Unknown error")
+                }
             };
+
         }
 
         logger.LogError(exception, exception.Message);

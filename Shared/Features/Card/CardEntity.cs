@@ -1,11 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;  
 
 [Index(nameof(UserId))]
 public partial class CardEntity : BaseEntity
 {
+    public string? Code { get; set; } = null!;
+    public string? Name { get; set; } = null!;
+
+    public string? Cvv { get; set; } = null!;
+
     public long? CardId { get; set; }
     public long UserId { get; set; }
     public string? ExpirationDate { get; set; } // MM/YY
