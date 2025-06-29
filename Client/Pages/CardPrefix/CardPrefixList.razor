@@ -1,0 +1,35 @@
+@page  "/cardprefixes"
+@inherits MixedStateComponent<TableResponse<CardPrefixView>, TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="CardPrefix">
+    <Actions>
+        <MudLink Href="/cardprefixes/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values="@Items"  SortColumns="@SortColumns" MutableState="@MutableState" Tclass="CardPrefixView">
+                <MudTd DataLabel="Prefix">@context.Prefix</MudTd>
+                <MudTd DataLabel="BankName">@context.BankName</MudTd>
+                <MudTd DataLabel="CardType">@context.CardType</MudTd>
+                <MudTd DataLabel="CardBrand">
+                <ImageView fileEntity="@context.CardBrandView"/>
+                </MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/cardprefixes/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>

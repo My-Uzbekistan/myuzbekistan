@@ -1,0 +1,10 @@
+@page "/cardprefixes/{Id:long}"
+@inherits ComputedStateComponent<CardPrefixView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.CardPrefix._Form OnSubmit="OnSubmit" 
+                                    Model="Model" 
+                                    Processing="@Processing" 
+                                    IsNew="false"/>

@@ -4,10 +4,12 @@ using ActualLab.Fusion;
 using System.Reactive;
 
 namespace myuzbekistan.Shared;
-public interface ICardService:IComputeService
+public interface ICardService : IComputeService
 {
     [ComputeMethod]
     Task<TableResponse<CardView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
+
+    Task<bool> CheckCard(long userId, string pan, CancellationToken cancellationToken = default);
     [ComputeMethod]
     Task<List<CardInfo>> GetCardByUserId(long userId, CancellationToken cancellationToken = default);
     [ComputeMethod]
@@ -19,6 +21,5 @@ public interface ICardService:IComputeService
     Task Update(UpdateCardCommand command, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Delete(DeleteCardCommand command, CancellationToken cancellationToken = default);
-    Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
+    Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }
-    

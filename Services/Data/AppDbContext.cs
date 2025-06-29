@@ -77,6 +77,7 @@ public partial class AppDbContext : DbContextBase
             .HasColumnType("text[]")
             .HasDefaultValueSql("'{}'");
 
+
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

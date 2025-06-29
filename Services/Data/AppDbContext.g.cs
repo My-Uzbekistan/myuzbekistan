@@ -21,4 +21,5 @@ public partial class AppDbContext : DbContextBase
     public DbSet<ServiceTypeEntity> ServiceTypes { get; protected set; } = null!;
     public DbSet<InvoiceEntity> Invoices { get; protected set; } = null!;
     public DbSet<SimCountryEntity> SimCountries { get; protected set; } = null!;
+    public DbSet<CardPrefixEntity> CardPrefixes { get; protected set; } = null!;
 }

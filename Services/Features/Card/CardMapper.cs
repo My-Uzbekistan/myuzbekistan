@@ -16,10 +16,14 @@ public static partial class CardMapper
 
     #region Internal
 
+
+    
     private static partial CardView To(this CardEntity src);
     
     private static partial List<CardView> ToList(this List<CardEntity> src);
 
+    [MapProperty("Code", "ColorCode")]
+    [MapProperty("CardPan", "CardNumber")]
     private static partial CardInfo ToInfo(this CardEntity src);
     private static partial List<CardInfo> ToListInfo(this List<CardEntity> src);
     private static partial CardEntity From(this CardView CardView);

@@ -27,6 +27,11 @@ public partial class  CardView
    [property: DataMember, JsonPropertyName("is_multicard")] public bool IsMulticard { get; set; } 
    [property: DataMember, JsonPropertyName("id")] public long Id { get; set; }
 
+    [property: DataMember, JsonPropertyName("code")] public string? Code { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("name")] public string? Name { get; set; } = null!;
+
+    [property: DataMember, JsonPropertyName("cvv")] public string? Cvv { get; set; } = null!;
+
     public override bool Equals(object? o)
     {
         var other = o as CardView;
@@ -43,10 +48,14 @@ public partial class CardInfo
 {
     [property: DataMember, JsonPropertyName("user_id")] public long UserId { get; set; }
     [property: DataMember, JsonPropertyName("expiration_date")] public string? ExpirationDate { get; set; }
-    [property: DataMember, JsonPropertyName("phone")] public string Phone { get; set; } = null!;
+    //[property: DataMember, JsonPropertyName("phone")] public string Phone { get; set; } = null!;
     [property: DataMember, JsonPropertyName("holder_name")] public string HolderName { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("card_number")] public string CardNumber { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("name")] public string Name { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("color_code")] public string ColorCode { get; set; } = null!;
     [property: DataMember, JsonPropertyName("status")] public string Status { get; set; } = null!;
     [property: DataMember, JsonPropertyName("card_status")] public CardStatus? CardStatus { get; set; }
+    [property: DataMember, JsonPropertyName("balance")] public decimal Balance { get; set; }
     [property: DataMember, JsonPropertyName("id")] public long Id { get; set; }
 
     public override bool Equals(object? o)

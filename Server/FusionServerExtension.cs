@@ -28,6 +28,7 @@ public static class FusionServerExtension
         fusion.AddService<IServiceTypeService, ServiceTypeService>();
         fusion.AddService<IInvoiceService, InvoiceService>();
         fusion.AddService<ISimCountryService, SimCountryService>();
+        fusion.AddService<ICardPrefixService, CardPrefixService>();
 
         return fusion;
     }

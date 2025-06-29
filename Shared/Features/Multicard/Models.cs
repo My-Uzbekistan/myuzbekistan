@@ -15,11 +15,25 @@ public class MultiBindCardRequest
 {
     [JsonPropertyName("pan")]
     [JsonProperty("pan")]
-    public string? Token { get; set; }
+    [Required]
+    public string Token { get; set; } = null!;
     [JsonPropertyName("expiry")]
     [JsonProperty("expiry")]
     [RegularExpression(@"^\d{2}((0[1-9])|(1[0-2]))$", ErrorMessage = "Expiry должен быть в формате YYMM (например, 2603)")]
     public string? Expiry { get; set; }
+
+    [JsonPropertyName("cvv")]
+    [JsonProperty("cvv")]
+    public string? Cvv { get; set; }
+    [Required]
+    [JsonPropertyName("name")]
+    [JsonProperty("name")]
+    public string Name { get; set; } = null!;
+    [JsonPropertyName("color")]
+    [JsonProperty("color")]
+    public string? Color { get; set; }
+
+
 }
 
 public class MultiTokenResponse

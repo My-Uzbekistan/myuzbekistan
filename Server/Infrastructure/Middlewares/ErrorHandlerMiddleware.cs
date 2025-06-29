@@ -56,7 +56,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
                     "401" => new ErrorResponse(400, "401", "Service Returned Invalid Response"),
                     "5000" => new ErrorResponse(400, "5000", "Limit sim card"),
                     "5009" => new ErrorResponse(400, "5009", "Financial obligations"),
-                    _ => new ErrorResponse(500, "500", exception.Message ?? "Unknown error")
+                    _ => new ErrorResponse(400, "400", exception.Message ?? "Unknown error")
                 }
             };
 
