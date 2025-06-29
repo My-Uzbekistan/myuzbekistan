@@ -1,6 +1,6 @@
 ﻿
 namespace myuzbekistan.Shared;
-
+[SkipGeneration]
 public partial class ReviewEntity : BaseEntity
 {
     public long UserId { get; set; }

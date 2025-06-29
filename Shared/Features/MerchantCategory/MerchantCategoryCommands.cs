@@ -12,4 +12,6 @@ public partial record MerchantCategoryAddChatIdCommand([property: DataMember] Se
 public partial record MerchantCategoryClearChatIdCommand([property: DataMember] Session Session, [property: DataMember] long MerchantCategoryId) : ISessionCommand<MerchantCategoryView>;
 
 [DataContract, MemoryPackable]
-public partial record DeleteMerchantCategoryCommand([property: DataMember] Session Session, [property: DataMember] long Id) : ISessionCommand<MerchantCategoryView>; 
+public partial record DeleteMerchantCategoryCommand([property: DataMember] Session Session, [property: DataMember] long Id) : ISessionCommand<MerchantCategoryView>;
+
+public partial record MerchantOwnerNotifyCommand([property: DataMember] Session Session, [property: DataMember] string Token) : ISessionCommand<MerchantView>;

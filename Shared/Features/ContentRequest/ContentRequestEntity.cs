@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 
 namespace myuzbekistan.Shared;
 
+[SkipGeneration]
+
 public class ContentRequestEntity : BaseEntity
 {
     public long? ContentId { get; set; }

@@ -3,6 +3,7 @@
 namespace myuzbekistan.Shared;
 
 [PrimaryKey(nameof(MerchantCategoryEntity.Id), nameof(MerchantCategoryEntity.Locale))]
+[SkipGeneration]
 public class MerchantCategoryEntity : BaseEntity
 {
     public string Locale { get; set; } = null!;

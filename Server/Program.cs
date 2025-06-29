@@ -213,6 +213,12 @@ services.AddAudit(cfg);
 services.AddHttpContextAccessor();
 #endregion
 
+#region Telegram Bot
+builder.Services.AddSingleton<MerchantNotifierService>();
+services.AddSingleton<TelegramBotService>();
+builder.Services.AddHostedService<TelegramBotService>();
+#endregion
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

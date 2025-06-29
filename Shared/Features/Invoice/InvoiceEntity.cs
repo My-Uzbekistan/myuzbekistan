@@ -1,5 +1,5 @@
 ﻿namespace myuzbekistan.Shared;
-
+[SkipGeneration]
 public class InvoiceEntity : BaseEntity
 {
     public decimal Amount { get; set; } = 0.0m;

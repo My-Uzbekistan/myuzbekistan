@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+.env
+
 # User-specific files
 *.rsuser
 *.suo
@@ -15,6 +17,9 @@
 
 # Mono auto generated files
 mono_crash.*
+.idea/
+
+
 
 # Build results
 [Dd]ebug/
@@ -361,12 +366,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+/Server/update-workers-reports.txt
+/Server/nimadir.txt
+/Server/Audit.db
+/Server/Audit.db-shm
+/Server/Audit.db-wal
+/.env
+NuGet.Config
 /Server/wwwroot/files
-/Dump
-appsettings.Production.json
-App.db
-App.db-shm
-App.db-wal
-Audit.db
-Audit.db-shm
-Audit.db-wal

@@ -2,13 +2,8 @@
 @inherits ComponentBase
 
 <!-- Кнопка‑триггер -->
-<MudButton Variant="Variant.Outlined"
-           Color="Color.Secondary"
-           StartIcon="@Icons.Material.Filled.VpnKey"
-           OnClick="OpenDialog"
-           Class="@TriggerClass">
-    @TriggerLabel
-</MudButton>
+<MudFab OnClick="OpenDialog" Color="Color.Surface" Class="@TriggerClass" StartIcon="@Icons.Material.Filled.VpnKey" Size="Size.Small" IconSize="Size.Small" />
+
 
 <!-- Диалог генерации токена -->
 <MudDialog @bind-Visible="_visible" MaxWidth="MaxWidth.Small">

@@ -5,6 +5,7 @@ namespace myuzbekistan.Shared;
 
 
 [Index(nameof(UserId))]
+[SkipGeneration]
 public partial class PaymentEntity : BaseEntity
 {
     

@@ -1,23 +1,9 @@
 ﻿using ActualLab.CommandR;
 using ActualLab.Fusion;
-using AspNet.Security.OAuth.Apple;
-using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using myuzbekistan.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Server.Controllers;
 
@@ -45,11 +31,12 @@ public class AccountController : ControllerBase
     }
 
     [HttpDelete("delete")]
-    public async Task<IActionResult> DeleteUser()
+    public async Task<IActionResult> DeleteUser([FromQuery] long id)
     {
-        var email = HttpContext.User.Claims.First(x => x.Type == "name").Value;
-        var user = await _userManager.FindByEmailAsync(email);
-        if(user == null)
+        //var email = HttpContext.User.Claims.First(x => x.Type == "name").Value;
+        //var user = await _userManager.FindByEmailAsync(email);
+        var user = await _userManager.FindByIdAsync(id.ToString()) ;
+        if (user == null)
         {
             return NotFound();
         }
