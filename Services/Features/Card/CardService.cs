@@ -17,6 +17,8 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var card = from s in dbContext.Cards select s;
 
+        card = card.Include(x => x.Code); // Include related entities if needed, e.g. Code
+
         if (!String.IsNullOrEmpty(options.Search))
         {
             card = card.Where(s => 
@@ -47,7 +49,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var card = from s in dbContext.Cards select s;
         
-        return card.ToList().MapToListInfo();
+        return card.Include(x=>x.Code).ToList().MapToListInfo();
     }
 
     public async virtual Task<bool> CheckCard(long userId, string pan, CancellationToken cancellationToken = default)
@@ -87,6 +89,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var card = await dbContext.Cards
+            .Include(x=>x.Code)
         .FirstOrDefaultAsync(x => x.UserId == userId && x.Id == Id);
         
         return card == null ? throw new ValidationException("CardEntity Not Found") : card.MapToView();
@@ -160,6 +163,12 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
     private void Reattach(CardEntity card, CardView cardView, AppDbContext dbContext)
     {
         CardMapper.From(cardView, card);
+
+        // Reattach related entities if needed, e.g. card.Application, card.Payer, etc.
+        if (cardView.Code != null)
+        {
+            card.Code = dbContext.CardColors.First(x=>x.Id == cardView.Code.Id );
+        }
 
 
 

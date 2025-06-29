@@ -1,0 +1,10 @@
+@page "/cardcolors/{Id:long}"
+@inherits ComputedStateComponent<CardColorView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.CardColor._Form OnSubmit="OnSubmit" 
+                                    Model="Model" 
+                                    Processing="@Processing" 
+                                    IsNew="false"/>

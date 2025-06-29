@@ -27,7 +27,7 @@ public partial class  CardView
    [property: DataMember, JsonPropertyName("is_multicard")] public bool IsMulticard { get; set; } 
    [property: DataMember, JsonPropertyName("id")] public long Id { get; set; }
 
-    [property: DataMember, JsonPropertyName("code")] public string? Code { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("code")] public CardColorView? Code { get; set; } = null!;
     [property: DataMember, JsonPropertyName("name")] public string? Name { get; set; } = null!;
 
     [property: DataMember, JsonPropertyName("cvv")] public string? Cvv { get; set; } = null!;

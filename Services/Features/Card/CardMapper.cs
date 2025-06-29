@@ -22,7 +22,7 @@ public static partial class CardMapper
     
     private static partial List<CardView> ToList(this List<CardEntity> src);
 
-    [MapProperty("Code", "ColorCode")]
+    [MapProperty("Code.ColorCode", "ColorCode")]
     [MapProperty("CardPan", "CardNumber")]
     private static partial CardInfo ToInfo(this CardEntity src);
     private static partial List<CardInfo> ToListInfo(this List<CardEntity> src);

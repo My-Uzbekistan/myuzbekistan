@@ -7,7 +7,7 @@ namespace myuzbekistan.Shared;
 [SkipGeneration]
 public partial class CardEntity : BaseEntity
 {
-    public string? Code { get; set; } = null!;
+    public CardColorEntity Code { get; set; } = null!;
     public string? Name { get; set; } = null!;
 
     public string? Cvv { get; set; } = null!;

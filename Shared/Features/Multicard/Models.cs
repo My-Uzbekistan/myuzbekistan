@@ -29,9 +29,9 @@ public class MultiBindCardRequest
     [JsonPropertyName("name")]
     [JsonProperty("name")]
     public string Name { get; set; } = null!;
-    [JsonPropertyName("color")]
-    [JsonProperty("color")]
-    public string? Color { get; set; }
+    [JsonPropertyName("cardColorId")]
+    [JsonProperty("cardColorId")]
+    public long CardColorId { get; set; }
 
 
 }

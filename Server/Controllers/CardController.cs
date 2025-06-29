@@ -13,7 +13,7 @@ namespace Server.Controllers
     [Route("api/cards")]
     [ApiController]
     [Authorize]
-    public class CardController(ICardService cardService, ICardPrefixService cardPrefixService, MultiCardService multiCardService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
+    public class CardController(ICardService cardService, ICardPrefixService cardPrefixService,ICardColorService cardColorService , MultiCardService multiCardService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
     {
 
         [HttpPost("bind-card")]
@@ -32,7 +32,7 @@ namespace Server.Controllers
                 throw new Exception("Card already exists.");
             }
             var cardInfo = await multiCardService.BindCard(request);
-            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = request.Color, Cvv = request.Cvv, Name = request.Name }), cancellationToken: cancellationToken);
+            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView {  Id = request.CardColorId } , Cvv = request.Cvv, Name = request.Name }), cancellationToken: cancellationToken);
 
             return Ok(res);
         }
@@ -42,6 +42,12 @@ namespace Server.Controllers
         public async Task<IActionResult> CardType([FromQuery] string cardNumber, CancellationToken cancellationToken = default)
         {
             return Ok(await cardPrefixService.GetTypeByCardNumber(cardNumber));
+        }
+
+        [HttpGet("card-colors")]
+        public async Task<IActionResult> CardColor(CancellationToken cancellationToken = default)
+        {
+            return Ok(await cardColorService.GetAll(new TableOptions { Page = 1 , PageSize = 200}));
         }
 
         [HttpPost("confirm-card/{id:long}")]
