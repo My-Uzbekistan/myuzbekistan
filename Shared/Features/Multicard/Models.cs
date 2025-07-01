@@ -25,10 +25,9 @@ public class MultiBindCardRequest
     [JsonPropertyName("cvv")]
     [JsonProperty("cvv")]
     public string? Cvv { get; set; }
-    [Required]
     [JsonPropertyName("name")]
     [JsonProperty("name")]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
     [JsonPropertyName("cardColorId")]
     [JsonProperty("cardColorId")]
     public long CardColorId { get; set; }
