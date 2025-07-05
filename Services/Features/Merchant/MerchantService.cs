@@ -1,3 +1,4 @@
+using ActualLab.Api;
 using myuzbekistan.Services;
 
 public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IMerchantService
@@ -47,7 +48,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
     }
 
     [ComputeMethod]
-    public async virtual Task<TableResponse<MerchantView>> GetAllByApi(TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<TableResponse<MerchantResponse>> GetAllByApi(TableOptions options, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -68,8 +69,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
 
         #region Search by Language
 
-        if (!String.IsNullOrEmpty(options.Lang))
-            merchant = merchant.Where(x => x.Locale.Equals(options.Lang));
+            merchant = merchant.Where(x => x.Locale.Equals(LangHelper.currentLocale));
 
         #endregion
 
@@ -83,7 +83,31 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             .ThenInclude(x => x.Logo);
         var count = await merchant.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await merchant.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-        return new TableResponse<MerchantView>() { Items = items.MapToViewList(), TotalItems = count };
+        return new TableResponse<MerchantResponse>() { Items = items.MapToResponseList(), TotalItems = count };
+    }
+
+    [ComputeMethod]
+    public async virtual Task<MerchantResponse> GetByApi(long Id, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var merchant = dbContext.Merchants
+            .Include(x => x.Logo)
+            .Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.ServiceType)
+            .Include(x => x.MerchantCategory)
+            .ThenInclude(x => x.Logo)
+            .Where(x => x.Id == Id);
+            
+            
+
+        #region Search by Language
+            merchant = merchant.Where(x => x.Locale.Equals(LangHelper.currentLocale));
+        #endregion
+        var merchantC = await merchant.FirstOrDefaultAsync(cancellationToken: cancellationToken)
+        ?? throw new ValidationException("MerchantEntity Not Found");
+
+        return merchantC.MapToResponse();
     }
 
     [ComputeMethod]

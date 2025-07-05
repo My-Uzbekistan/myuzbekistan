@@ -4,7 +4,9 @@ public interface IMerchantService : IComputeService
     Task<TableResponse<MerchantView>> GetAll(long? merchantCategoryId, TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
-    Task<TableResponse<MerchantView>> GetAllByApi(TableOptions options, CancellationToken cancellationToken = default);
+    Task<TableResponse<MerchantResponse>> GetAllByApi(TableOptions options, CancellationToken cancellationToken = default);
+    [ComputeMethod]
+    Task<MerchantResponse> GetByApi(long Id, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
     Task<List<MerchantView>> Get(long Id, CancellationToken cancellationToken = default);

@@ -34,7 +34,7 @@ namespace Server.Controllers
             var cardInfo = await multiCardService.BindCard(request);
             var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView {  Id = request.CardColorId } , Cvv = request.Cvv, Name = request.Name }), cancellationToken: cancellationToken);
 
-            return Ok(res);
+            return Ok(new { cardId = res } );
         }
 
 

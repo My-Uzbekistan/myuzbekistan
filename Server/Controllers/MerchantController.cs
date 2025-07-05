@@ -12,12 +12,12 @@ namespace Server.Controllers
     {
 
         [HttpGet("{id}")]
-        public Task<List<MerchantView>> Get(long Id, CancellationToken cancellationToken = default)
+        public Task<MerchantResponse> Get(long Id, CancellationToken cancellationToken = default)
         {
-            return _merchantService.Get(Id, cancellationToken);
+            return _merchantService.GetByApi(Id, cancellationToken);
         }
         [HttpGet]
-        public Task<TableResponse<MerchantView>> GetAllByApi([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
+        public Task<TableResponse<MerchantResponse>> GetAllByApi([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
         {
             return _merchantService.GetAllByApi( options, cancellationToken);
         }

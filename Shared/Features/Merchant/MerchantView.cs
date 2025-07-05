@@ -28,3 +28,20 @@ public partial class MerchantView
 
     public override int GetHashCode() => Id.GetHashCode();
 }
+
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class MerchantResponse
+{
+    [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public string? Logo { get; set; }
+    [property: DataMember] public string? Name { get; set; }
+    [property: DataMember] public string? Description { get; set; }
+    [property: DataMember] public string? Address { get; set; }
+    [property: DataMember] public string? WorkTime { get; set; }
+    [property: DataMember] public string? Phone { get; set; }
+    [property: DataMember] public string? Type { get; set; }
+    [property: DataMember] public int Distance { get; set; }
+
+}
