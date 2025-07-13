@@ -3,57 +3,68 @@
 
 @if (Files?.Count > 0)
 {
-    @if (Files[0].Type == UFileTypes.Image)
+    @if (Files.Any(f => f.Type == UFileTypes.Image))
     {
-        <MudImage Fluid="true" @onclick="@OpenDialog" Src="@(url + Files[0].Path)" Height="50" Width="60" />
+        <span @onclick="OpenDialog" style="cursor:pointer;display:inline-block;">
+            <MudImage Fluid="true" Src="@(url + Files.First(f => f.Type == UFileTypes.Image).Path)" Height="50" Width="60" />
+        </span>
     }
     else if (Files[0].Type == UFileTypes.File)
     {
-        <MudButton @onclick="@OpenDialog">Open Files</MudButton>
+        <MudButton @onclick="OpenDialog">Open Files</MudButton>
     }
 }
 
-
-
-<MudDialog @bind-IsVisible="visible" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">
-            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> List of picture
-        </MudText>
-    </TitleContent>
+<MudDialog @bind-Visible="visible" Options="dialogOptions" >
     <DialogContent>
-        <MudCarousel Class="mud-width-full" Style="height:200px;" ShowArrows="true" ShowBullets="true" AutoCycle="true" TData="object">
-          @if(Files != null)
-          {
-            @foreach (var file in Files)
-            {
-                <MudCarouselItem Transition="Transition.Slide" Color="@Color.Transparent">
-                    <div class="d-flex" style="height:100%">
-                        @if (file.Type == UFileTypes.Image)
-                        {
-                                
-                            <MudImage Fluid="true" Src="@(url + file.Path)" />
-                        }
-                        else
-                        {
-                            <MudList T="string" Clickable="true">
-                                <MudListItem Text="@file.Name">
-                                    <MudLink Href="@file.Path">@file.Name</MudLink>
-                                </MudListItem>
-                                <MudDivider />
-                            </MudList>
-                        }
-                    </div>
-                </MudCarouselItem>
-            }
-          }
+        <MudCarousel Class="mud-width-full" Style="height:400px;max-width:700px;" ShowArrows="true" ShowBullets="true" AutoCycle="false" TData="object">
+            <PreviousButtonTemplate>
+                <div Class="mud-button-root mud-icon-button mud-icon-button-color-inherit mud-ripple mud-ripple-icon" style="background: #cac0c099;">
+                    <span class="mud-icon-button-label">
+                        <MudIcon Class="mud-ripple mud-ripple-icon mud-icon-button-size-medium" Icon="@Icons.Material.Filled.SkipPrevious" Color="@Color.Inherit" />
+                    </span>
+                </div>
+            </PreviousButtonTemplate>
+            <NextButtonTemplate>
+                <div Class="mud-button-root mud-icon-button mud-icon-button-color-inherit mud-ripple mud-ripple-icon" style="background: #cac0c099;">
+                    <span class="mud-icon-button-label">
+                        <MudIcon Class="mud-ripple mud-ripple-icon mud-icon-button-size-medium" Icon="@Icons.Material.Filled.SkipNext" Color="@Color.Inherit" />
+                    </span>
+                </div>
+            </NextButtonTemplate>
+            <ChildContent>
+                @if (Files != null)
+                {
+                    @foreach (var file in Files.Where(f => f.Type == UFileTypes.Image))
+                    {
+                        <MudCarouselItem Transition="Transition.Slide" Color="@Color.Transparent">
+                            <div class="d-flex justify-center align-center" style="height:100%">
+                                <MudImage Fluid="true" Src="@(url + file.Path)" Style="max-height:380px; max-width:680px; object-fit:contain;" />
+                            </div>
+                        </MudCarouselItem>
+                    }
+                }
+            </ChildContent>
         </MudCarousel>
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Close</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">@L["Close"]</MudButton>
     </DialogActions>
 </MudDialog>
 
+<style>
+    .mud-image {
+        cursor: pointer;
+    }
+
+    .mud-carousel-arrow {
+        color: #1976d2 !important;
+        background: #fff !important;
+        font-size: 2rem !important;
+        opacity: 1 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+</style>
 
 @code {
 
@@ -71,5 +82,5 @@
     private void OpenDialog() => visible = true;
     void Submit() => visible = false;
 
-    private DialogOptions dialogOptions = new() { FullWidth = true };
+    private DialogOptions dialogOptions = new() { FullWidth = true, NoHeader = true, MaxWidth= MaxWidth.Small };
 }

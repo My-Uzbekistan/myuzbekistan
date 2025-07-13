@@ -11,7 +11,7 @@ namespace myuzbekistan.Shared;
 
 
 
-public class MultiBindCardRequest
+public class PaymentVendorCardRequest
 {
     [JsonPropertyName("pan")]
     [JsonProperty("pan")]
@@ -22,9 +22,15 @@ public class MultiBindCardRequest
     [RegularExpression(@"^\d{2}((0[1-9])|(1[0-2]))$", ErrorMessage = "Expiry должен быть в формате YYMM (например, 2603)")]
     public string? Expiry { get; set; }
 
-    [JsonPropertyName("cvv")]
-    [JsonProperty("cvv")]
-    public string? Cvv { get; set; }
+    [JsonPropertyName("smsNotificationNumber")]
+    [JsonProperty("smsNotificationNumber")]
+    [Required]
+    public string? SmsNotificationNumber { get; set; } = null!;
+    [JsonPropertyName("cardHolderName")]
+    [JsonProperty("cardHolderName")]
+    [RegularExpression(@"^\d{2}((0[1-9])|(1[0-2]))$", ErrorMessage = "Expiry должен быть в формате YYMM (например, 2603)")]
+    public string? CardHolderName { get; set; }
+
     [JsonPropertyName("name")]
     [JsonProperty("name")]
     public string? Name { get; set; }

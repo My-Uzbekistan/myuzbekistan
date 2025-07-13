@@ -220,4 +220,9 @@
             Snackbar.Add(@L["SuccessDelete"], Severity.Success);
         }
     }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        PageHistoryState.CompletePendingNavigation();
+    }
 }

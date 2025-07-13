@@ -450,4 +450,22 @@
   <data name="Locale" xml:space="preserve">
     <value>Язык</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>ЗАКРЫТЬ</value>
+  </data>
+  <data name="ListOfImages" xml:space="preserve">
+    <value>Список изображений</value>
+  </data>
+  <data name="ImagesCount" xml:space="preserve">
+    <value>Количество изображении</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Выберите все</value>
+  </data>
+  <data name="DeleteAll" xml:space="preserve">
+    <value>Удалить все</value>
+  </data>
+  <data name="NoImagesFound!UploadYourFirstImage" xml:space="preserve">
+    <value>Изображения не найдены! Загрузите свое первое изображение</value>
+  </data>
 </root>

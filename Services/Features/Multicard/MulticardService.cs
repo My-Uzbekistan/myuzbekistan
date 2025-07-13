@@ -76,7 +76,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
         return responseString;
     }
 
-    public async Task<MultiBindCardResponse> BindCard(MultiBindCardRequest multiBindCard)
+    public async Task<MultiBindCardResponse> BindCard(PaymentVendorCardRequest multiBindCard)
     {
         var resultString = await SendPostRequestAsync(configuration["Multicard:Url"] + "payment/card", multiBindCard, HttpMethod.Post);
 
@@ -166,7 +166,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
     {
         await GetToken();
         var client = httpClientFactory.CreateClient("multicard");
-        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
         var body = new StringContent($$"""
             {
                 "otp": "{{otp}}"

@@ -1,28 +1,60 @@
-@inject NavigationManager Navigator
 @inject IUFileService UFileService
 @namespace Client.Core.Components
 
-<InputFile id="fileInput112" OnChange="OnChanged" hidden multiple accept="@Accept" />
+<MudFileUpload T="IReadOnlyList<IBrowserFile>"
+               OnFilesChanged="OnChanged"
+               AppendMultipleFiles
+               Hidden="false"
+               InputClass="absolute mud-width-full mud-height-full overflow-hidden z-10"
+               InputStyle="opacity:0"
+               @ondrop="@ClearDragClass"
+               @ondragenter="@SetDragClass"
+               @ondragleave="@ClearDragClass"
+               @ondragend="@ClearDragClass">
+    <ActivatorContent>
+        <MudPaper Height="110px"
+                  Outlined="true"
+                  Class="@_dragClass"
+                  Style="width: 100%; background: rgba(84, 167, 250, 0.05);">
+            <MudIcon Color="Color.Primary" Icon="@Icons.Material.Outlined.Upload" />
+            <MudText Color="Color.Primary" Typo="Typo.body1">
+                @L["ClickOnTheAreaToAddAPhoto"] or drag files here
+            </MudText>
+        </MudPaper>
+    </ActivatorContent>
+</MudFileUpload>
 
-<MudButton HtmlTag="label"
-           Variant="Variant.Filled"
-           Color="Color.Primary"
-           StartIcon="@Icons.Material.Filled.CloudUpload"
-           for="fileInput112">
-    Upload images
-</MudButton>
-
-
-
-<p>Progress: @_percent%</p>
+<span id="downloadLink">@(_percent != "0" ? $"{_percent}%" : string.Empty)</span>
 
 @code {
+    private const string DefaultDragClass = "border border-dashed cursor-pointer rounded mud-border-primary d-flex flex-column justify-center align-center";
+    private string _dragClass = DefaultDragClass;
+
     string _percent = "0";
+    private string? _link;
+    public string? Link
+    {
+        get => _link;
+        set
+        {
+            if (_link == value) return;
+            _link = value;
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> LinkChanged { get; set; }
 
     [Parameter]
     public string Accept { get; set; } = ".jpg, .jpeg, .png";
 
     readonly CancellationTokenSource _cancelTokenSource = new();
+
+    private void SetDragClass()
+        => _dragClass = $"{DefaultDragClass} mud-border-primary";
+
+    private void ClearDragClass()
+        => _dragClass = DefaultDragClass;
 
     async void OnChanged(InputFileChangeEventArgs e)
     {
@@ -55,7 +87,7 @@
                     await InvokeAsync(() =>
                     {
                         StateHasChanged();
-                        
+
                     });
                 };
 

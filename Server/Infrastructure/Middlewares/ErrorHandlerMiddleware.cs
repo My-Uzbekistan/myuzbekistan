@@ -34,7 +34,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
         }
 
         ErrorResponse httpResponse;
-        if (exception is ServiceException customEx)
+        if (exception is myuzbekistan.Shared.ServiceException customEx)
         {
             httpResponse = new ErrorResponse(400, customEx.Code, $"{customEx.Service}---{customEx.Method}---{customEx.Message}");
         }
@@ -69,7 +69,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = httpResponse.Status;
-            await context.Response.WriteAsync(JsonSerializer.Serialize(httpResponse));
+            await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(httpResponse));
         }
         else
         {

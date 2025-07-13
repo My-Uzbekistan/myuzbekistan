@@ -1,13 +1,15 @@
 @namespace Client.Core.Components
 @inject IUFileService UFileService
+@inject IDialogService DialogService
 
 @if (fileEntity != null)
 {
-   
+    
     @if (fileEntity.Type == UFileTypes.Image)
     {
-
-        <MudImage Fluid="true" Src="@(url + fileEntity.Path)" Height="50" Width="60" />
+        <span @onclick="ShowPreview" style="cursor:pointer;display:inline-block;">
+            <MudImage Fluid="true" Src="@(url + fileEntity.Path)" Height="50" Width="60" />
+        </span>
     }
     else if (fileEntity.Type == UFileTypes.File)
     {
@@ -29,4 +31,11 @@
         url = await urlTask;
     }
 
+    private async Task ShowPreview()
+    {
+        if (fileEntity != null)
+        {
+            await DialogService.ShowFilePreview(fileEntity);
+        }
+    }
 }

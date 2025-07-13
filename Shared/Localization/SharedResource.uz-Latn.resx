@@ -450,4 +450,22 @@
   <data name="Locale" xml:space="preserve">
     <value>Til</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Yaqin</value>
+  </data>
+  <data name="ListOfImages" xml:space="preserve">
+    <value>Rasmlar ro'yxati</value>
+  </data>
+  <data name="ImagesCount" xml:space="preserve">
+    <value>Rasmlar soni</value>
+  </data>
+  <data name="NoImagesFound!UploadYourFirstImage" xml:space="preserve">
+    <value>Rasmlar Yo'q! Birinchi rasmingizni yuklang</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Barchasini tanlang</value>
+  </data>
+  <data name="DeleteAll" xml:space="preserve">
+    <value>Barchasini o'chiring</value>
+  </data>
 </root>

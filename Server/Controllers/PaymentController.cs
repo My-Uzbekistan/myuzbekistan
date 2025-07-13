@@ -8,7 +8,7 @@ namespace Server.Controllers;
 [Route("api/payments")]
 [Authorize]
 [ApiController]
-public class PaymentController(MultiCardService multiCardService, ICardService cardService) : ControllerBase
+public class PaymentController(GlobalPayService globalPayService, ICardService cardService) : ControllerBase
 {
 
     [HttpPost("top-up")]
@@ -19,8 +19,8 @@ public class PaymentController(MultiCardService multiCardService, ICardService c
             return BadRequest(new { Message = "Amount must be greater than 0" });
         }
         var userId = User.Id();
-        var card = await cardService.Get(topUp.CardId, userId,cancellationToken);
-        var res = await multiCardService.CreatePayment(userId, topUp.Amount, card.CardToken);
+        var card = await cardService.Get(topUp.CardId, userId, cancellationToken);
+        var res = await globalPayService.CreatePayment(userId, topUp.Amount, card);
         return Ok(new { Message = res });
     }
 
@@ -28,7 +28,7 @@ public class PaymentController(MultiCardService multiCardService, ICardService c
     public async Task<IActionResult> ConfirmTopUp([FromBody] ConfirmTopUpRequest confirmTopUp)
     {
         long userId = User.Id();
-        await multiCardService.ConfirmPayment(confirmTopUp.PaymentId, confirmTopUp.Otp);
+        await globalPayService.ConfirmPayment(confirmTopUp.PaymentId, confirmTopUp.Otp);
         return Ok();
     }
 

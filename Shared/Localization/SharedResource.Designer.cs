@@ -169,6 +169,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conditions.
         /// </summary>
         public static string Conditions {
@@ -309,6 +318,15 @@ namespace Shared.Localization {
         public static string Delete {
             get {
                 return ResourceManager.GetString("Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete All.
+        /// </summary>
+        public static string DeleteAll {
+            get {
+                return ResourceManager.GetString("DeleteAll", resourceCulture);
             }
         }
         
@@ -484,6 +502,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Images Count.
+        /// </summary>
+        public static string ImagesCount {
+            get {
+                return ResourceManager.GetString("ImagesCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to InActive.
         /// </summary>
         public static string InActive {
@@ -534,6 +561,15 @@ namespace Shared.Localization {
         public static string LanguageVersions {
             get {
                 return ResourceManager.GetString("LanguageVersions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to List Of Images.
+        /// </summary>
+        public static string ListOfImages {
+            get {
+                return ResourceManager.GetString("ListOfImages", resourceCulture);
             }
         }
         
@@ -642,6 +678,15 @@ namespace Shared.Localization {
         public static string NameError {
             get {
                 return ResourceManager.GetString("NameError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Images Found! Upload Your First Image.
+        /// </summary>
+        public static string NoImagesFound_UploadYourFirstImage {
+            get {
+                return ResourceManager.GetString("NoImagesFound!UploadYourFirstImage", resourceCulture);
             }
         }
         
@@ -885,6 +930,15 @@ namespace Shared.Localization {
         public static string Search {
             get {
                 return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select All.
+        /// </summary>
+        public static string SelectAll {
+            get {
+                return ResourceManager.GetString("SelectAll", resourceCulture);
             }
         }
         

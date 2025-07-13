@@ -16,8 +16,6 @@
                             <MudNumericField  @bind-Value="Model.CardId" AutoFocus="true" Label="CardId" Variant="Variant.Text" For="@(() => Model.CardId)"Required="true"/>                                
                             <MudNumericField  @bind-Value="Model.UserId" AutoFocus="false" Label="UserId" Variant="Variant.Text" For="@(() => Model.UserId)"Required="true"/>                                
                             <MudTextField  @bind-Value="Model.ExpirationDate" Label="ExpirationDate" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.ExpirationDate)"/>
-                            <MudNumericField  @bind-Value="Model.ApplicationId" AutoFocus="false" Label="ApplicationId" Variant="Variant.Text" For="@(() => Model.ApplicationId)"Required="true"/>                                
-                            <MudTextField  @bind-Value="Model.PayerId" Label="PayerId" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.PayerId)"Required="true"/>
                             <MudTextField  @bind-Value="Model.CardPan" Label="CardPan" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CardPan)"Required="true"/>
                             <MudTextField  @bind-Value="Model.CardToken" Label="CardToken" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CardToken)"Required="true"/>
                             <MudTextField  @bind-Value="Model.Phone" Label="Phone" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Phone)"Required="true"/>
@@ -25,10 +23,6 @@
                             <MudTextField  @bind-Value="Model.Pinfl" Label="Pinfl" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Pinfl)"/>
                             <MudTextField  @bind-Value="Model.Ps" Label="Ps" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Ps)"Required="true"/>
                             <MudTextField  @bind-Value="Model.Status" Label="Status" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Status)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.AddedOn" Label="AddedOn" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.AddedOn)"Required="true"/>
-                            <MudTextField  @bind-Value="Model.CardStatus" Label="CardStatus" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.CardStatus)"/>
-                            <MudTextField  @bind-Value="Model.SmsInform" Label="SmsInform" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.SmsInform)"/>
-                            <MudSwitch @bind-Checked="Model.IsMulticard" For="@(() => Model.IsMulticard)"Required="true"/>
                             <input type="hidden" @bind-value="Model.Id"> 
                 </MudPaper>
             </MudItem>

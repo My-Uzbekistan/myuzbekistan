@@ -67,7 +67,7 @@
 
 <body>
     @{
-        var sessionId = _serverAuthHelper.Session.Id.Value;
+        var sessionId = _serverAuthHelper.Session.Id;
     }
 
     <Routes SessionId="@sessionId" @rendermode="RenderModeForPage" IsDark="@theme" />

@@ -9,6 +9,8 @@ public class PageHistoryState(NavigationManager navManager)
     private List<string> previousPages = [];
     public NavigationManager NavManager { get; } = navManager;
 
+    public string? PendingNavigationUri { get; private set; }
+
     public void AddPageToHistory(string pageName)
     {
         previousPages.Add(pageName);
@@ -59,7 +61,15 @@ public class PageHistoryState(NavigationManager navManager)
         var newUri = NavManager.GetUriWithQueryParameters(queryParams);
         AddPageToHistory(newUri);
 
-        NavManager.NavigateTo(newUri);
+        PendingNavigationUri = newUri; // Только сохраняем, не навигируем!
+    }
 
+    public void CompletePendingNavigation()
+    {
+        if (PendingNavigationUri is not null)
+        {
+            NavManager.NavigateTo(PendingNavigationUri);
+            PendingNavigationUri = null;
+        }
     }
 }

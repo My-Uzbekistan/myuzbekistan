@@ -123,4 +123,8 @@
         PageHistoryState.SetPage(MutableState);
         MutableState.Invalidate();
     }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        PageHistoryState.CompletePendingNavigation();
+    }
 }

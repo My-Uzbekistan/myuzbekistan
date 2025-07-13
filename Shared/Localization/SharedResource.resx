@@ -450,4 +450,22 @@
   <data name="Locale" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ListOfImages" xml:space="preserve">
+    <value>List Of Images</value>
+  </data>
+  <data name="ImagesCount" xml:space="preserve">
+    <value>Images Count</value>
+  </data>
+  <data name="NoImagesFound!UploadYourFirstImage" xml:space="preserve">
+    <value>No Images Found! Upload Your First Image</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="DeleteAll" xml:space="preserve">
+    <value>Delete All</value>
+  </data>
 </root>

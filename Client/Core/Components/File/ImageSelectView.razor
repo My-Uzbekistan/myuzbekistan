@@ -1,7 +1,6 @@
 @namespace Client.Core.Components
 @inject IUFileService UFileService
-
-<MudGrid Style="align-items:center" Justify="Justify.Center" Class="flex-column mt-2 mb-1">
+<MudGrid Style="align-items:center" Class="flex-column mt-5 mb-1">
     <MudBadge Icon="@Icons.Material.Filled.Clear" Color="Color.Error" Overlap="true" Bordered="true" Visible="@_showClearImage" OnClick="ClearImage">
         <MudItem @onclick="OpenImageSelect" Style="width:270px; height:150px;" Class="border-dotted border-2 mud-border-primary d-flex justify-center align-center">
             @if (Value != null)
@@ -18,7 +17,7 @@
 </MudGrid>
 
 
-<ImageSelect @bind-Value="@Value" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" Accept="@Accept" />
+<ImageSelect @bind-Value="@Value" @bind-IsImageSelect="@IsImageSelect" ImageSelected="OnImageSelected" />
 
 <MudDialog @bind-IsVisible="@isImageShow" Options="dialogOptions" Style="min-width:600px; height:auto">
   <DialogContent>
@@ -30,12 +29,6 @@
 </MudDialog>
 
 @code {
-
-    [Parameter]
-    public string Accept { get; set; } = ".jpg, .jpeg, .png";
-    [Parameter]
-    public string? Label { get; set; }
-
     [Parameter]
     public FileView? Value { get; set; }
 

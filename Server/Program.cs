@@ -79,7 +79,14 @@ services.AddHttpClient("multicard", (client) =>
     client.DefaultRequestHeaders.Add("accept", "application/json");
 });
 
+services.AddHttpClient("globalpay", (client) =>
+{
+    client.BaseAddress = new Uri(cfg.GetValue<string>("GlobalPay:Url")!);
+    client.DefaultRequestHeaders.Add("accept", "application/json");
+});
+
 services.AddScoped<MultiCardService>();
+services.AddScoped<GlobalPayService>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, CustomPasswordHasher<ApplicationUser>>();
@@ -96,7 +103,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 #region ActualLab.Fusion
 ComputedState.DefaultOptions.FlowExecutionContext = true;
 services.AddFusionServices();
-services.AddSingleton(c => new CommandTracer(c));
+services.AddSingleton(c => new Server.Infrastructure.CommandTracer(c));
 #endregion
 #region MudBlazor and Pages
 builder.Services

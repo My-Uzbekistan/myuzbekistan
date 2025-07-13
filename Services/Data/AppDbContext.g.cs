@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using myuzbekistan.Shared;
 using ActualLab.Fusion.EntityFramework;
 
 namespace myuzbekistan.Services;

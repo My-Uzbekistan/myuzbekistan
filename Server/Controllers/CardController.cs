@@ -1,10 +1,7 @@
 ﻿using ActualLab.CommandR;
 using ActualLab.Fusion;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using myuzbekistan.Services;
 using myuzbekistan.Shared;
 
@@ -13,17 +10,14 @@ namespace Server.Controllers
     [Route("api/cards")]
     [ApiController]
     [Authorize]
-    public class CardController(ICardService cardService, ICardPrefixService cardPrefixService,ICardColorService cardColorService , MultiCardService multiCardService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
+    public class CardController(ICardService cardService, ICardPrefixService cardPrefixService,ICardColorService cardColorService , GlobalPayService globalPayService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
     {
 
         [HttpPost("bind-card")]
-        public async Task<IActionResult> BindCard([FromBody] MultiBindCardRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> BindCard([FromBody] PaymentVendorCardRequest request, CancellationToken cancellationToken)
         {
             var cardPrefix = await cardPrefixService.GetTypeByCardNumber(request.Token!, cancellationToken);
-            if ((cardPrefix.CardType == "Visa" || cardPrefix.CardType == "MasterCard") && request.Cvv is null)
-            {
-                throw new Exception("CVV is required for Visa and MasterCard cards.");
-            }
+           
             var userId = User.Id();
             var session = await sessionResolver.GetSession();
             var card = await cardService.CheckCard(userId, request.Token!, cancellationToken);
@@ -31,8 +25,15 @@ namespace Server.Controllers
             {
                 throw new Exception("Card already exists.");
             }
-            var cardInfo = await multiCardService.BindCard(request);
-            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView {  Id = request.CardColorId } , Cvv = request.Cvv, Name = request.Name }), cancellationToken: cancellationToken);
+            var cardInfo = await globalPayService.BindCard(new GPBindCardRequest
+            {
+                CardHolderName = request.CardHolderName,
+                SmsNotificationNumber = request.SmsNotificationNumber,
+                CardNumber = request.Token!.Replace(" ", ""),
+                ExpiryDate = request.Expiry,
+            }
+                );
+            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView {  Id = request.CardColorId } ,  Name = request.Name }), cancellationToken: cancellationToken);
 
             return Ok(new { cardId = res } );
         }
@@ -41,7 +42,7 @@ namespace Server.Controllers
         [HttpGet("card-type")]
         public async Task<IActionResult> CardType([FromQuery] string cardNumber, CancellationToken cancellationToken = default)
         {
-            return Ok(await cardPrefixService.GetTypeByCardNumber(cardNumber));
+            return Ok(await cardPrefixService.GetTypeByCardNumber(cardNumber, cancellationToken));
         }
 
         [HttpGet("card-colors")]
@@ -58,15 +59,14 @@ namespace Server.Controllers
             var session = await sessionResolver.GetSession(cancellationToken);
 
             var cardInfo = await cardService.Get(Id, userId, cancellationToken);
-            var confirmedCard = await multiCardService.ConfirmBindCard(cardInfo.CardToken, request.Otp);
+            var confirmedCard = await globalPayService.ConfirmBindCard(cardInfo.CardToken, request.Otp);
             confirmedCard.CardId = confirmedCard.Id;
             confirmedCard.Id = cardInfo.Id;
             confirmedCard.UserId = userId;
             confirmedCard.ExpirationDate = cardInfo.ExpirationDate;
             confirmedCard.Name = cardInfo.Name;
             confirmedCard.Code = cardInfo.Code;
-            confirmedCard.Cvv = cardInfo.Cvv;
-            await commander.Call(new UpdateCardCommand(session, confirmedCard));
+            await commander.Call(new UpdateCardCommand(session, confirmedCard), cancellationToken: cancellationToken);
 
             return Ok();
         }

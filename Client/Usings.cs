@@ -19,4 +19,6 @@ global using System.Diagnostics.CodeAnalysis;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.AspNetCore.Components.Routing;
 global using Microsoft.JSInterop;
+global using UFile.Shared;
 global using System.Linq.Expressions;
+global using Client.Core.Components.File;

@@ -1,156 +1,171 @@
 @using System.Linq.Expressions
+@using Client.Core.Components.File
 @inject IFileService FileService
 @inject IUFileService UFileService
-@inject Session Session
+@inject UInjector Injector
 @namespace Client.Core.Components
-@inherits MixedStateComponent<TableResponse<FileView>, TableOptions>
+@inherits MixedStateComponent<TableResponse<FileView>,TableOptions>
 
 @{
-    Images = State.LastNonErrorValue ?? new TableResponse<FileView>() { };
+    Images = State.GetValue(Injector);
 }
 
-<MudDialog Visible="@IsImageSelect" VisibleChanged="OnVisibleChanged" Options="dialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">List of Images</MudText>
-        <MudSpacer />
-        <FileUpload Accept="@Accept" />
-    </TitleContent>
+<MudDialog Visible="@IsImageSelect" VisibleChanged="(isVisible) => OnVisibleChanged(isVisible)" Options="dialogOptions">
     <DialogContent>
-        <MudGrid Justify="Justify.SpaceEvenly" Spacing="2" Style="max-height: 520px; overflow-x:hidden; overflow-y:scroll; min-height: 200px">
-            @if (Images?.Items?.Count() > 0)
+        <MudItem Class="d-flex align-center justify-space-between border-b border-solid" Style="border-color: #E0E0E0;">
+            <MudText Typo="Typo.h5">@L["ListOfImages"]</MudText>
+            <MudIconButton OnClick="() => OnVisibleChanged(false)" Icon="@Icons.Material.Filled.Close" Size="Size.Large" />
+        </MudItem>
+        <MudItem Class="my-4">
+            <FileUpload Accept="@Accept" />
+        </MudItem>
+        <MudItem Class="d-flex align-center justify-space-between">
+            <MudItem Class="d-flex align-center gap-4">
+                <MudCheckBox Color="Color.Primary" Value="IsAllSelect" T="bool" ValueChanged="OnSelectAll" Label="@($"{L["SelectAll"]} ({Images?.Items.Count()})")"></MudCheckBox>
+                <MudButton Disabled="!IsAllSelect" OnClick="DeleteAll" Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error">@L["DeleteAll"]</MudButton>
+            </MudItem>
+            <MudText>@L["ImagesCount"] (@Images?.Items.Count())</MudText>
+        </MudItem>
+        <MudItem Class="d-flex flex-wrap overflow-x-hidden overflow-y-scroll" Style="gap: 8px; max-height: 644px; min-height: 155px">
+            @if (Images?.Items.Count() > 0)
             {
                 @foreach (var image in Images.Items)
                 {
-                    <MudItem xs="3" @onclick="@(() => UpdateValue(image))"
-                             Style="width:230px; height:170px; margin-bottom:10px;"
-                             Class="@StyleFor(image.Id)">
-                        <MudImage ObjectFit="ObjectFit.Contain"
-                                  Src="@(url + image.Path)"
-                                  Alt="@image.Name"
-                                  Style="max-width:200px; max-height:130px;" />
+                    bool isImage = FileExtensions.IsImage(image.Name);
+                    string imageStyle = "width: 80px; cursor: pointer; height: 80px; border-radius: 5px; display: block; background-color: var(--mud-palette-surface); padding: " + (isImage ? "1%" : "5%");
+                    bool isChecked = SelectedValues.Any(x => x.Id == image.Id) || IsAllSelect;
+
+                    <MudItem @onclick='() => UpdateValue(image)' Style="position:relative; margin: 5px; overflow:hidden; border-radius: 8px; background: var(--mud-palette-background); width:420px; height:90px; cursor:pointer;">
+                        <div style="padding: 5px;">
+                            <MudImage @onclick="@(() => Injector.DialogService.ShowFilePreview(image))" ObjectFit="ObjectFit.Cover" Src="@image.GetPreviewOrIcon(url)" Alt="@image.Name" Style="@imageStyle" />
+                        </div>
+                        <div style="position: absolute; top: 23px; cursor: default; left: 100px; color: var(--mud-palette-text-primary); font-size: 16px; font-weight: 470;">
+                            @image.Name.ScaleFileName()
+                        </div>
+                        <div style="position: absolute; top: 53px; cursor: default; left: 100px; color: var(--mud-palette-text-primary); font-size: 14px;">
+                            @image.Size.FormatFileSize()
+                        </div>
+                        <MudIconButton OnClick="() => DeleteImage(image)" Color="Color.Error" Icon="@Icons.Material.Filled.Close" Style="position: absolute; top: 0; right: 0" />
+                        <MudCheckBox Color="Color.Primary" id="@($"{image.Id}_id")"
+                                     Value="@isChecked"
+                                     T="bool"
+                                     ValueChanged="@(checkedVal => UpdateValue(image))"
+                                     Style="position: absolute; bottom: 0; right: 0;"
+                                     OnClick:stopPropagation="true">
+                        </MudCheckBox>
                     </MudItem>
                 }
             }
             else
             {
-                <MudItem Class="d-flex align-center">
-                    <MudChip T="string"
-                             Icon="@Icons.Material.Filled.CloudUpload"
-                             IconColor="Color.Warning"
-                             Variant="Variant.Text"
-                             Color="Color.Warning">
-                        No Images Found! Upload Your First Image
-                    </MudChip>
-                </MudItem>
+                <MudText Style="width: 100%" Align="Align.Center" Typo="Typo.body1">@L["NoImagesFound!UploadYourFirstImage"]</MudText>
             }
-        </MudGrid>
+
+        </MudItem>
     </DialogContent>
     <DialogActions>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   OnClick="Submit"
-                   Class="px-10">Submit</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">@L["SaveChanges"]</MudButton>
     </DialogActions>
 </MudDialog>
 
-@code {
+@code {  
+    public bool IsAllSelect { get; set; } = false;  
 
-    [Parameter]
-    public FileView? Value
-    {
-        get => SelectedValues?.FirstOrDefault();
-        set
-        {
-            SelectedValues = value != null ? new List<FileView> { value } : new();
-        }
-    }
+    [Parameter]  
+    public string Accept { get; set; } = ".jpg, .jpeg, .png";  
 
-    [Parameter]
-    public EventCallback<FileView> ValueChanged { get; set; }
-    [Parameter]
-    public string Accept { get; set; } = ".jpg, .jpeg, .png";
+    [Parameter]  
+    public List<FileView> SelectedValues { get; set; } = new();  
 
-    [Parameter]
-    public bool IsImageSelect { get; set; }
+    [Parameter]  
+    public EventCallback<List<FileView>> SelectedValuesChanged { get; set; }  
 
-    [Parameter]
-    public EventCallback<bool> IsImageSelectChanged { get; set; }
+    [Parameter]  
+    public bool Multiple { get; set; } = false;  
 
-    [Parameter]
-    public bool Multiple { get; set; } = false;
+    [Parameter]  
+    public bool IsImageSelect { get; set; }  
 
-    [Parameter]
-    public List<FileView> SelectedValues { get; set; } = new();
+    [Parameter]  
+    public EventCallback<bool> IsImageSelectChanged { get; set; }  
 
-    [Parameter]
-    public EventCallback<List<FileView>> SelectedValuesChanged { get; set; }
+    TableResponse<FileView>? Images { get; set; }  
 
-    [Parameter]
-    public EventCallback ImageSelected { get; set; }
+    [Parameter]  
+    public FileView? Value { get; set; } // Changed to auto property  
 
-    TableResponse<FileView>? Images { get; set; }
+    [Parameter]  
+    public EventCallback<FileView> ValueChanged { get; set; }  
 
-    DialogOptions dialogOptions = new() { MaxWidth = MaxWidth.Medium, FullWidth = true };
+    [Parameter]  
+    public EventCallback ImageSelected { get; set; }  
 
-    string url = string.Empty;
+    string url = string.Empty;  
 
-    protected override async Task OnParametersSetAsync()
-    {
-        url = await UFileService.GetFileUrl();
-    }
+    DialogOptions dialogOptions = new DialogOptions() { MaxWidth = MaxWidth.Medium, NoHeader = true };  
 
-    void UpdateValue(FileView value)
-    {
-        if (Multiple)
-        {
-            if (SelectedValues.Any(x => x.Id == value.Id))
-                SelectedValues.RemoveAll(x => x.Id == value.Id);
-            else
-                SelectedValues.Add(value);
-        }
-        else
-        {
-            SelectedValues.Clear();
-            SelectedValues.Add(value);
-        }
+    protected async override Task OnParametersSetAsync()  
+    {  
+        var urlTask = UFileService.GetFileUrl();  
+        url = await urlTask;  
+    }  
 
-        StateHasChanged();
-    }
+    void UpdateValue(FileView value)  
+    {  
+        if (Multiple)  
+        {  
+            if (SelectedValues.Any(x => x.Id == value.Id))  
+                SelectedValues.RemoveAll(x => x.Id == value.Id);  
+            else  
+                SelectedValues.Add(value);  
+        }  
+        else  
+        {  
+            SelectedValues.Clear();  
+            SelectedValues.Add(value);  
+        }  
 
-    async Task Submit()
-    {
-        if (!Multiple && SelectedValues.Count == 1)
-        {
-            await ValueChanged.InvokeAsync(SelectedValues[0]);
-        }
-        await SelectedValuesChanged.InvokeAsync(SelectedValues);
-        await ImageSelected.InvokeAsync();
-    }
+        StateHasChanged();  
+    }  
 
-    protected override async Task<TableResponse<FileView>> ComputeState(CancellationToken cancellationToken)
-    {
-        return await FileService.GetAll(new TableOptions
-        {
-            Page = 1,
-            PageSize = 1000,
-            SortLabel = "Id",
-            SortDirection = 1,
-            Search = ""
-        }, cancellationToken);
-    }
+    void OnSelectAll(bool value)  
+    {  
+        IsAllSelect = value;  
+        StateHasChanged();  
+    }  
 
-    string StyleFor(long id)
-    {
-        return SelectedValues.Any(x => x.Id == id)
-            ? "border-dotted border-2 mud-border-success"
-            : "";
-    }
+    async Task Submit()  
+    {  
+        if (!Multiple && SelectedValues.Count == 1)  
+        {  
+            await ValueChanged.InvokeAsync(SelectedValues[0]);  
+        }  
+        await SelectedValuesChanged.InvokeAsync(SelectedValues);  
+        await ImageSelected.InvokeAsync();  
+    }  
 
-    private async void OnVisibleChanged(bool isVisible)
-    {
-        IsImageSelect = isVisible;
-        await IsImageSelectChanged.InvokeAsync(IsImageSelect);
-        StateHasChanged();
-    }
+    protected override async Task<TableResponse<FileView>> ComputeState(CancellationToken cancellationToken)  
+    {  
+        return await FileService.GetAll(new TableOptions() { Page = 1, PageSize = 1000, SortLabel = "Id", SortDirection = 1, Search = "" }, cancellationToken);  
+    }  
+
+    private async void OnVisibleChanged(bool isVisible)  
+    {  
+        IsImageSelect = isVisible;  
+        await IsImageSelectChanged.InvokeAsync(IsImageSelect);  
+        StateHasChanged();  
+    }  
+
+    async Task DeleteImage(FileView file)  
+    {  
+        await UFileService.DeleteFile(file.Path ?? "");  
+        await Injector.Commander.Run(new DeleteFileCommand(Injector.Session, file.Id));  
+    }  
+
+    async Task DeleteAll()  
+    {  
+        if (Images != null)  
+            await Task.WhenAll(Images.Items.Select(DeleteImage));  
+    }  
 }

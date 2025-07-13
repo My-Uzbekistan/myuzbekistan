@@ -5,7 +5,7 @@
 @inject PageHistoryState PageHistoryState
 @typeparam Tclass where Tclass : class
 
-@if ((Values == null && Values?.Items == null) )
+@if ((Values == null || (Values?.Items == null || Values?.Items.Count() == 0)))
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }
@@ -78,6 +78,11 @@ else
     {
         PageHistoryState.SetPage(MutableState);
         MutableState.Invalidate();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        PageHistoryState.CompletePendingNavigation();
     }
 
     int Count() => (Values.TotalItems + MutableState.Value.PageSize - 1) / MutableState.Value.PageSize;

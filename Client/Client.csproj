@@ -6,8 +6,8 @@
 		<PublishTrimmed>true</PublishTrimmed>
 		<TrimmerDefaultAction>link</TrimmerDefaultAction>
 		<RunAOTCompilation>false</RunAOTCompilation>
-		<PacketVersions>9.0.2</PacketVersions>
-		<FusionVersion>9.8.37</FusionVersion>
+		<PacketVersions>9.0.3</PacketVersions>
+		<FusionVersion>10.1.3</FusionVersion>
 		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

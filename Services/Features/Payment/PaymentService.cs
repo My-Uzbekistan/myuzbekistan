@@ -44,6 +44,16 @@ public class PaymentService(IServiceProvider services) : DbServiceBase<AppDbCont
         return payment == null ? throw new ValidationException("PaymentEntity Not Found") : payment.MapToView();
     }
 
+    public async virtual Task<PaymentView> GetByExternalId(string externalId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var payment = await dbContext.Payments
+        .FirstOrDefaultAsync(x => x.ExternalId == externalId);
+
+        return payment == null ? throw new ValidationException("PaymentEntity Not Found") : payment.MapToView();
+    }
+
 
     [ComputeMethod]
     public async virtual Task<PaymentView> GetByTransactionId(string Id, CancellationToken cancellationToken = default)

@@ -64,10 +64,9 @@ public class ContentService(IServiceProvider services, ICategoryService category
         {
             content = content.Where(s =>
                      s.Title.Contains(options.Search)
-                    || s.Description.Contains(options.Search)
-                    || s.WorkingHours.Contains(options.Search)
-                    || (s.Facilities != null && s.Facilities.Any(x => x.Name.Contains(options.Search)))
-                    || (s.Languages != null && s.Languages.Any(x => x.Name.Contains(options.Search)))
+                    || (s.Description != null && s.Description.Contains(options.Search))
+                    //|| (s.Facilities != null && s.Facilities.Any(x => x.Name.Contains(options.Search)))
+                    //|| (s.Languages != null && s.Languages.Any(x => x.Name.Contains(options.Search)))
                     || s.Address != null && s.Address.Contains(options.Search)
             );
         }

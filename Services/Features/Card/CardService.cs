@@ -23,7 +23,6 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         {
             card = card.Where(s => 
                      s.ExpirationDate !=null && s.ExpirationDate.Contains(options.Search)
-                    || s.PayerId.Contains(options.Search)
                     || s.CardPan.Contains(options.Search)
                     || s.CardToken.Contains(options.Search)
                     || s.Phone.Contains(options.Search)
@@ -31,7 +30,6 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
                     || s.Pinfl !=null && s.Pinfl.Contains(options.Search)
                     || s.Ps.Contains(options.Search)
                     || s.Status.Contains(options.Search)
-                    || s.AddedOn.Contains(options.Search)
             );
         }
 
@@ -179,8 +177,6 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         "CardId" => card.Ordering(options, o => o.CardId),
         "UserId" => card.Ordering(options, o => o.UserId),
         "ExpirationDate" => card.Ordering(options, o => o.ExpirationDate),
-        "ApplicationId" => card.Ordering(options, o => o.ApplicationId),
-        "PayerId" => card.Ordering(options, o => o.PayerId),
         "CardPan" => card.Ordering(options, o => o.CardPan),
         "CardToken" => card.Ordering(options, o => o.CardToken),
         "Phone" => card.Ordering(options, o => o.Phone),
@@ -188,9 +184,6 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         "Pinfl" => card.Ordering(options, o => o.Pinfl),
         "Ps" => card.Ordering(options, o => o.Ps),
         "Status" => card.Ordering(options, o => o.Status),
-        "AddedOn" => card.Ordering(options, o => o.AddedOn),
-        "SmsInform" => card.Ordering(options, o => o.SmsInform),
-        "IsMulticard" => card.Ordering(options, o => o.IsMulticard),
         "Id" => card.Ordering(options, o => o.Id),
         _ => card.OrderBy(o => o.Id),
         

@@ -1,0 +1,87 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudPaper Class="file-dialog-content blurred-background" Elevation="0">
+
+            <!-- Custom Header -->
+            <div class="file-dialog-header d-flex justify-space-between align-center">
+                <MudText Typo="Typo.subtitle1" Class="file-name-text">@File.Name</MudText>
+
+                <div class="header-buttons">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                               Href="@FileUrl" Target="_blank">
+                        Download
+                    </MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   Color="Color.Default"
+                                   OnClick="@Close"
+                                   Class="ml-2" />
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="file-dialog-preview mt-4" style="height: @Height;">
+                @if (FileExtensions.IsMsOfficeFile(FileUrl))
+                {
+                    <iframe src="@FileExtensions.GetUrl(FileUrl)" class="file-preview-iframe" onerror="handlePreviewError()"></iframe>
+                }
+                else if (FileExtensions.IsPdf(FileUrl))
+                {
+                    <iframe src="@FileUrl" class="file-preview-iframe"></iframe>
+                }
+                else if (FileExtensions.IsVideo(FileUrl))
+                {
+                    <div style="display: flex; justify-content: center; align-items: center; padding: 0 5%;">
+                        <video class="file-preview-video" controls>
+                            <source src="@FileUrl" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                }
+                else if (FileExtensions.IsAudio(FileUrl))
+                {
+                    <MudGrid Justify="Justify.Center" Style="display: flex; align-items: center; flex-direction: column;">
+                        <MudItem>
+                            <MudImage ObjectFit="ObjectFit.Cover" Src="icons/audio.png" Style="width: 100%; height: 100%; display: block;" />
+                        </MudItem>
+                        <MudItem>
+                            <audio class="custom-audio" controls>
+                                <source src="@FileUrl" type="audio/mpeg">
+                                Your browser does not support the audio tag.
+                            </audio>
+                        </MudItem>
+                    </MudGrid>
+                }
+                else if (FileExtensions.IsImage(FileUrl) || File.Type == UFileTypes.Image)
+                {
+
+                    <div style="display: flex; justify-content: center; align-items: center;">
+                        <img style="width: 100%; height: 100%;object-fit: contain;" src="@FileUrl" alt="@File.Name" class="file-preview-image" />
+                    </div>
+                }
+                else if (FileExtensions.IsTextFile(FileUrl))
+                {
+                    <iframe src="@FileUrl" class="file-preview-iframe"></iframe>
+                }
+                else
+                {
+                    <MudGrid Justify="Justify.Center" Style="display: flex; align-items: center; flex-direction: column;">
+                        <MudItem>
+                            <MudImage ObjectFit="ObjectFit.Cover" Src="icons/unsupported.png" Style="width: 100%; height: 100%; display: block;" />
+                        </MudItem>
+                        <MudItem>
+                            <MudText Typo="Typo.body1">Preview not available for this file type.</MudText>
+                        </MudItem>
+                    </MudGrid>
+                }
+            </div>
+
+        </MudPaper>
+
+    </DialogContent>
+</MudDialog>
+
+<script>
+    function handlePreviewError() {
+        alert("Failed to load preview.");
+    }
+</script>

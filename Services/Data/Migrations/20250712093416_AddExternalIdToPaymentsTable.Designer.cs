@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +12,14 @@ using myuzbekistan.Shared;
 
 #nullable disable
 
-namespace Services.Migrations
+namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250712093416_AddExternalIdToPaymentsTable")]
+    partial class AddExternalIdToPaymentsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -340,6 +343,9 @@ namespace Services.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Cvv")
+                        .HasColumnType("text");
 
                     b.Property<string>("ExpirationDate")
                         .HasColumnType("text");
@@ -942,9 +948,6 @@ namespace Services.Migrations
                     b.Property<string>("CallbackData")
                         .HasColumnType("jsonb");
 
-                    b.Property<long>("CardId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -970,8 +973,6 @@ namespace Services.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CardId");
 
                     b.HasIndex("UserId");
 
