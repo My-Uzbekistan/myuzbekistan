@@ -4,7 +4,16 @@ namespace myuzbekistan.Shared;
 
 public class BadRequestException : SystemException
 {
+    public BadRequestException()
+    {
+        
+    }
 
+    public BadRequestException(string message)
+        : base(message)
+    {
+
+    }
 }
 public class MultiException(MultiErrorWrapper<MultiError> multiErrorWrapper) : SystemException
 {

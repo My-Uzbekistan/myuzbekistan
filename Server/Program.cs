@@ -79,6 +79,7 @@ services.AddHttpClient("multicard", (client) =>
     client.DefaultRequestHeaders.Add("accept", "application/json");
 });
 
+
 services.AddScoped<MultiCardService>();
 
 builder.Services.AddCascadingAuthenticationState();
@@ -220,6 +221,7 @@ builder.Services.AddHostedService<TelegramBotService>();
 #endregion
 
 var app = builder.Build();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -258,7 +260,6 @@ app.UseAntiforgery();
 UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Tus);
 
 app.UseCors();
-app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
