@@ -33,6 +33,7 @@ public static class FusionServerExtension
         fusion.AddService<IAiraloCountryService, AiraloCountryService>();
         fusion.AddService<IAiraloTokenService, AiraloTokenService>();
         fusion.AddService<IAiraloPackageService, AiraloPackageService>();
+        fusion.AddService<IESimPackageService, ESimPackageService>();
 
         return fusion;
     }

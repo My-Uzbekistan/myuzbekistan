@@ -1,6 +1,6 @@
 ﻿namespace myuzbekistan.Shared;
 
-public class ESimPackage : BaseEntity
+public class ESimPackageEntity : BaseEntity
 {
     public string PackageId { get; set; } = string.Empty;
     public string CountryCode { get; set; } = string.Empty;
@@ -11,4 +11,5 @@ public class ESimPackage : BaseEntity
     public double CustomPrice { get; set; }
     public string Network { get; set; } = string.Empty;
     public string ActivationPolicy { get; set; } = string.Empty;
+    public ContentStatus Status { get; set; } = ContentStatus.Active; // Default to Active
 }

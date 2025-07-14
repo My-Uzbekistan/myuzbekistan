@@ -14,9 +14,15 @@ public class AiraloPackageService(IServiceProvider services,
         DefaultValueHandling = DefaultValueHandling.Ignore
     };
 
-    public virtual async Task<PackageResponseView> GetCountryPackagesAsync(string countryCode, CancellationToken cancellationToken = default)
+    public virtual async Task<PackageResponseView> GetCountryPackagesAsync(string countrySlug, CancellationToken cancellationToken = default)
     {
         await Invalidate();
+        var canGet = CountryCodes.Dictionary.TryGetValue(countrySlug, out var countryCode);
+        if (!canGet)
+        {
+            Console.WriteLine(countrySlug);
+            return new();
+        }
         var token = await airaloTokenService.GetTokenAsync(cancellationToken);
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
