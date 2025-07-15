@@ -1,0 +1,45 @@
+@page "/esim-packages"
+
+@inherits MixedStateComponent<TableResponse<ESimPackageView>,TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="ESimPackage">
+    <ChildContent>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">
+            <MudTd>@context.PackageId</MudTd>
+            <MudTd>@context.CountryCode</MudTd>
+            <MudTd>@context.CountryName</MudTd>
+            <MudTd>@context.DataVolume</MudTd>
+            <MudTd>@context.ValidDays</MudTd>
+            <MudTd>@context.Network</MudTd>
+            <MudTd>@context.ActivationPolicy</MudTd>
+            <MudTd>
+                @if(context.Status == ContentStatus.Active)
+                {
+                    <MudChip T="string" Color="Color.Info">
+                        @L["Active"]
+                    </MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Color="Color.Error">
+                        @L["Inactive"]
+                    </MudChip>
+                }
+            </MudTd>
+            <MudTd>@context.Price</MudTd>
+            <MudTd>@context.CustomPrice</MudTd>
+
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    <MudLink Href=@($"/esim-packages/{context.Id}")>
+                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                    </MudLink>
+                    <MudFab @onclick="() => Delete(context.Id)" Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                </div>
+            </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>

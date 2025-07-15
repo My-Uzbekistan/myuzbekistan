@@ -1,0 +1,38 @@
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+        <Actions>
+            <SaveCancelButton OnCancel='() => Injector.NavigationManager.NavigateTo("esim-packages")' Processing="@Processing" />
+        </Actions>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="8">
+                    <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.PackageId" Label="@L["PackageId"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.CountryCode" Label="@L["CountryCode"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.CountryName" Label="@L["CountryName"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.DataVolume" Label="@L["DataVolume"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.ValidDays" Label="@L["ValidDays"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.Network" Label="@L["Network"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.ActivationPolicy" Label="@L["ActivationPolicy"]" Variant="Variant.Text" />
+                        <MudTextField Readonly="true" Class="mt-3" @bind-Value="Model.Price" Label="@L["Price"]" Variant="Variant.Text" />
+                        <MudNumericField @bind-Value="Model.CustomPrice" 
+                                         Label="@L["CustomPrice"]" 
+                                         AutoFocus="true" 
+                                         Class="mt-3"
+                                         Variant="Variant.Text" 
+                                         For="@(() => Model.CustomPrice)" 
+                                         Required="true" />
+                        <MudSelect Margin="Margin.Dense" For="@(() => Model.Status)" Class="mt-3" @bind-Value="Model.Status" Label="@L["Status"]" T="ContentStatus" Required="true" Variant="Variant.Text">
+                            <MudSelectItem T="ContentStatus" Value="(ContentStatus)ContentStatus.Active">@L["Active"]</MudSelectItem>
+                            <MudSelectItem T="ContentStatus" Value="(ContentStatus)ContentStatus.Inactive">@L["Inactive"]</MudSelectItem>
+                        </MudSelect>
+
+                        <input type="hidden" @bind-value="Model.Id">
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </FormContainer>
+</EditForm>

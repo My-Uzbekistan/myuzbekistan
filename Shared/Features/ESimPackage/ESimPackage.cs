@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;
 
 public class ESimPackageEntity : BaseEntity
 {
@@ -12,4 +12,6 @@ public class ESimPackageEntity : BaseEntity
     public string Network { get; set; } = string.Empty;
     public string ActivationPolicy { get; set; } = string.Empty;
     public ContentStatus Status { get; set; } = ContentStatus.Active; // Default to Active
+    public long? PackageDiscountId { get; set; }
+    public PackageDiscountEntity? PackageDiscountEntity { get; set; }
 }

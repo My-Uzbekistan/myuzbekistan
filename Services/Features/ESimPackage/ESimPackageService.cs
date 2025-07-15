@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace myuzbekistan.Services;
 
@@ -71,7 +71,8 @@ public class ESimPackageService(
         var eSimPackage = await dbContext.ESimPackages
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
             ?? throw new ValidationException("ESimPackageEntity Not Found");
-        dbContext.Remove(eSimPackage);
+        eSimPackage.Status = ContentStatus.Inactive;
+        dbContext.Update(eSimPackage);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -115,8 +116,10 @@ public class ESimPackageService(
                 if (existingPackage != null && existingPackage.Price != package.Price)
                 {
                     long id = existingPackage.Id;
+                    var status = existingPackage.Status;
                     Reattach(existingPackage, package, dbContext);
                     existingPackage.Id = id;
+                    existingPackage.Status = status;
                     dbContext.Update(existingPackage);
                 }
                 else
@@ -146,7 +149,16 @@ public class ESimPackageService(
 
     private void Sorting(ref IQueryable<ESimPackageEntity> eSimPackage, TableOptions options) => eSimPackage = options.SortLabel switch
     {
-        "Id" => eSimPackage.Ordering(options, o => o.Id),
+        "PackageId" => eSimPackage.Ordering(options, o => o.PackageId),
+        "CountryCode" => eSimPackage.Ordering(options, o => o.CountryCode),
+        "CountryName" => eSimPackage.Ordering(options, o => o.CountryName),
+        "DataVolume" => eSimPackage.Ordering(options, o => o.DataVolume),
+        "ValidDays" => eSimPackage.Ordering(options, o => o.ValidDays),
+        "Network" => eSimPackage.Ordering(options, o => o.Network),
+        "ActivationPolicy" => eSimPackage.Ordering(options, o => o.ActivationPolicy),
+        "Status" => eSimPackage.Ordering(options, o => o.Status),
+        "Price" => eSimPackage.Ordering(options, o => o.Price),
+        "CustomPrice" => eSimPackage.Ordering(options, o => o.CustomPrice),
         _ => eSimPackage.OrderBy(o => o.Id),
 
     };

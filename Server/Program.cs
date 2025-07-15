@@ -1,9 +1,6 @@
-﻿using ActualLab.CommandR.Configuration;
 using ActualLab.Fusion;
-using ActualLab.Fusion.Client.Caching;
 using ActualLab.Fusion.Extensions;
 using ActualLab.Fusion.Server;
-using ActualLab.Rpc;
 using ActualLab.Rpc.Server;
 using BackuptaGram;
 using Blazored.LocalStorage;
@@ -12,14 +9,12 @@ using Client.Core.Services;
 using Coravel;
 using EF.Audit.Core.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using MudBlazor;
 using MudBlazor.Services;
 using MudBlazorWebApp1.Components.Account;
@@ -29,10 +24,8 @@ using Server;
 using Server.Components;
 using Server.Infrastructure;
 using Server.Infrastructure.ServiceCollection;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using tusdotnet.Stores;
 using UFile.Server;
 using UFile.Shared;
@@ -248,6 +241,16 @@ app.UseWebSockets(new WebSocketOptions()
 {
     KeepAliveInterval = TimeSpan.FromSeconds(30)
 });
+#endregion
+
+#region BackgroundJobs
+
+var provider = app.Services;
+provider.UseScheduler(scheduler =>
+{
+    scheduler.ScheduleWithParams<ESimPackageSyncner>().Daily();
+});
+
 #endregion
 
 app.UseFusionSession();

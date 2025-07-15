@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;
 
 
 [DataContract, MemoryPackable]
@@ -15,6 +15,7 @@ public partial class ESimPackageView
     [property: DataMember] public double CustomPrice { get; set; }
     [property: DataMember] public string Network { get; set; } = string.Empty;
     [property: DataMember] public string ActivationPolicy { get; set; } = string.Empty;
+    [property: DataMember] public ContentStatus Status { get; set; }
 
     public override bool Equals(object? o)
     {
