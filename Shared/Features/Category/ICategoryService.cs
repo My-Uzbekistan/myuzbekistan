@@ -20,6 +20,6 @@ public interface ICategoryService:IComputeService
 
     Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default);
 
-    Task<List<MainPageApi>> GetMainPageApi(TableOptions options,CancellationToken cancellationToken = default);
+    Task<List<MainPageApi>> GetMainPageApi(TableOptions options,CancellationToken cancellationToken = default,bool isNewApi = false);
 }
     

@@ -9,7 +9,7 @@ public class OnFileCompleteEvent : IOnFileCompleteEvent
     public async Task InvokeAsync(FileCompleteContext ctx)
     {
         ITusFile file = await ctx.GetFileAsync();
-        Dictionary<string, Metadata> metadata = await file.GetMetadataAsync(ctx.CancellationToken);
+        //Dictionary<string, Metadata> metadata = await file.GetMetadataAsync(ctx.CancellationToken);
         Stream content = await file.GetContentAsync(ctx.CancellationToken);
     }
 }

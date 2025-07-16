@@ -59,8 +59,8 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="UFile.Server" Version="1.1.1" />
-		<PackageReference Include="UTC.Minio" Version="0.0.5" />
+		<PackageReference Include="UFile.Server" Version="1.1.4" />
+		<PackageReference Include="UTC.Minio" Version="1.0.1" />
 		<ProjectReference Include="..\Client\Client.csproj" />
 		<ProjectReference Include="..\Services\Services.csproj" />
 		<ProjectReference Include="..\Shared\Shared.csproj" />

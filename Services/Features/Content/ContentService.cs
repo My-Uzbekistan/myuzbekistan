@@ -1,24 +1,10 @@
-using ActualLab.Async;
-using ActualLab.Fusion;
-using ActualLab.Fusion.Authentication;
-using ActualLab.Fusion.EntityFramework;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using myuzbekistan.Shared;
-using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Reactive;
-using System.Security.Claims;
-using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 namespace myuzbekistan.Services;
 
 public class ContentService(IServiceProvider services, ICategoryService categoryService, ILogger<ContentService> logger, IAuth auth) : DbServiceBase<AppDbContext>(services), IContentService
 {
     #region Queries
 
-    public async virtual Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default)
+    public async virtual Task<List<ContentShort>> GetContentByCategoryName(string CategoryName, CancellationToken cancellationToken = default,bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -50,7 +36,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
         logger.LogError(content.ToQueryString());
 
         var items = await content.AsNoTracking().ToListAsync(cancellationToken: cancellationToken);
-        return [.. items.Select(x => x.MapToShortApi())];
+        return [.. items.Select(x => x.MapToShortApi(isNewApi))];
     }
 
     [ComputeMethod]
@@ -99,11 +85,8 @@ public class ContentService(IServiceProvider services, ICategoryService category
         return new TableResponse<ContentView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
-
-
-
     [ComputeMethod]
-    public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, long userId, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, long userId, TableOptions options, CancellationToken cancellationToken = default, bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -143,7 +126,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
             .Include(x => x.Languages)
             .AsSplitQuery()
             .AsNoTracking()
-                .Select(x => mapToMainPage(x,dbContext, userId));
+                .Select(x => mapToMainPage(x,dbContext, userId, isNewApi));
         ;
 
         var items = await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
@@ -152,9 +135,8 @@ public class ContentService(IServiceProvider services, ICategoryService category
     }
 
 
-
     [ComputeMethod]
-    public async virtual Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, long userId, TableOptions options, CancellationToken cancellationToken = default)
+    public async virtual Task<List<MainPageContent>> GetContentsByIds(List<long> contentIds, long userId, TableOptions options, CancellationToken cancellationToken = default,bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -193,28 +175,29 @@ public class ContentService(IServiceProvider services, ICategoryService category
             .Include(x => x.Languages)
             .AsSplitQuery()
             .AsNoTracking()
-            .Select(x => mapToMainPage(x,dbContext, userId));
+            .Select(x => mapToMainPage(x,dbContext, userId, isNewApi));
         ;
 
         return await query.Paginate(options).ToListAsync(cancellationToken: cancellationToken);
     }
 
 
-    private static MainPageContent mapToMainPage(ContentEntity x, AppDbContext dbContext, long userId)
+    private static MainPageContent mapToMainPage(ContentEntity x, AppDbContext dbContext, long userId,bool isNewApi = false)
     {
+        var minioUrl = isNewApi ? Constants.MinioPath : "";
         return new MainPageContent
         {
             ContentId = x.Id,
             Title = x.Title,
             Caption = x.Description,
-            Photos = x.Photos?.Select(p => p.Path).ToList(),
-            Photo = x.Photo?.Path,
+            Photos = x.Photos?.Select(p =>  minioUrl + p.Path).ToList(),
+            Photo = minioUrl + x.Photo?.Path,
             Region = x.Region?.Name,
             Facilities = x.Facilities?.Select(f => new FacilityItemDto
             {
                 Id = f.Id,
                 Name = f.Name,
-                Icon = f.Icon?.Path
+                Icon = minioUrl + f.Icon?.Path
             }).ToList(),
             Languages = x.Languages?.Select(l => l.Name).ToList(),
             RatingAverage = x.RatingAverage,
@@ -228,11 +211,11 @@ public class ContentService(IServiceProvider services, ICategoryService category
 
 
 
-    public async virtual Task<ContentDto> GetContent(long ContentId, long userId, CancellationToken cancellationToken = default)
+    public async virtual Task<ContentDto> GetContent(long ContentId, long userId, CancellationToken cancellationToken = default, bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-
+        var minioUrl = isNewApi ? Constants.MinioPath : "";
         var contentQuery = dbContext.Database.SqlQueryRaw<string>($"""
                 SELECT jsonb_build_object(
                     'Id', c."Id",
@@ -247,7 +230,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
                         (SELECT jsonb_agg(jsonb_build_object(
                             'Id', fac."Id",
                             'Name', fac."Name",
-                            'Icon', F2."Path"
+                            'Icon',  CONCAT('{minioUrl}',F2."Path") 
                         ))
                         FROM "ContentEntityFacilityEntity" cf
                         JOIN "Facilities" fac ON fac."Id" = cf."FacilitiesId" AND cf."FacilitiesLocale" = c."Locale"
@@ -323,6 +306,12 @@ public class ContentService(IServiceProvider services, ICategoryService category
         if (str != null)
         {
             var content = JsonSerializer.Deserialize<ContentDto>(str!)!;
+
+            if (isNewApi)
+            {
+                content.Photo = content.Photo != null ? Constants.MinioPath + content.Photo : null;
+                content.Photos = content.Photos?.Select(p => Constants.MinioPath + p).ToList();
+            }
 
             return content;
         }

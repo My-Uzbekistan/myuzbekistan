@@ -7,18 +7,24 @@ namespace myuzbekistan.Services;
 [Mapper]
 public static partial class ContentMapper
 {
+
+    
     #region Usable
 
     public static ContentRequestEntity MapToRequest(this ContentRequestView src) => src.MapToRequestEntity();
     public static ContentRequestView MapToRequestV(this ContentRequestEntity src) => src.MapToRequestView();
 
-    public static ContentShort MapToShortApi(this ContentEntity src)
+    public static ContentShort MapToShortApi(this ContentEntity src, bool newApi  = false)
     {
         var source = src.ToShortApi();
+        if (newApi)
+        {
+            source.Photo = Constants.MinioPath + source.Photo;
+        }
 
         return source;
     }
-    public static MainPageContent MapToApi(this ContentEntity src)
+    public static MainPageContent MapToApi(this ContentEntity src, bool newApi = false)
     {
         var source = src.ToApi();
         source.Caption = src.Category.Caption;
@@ -26,6 +32,12 @@ public static partial class ContentMapper
         if (src.Languages != null)
         {
             source.Languages = [.. src.Languages.Select(x => x.Name)];
+        }
+
+        if (newApi)
+        {
+            source.Photo = Constants.MinioPath + source.Photo;
+            source.Photos = source.Photos.Select(x => Constants.MinioPath + x).ToList();
         }
 
         return source;

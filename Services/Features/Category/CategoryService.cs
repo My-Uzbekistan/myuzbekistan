@@ -13,7 +13,7 @@ namespace myuzbekistan.Services;
 public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICategoryService
 {
     #region Queries
-    public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default)
+    public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default,bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -62,7 +62,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                     ?.MapToApi(),
                 c.ViewType,
                 [.. ContentQuery(c.Contents!,options).OrderBy(_ => Guid.NewGuid())
-                .Select(x => x.MapToApi())]))
+                .Select(x => x.MapToApi(isNewApi))]))
             .Where(s =>
                 string.IsNullOrEmpty(options.Search) ||
                 s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||

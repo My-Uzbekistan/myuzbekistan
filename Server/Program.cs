@@ -1,41 +1,15 @@
-﻿using ActualLab.CommandR.Configuration;
-using ActualLab.Fusion;
-using ActualLab.Fusion.Client.Caching;
-using ActualLab.Fusion.Extensions;
-using ActualLab.Fusion.Server;
-using ActualLab.Rpc;
-using ActualLab.Rpc.Server;
-using BackuptaGram;
-using Blazored.LocalStorage;
-using Client;
-using Client.Core.Services;
+﻿using BackuptaGram;
 using Coravel;
-using EF.Audit.Core.Extensions;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
-using MudBlazor;
-using MudBlazor.Services;
+using Minio;
 using MudBlazorWebApp1.Components.Account;
 using myuzbekistan.Services;
-using myuzbekistan.Shared;
 using Server;
-using Server.Components;
 using Server.Infrastructure;
 using Server.Infrastructure.ServiceCollection;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using tusdotnet.Stores;
-using UFile.Server;
-using UFile.Shared;
 using UTC.Minio;
 
 
@@ -59,9 +33,25 @@ services.AddHttpLogging(logging =>
 #region DATABASE
 var dbType = cfg.GetValue<string>("DatabaseProviderConfiguration:ProviderType");
 services.AddDataBase<AppDbContext>(env, cfg, (DataBaseType)Enum.Parse(typeof(DataBaseType), dbType!, true));
-services.AddMinio(cfg);
 services.AddAlertaGram(cfg);
 services.AddBackuptaGram();
+services.AddMinio(cfg);
+services.AddSingleton<IMinioUpload>(s =>
+{
+    var minioClient = new MinioClient()
+        .WithEndpoint(cfg["Minio:Endpoint"])
+        .WithCredentials(cfg["Minio:AccessKey"], cfg["Minio:SecretKey"])
+        .WithSSL(true)
+        .Build();
+    var createEvent = s.GetRequiredService<IOnCreateCompleteEvent>();
+
+    return new MinioUploadServer((MinioClient)minioClient , cfg, createEvent);
+});
+
+//services.AddSingleton<IMinioUpload, MinioUploadServer>();
+services.AddControllersWithViews().AddApplicationPart(typeof(MinioController).Assembly).AddControllersAsServices();
+services.AddScoped<IUFileService, MinioUploadHelper>();
+
 #endregion
 #region AUTH
 services.AddAuth(env, cfg);
@@ -196,8 +186,9 @@ services.AddScoped<PageHistoryState>();
 services.AddScoped<UInjector>();
 #endregion
 #region File
-//FileServiceCollection.AddFileServer(services, UploadType.Minio, cfg);
-services.AddFileServer(UploadType.Tus, cfg);
+//UFile.Server.UFileRegistration.AddFileServer(services,UploadType.Minio, cfg);
+//services.AddFileServer(UploadType.Minio, cfg);
+//services.AddFileServer(UploadType.Tus, cfg);
 services.AddSingleton(delegate
 {
     char sep = Path.DirectorySeparatorChar;
@@ -225,6 +216,24 @@ builder.Services.AddSingleton<MerchantNotifierService>();
 services.AddSingleton<TelegramBotService>();
 builder.Services.AddHostedService<TelegramBotService>();
 #endregion
+
+
+//services.AddSingleton(delegate
+//{
+//    string currentDirectory = Directory.GetCurrentDirectory();
+//    string path = "..\\Server\\wwwroot\\files";
+//    string text = Path.Combine(currentDirectory, path);
+//    if (!Directory.Exists(text))
+//    {
+//        Directory.CreateDirectory(text);
+//    }
+
+//    return new TusDiskStore(text);
+//});
+//services.AddSingleton(TusConfiguration.CreateTusConfiguration);
+//services.AddScoped<ITusUpload, TusUploadServer>();
+//services.AddHostedService<ExpiredFilesCleanupService>();
+//services.AddScoped<IUFileService, TusUploadHelper>();
 
 var app = builder.Build();
 
@@ -262,7 +271,8 @@ app.UseResponseCaching();
 app.UseResponseCompression();
 app.UseStaticFiles();
 app.UseAntiforgery();
-UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Tus);
+UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Minio);
+//UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Tus);
 
 app.UseCors();
 app.UseMiddleware<ErrorHandlerMiddleware>();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using myuzbekistan.Shared;
-using Stl.Fusion.Authentication;
 
 namespace Server.Controllers
 {
