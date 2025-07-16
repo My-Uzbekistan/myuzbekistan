@@ -11,7 +11,7 @@ public class ESimPackageEntity : BaseEntity
     public double CustomPrice { get; set; }
     public string Network { get; set; } = string.Empty;
     public string ActivationPolicy { get; set; } = string.Empty;
-    public ContentStatus Status { get; set; } = ContentStatus.Active; // Default to Active
+    public ContentStatus Status { get; set; } = ContentStatus.Active;
     public long? PackageDiscountId { get; set; }
     public PackageDiscountEntity? PackageDiscountEntity { get; set; }
 }
