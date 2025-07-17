@@ -6,6 +6,8 @@ namespace myuzbekistan.Shared;
 public partial class ESimPackageView
 {
     [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public long? PackageDiscountId { get; set; }
+    [property: DataMember] public PackageDiscountView PackageDiscountView { get; set; } = new();
     [property: DataMember] public string PackageId { get; set; } = string.Empty;
     [property: DataMember] public string CountryCode { get; set; } = string.Empty;
     [property: DataMember] public string CountryName { get; set; } = string.Empty;

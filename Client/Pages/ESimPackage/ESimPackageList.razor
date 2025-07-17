@@ -29,11 +29,25 @@
                     </MudChip>
                 }
             </MudTd>
-            <MudTd>@context.Price</MudTd>
-            <MudTd>@context.CustomPrice</MudTd>
+            <MudTd>@context.Price.ToString("N2") so'm</MudTd>
+            <MudTd>@context.CustomPrice.ToString("N2") so'm</MudTd>
+            <MudTd>
+                @if (context.PackageDiscountId > 0)
+                {
+                    <MudText>
+                        @context.PackageDiscountView.DiscountPercentage %
+                    </MudText>
+                }
+                else
+                {
+                    <MudText> _ </MudText>
+                }
+            </MudTd>
+            <MudTd>@context.PackageDiscountView?.DiscountPrice.ToString("N2") so'm</MudTd>
 
             <MudTd Class="d-flex justify-end">
                 <div style="display:flex; gap:7px;">
+                    <MudFab @onclick="() => OpenDiscountDialog(context)" Color=Color.Info StartIcon=@Icons.Material.Filled.Discount Size=Size.Small IconSize=Size.Small />
                     <MudLink Href=@($"/esim-packages/{context.Id}")>
                         <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
                     </MudLink>

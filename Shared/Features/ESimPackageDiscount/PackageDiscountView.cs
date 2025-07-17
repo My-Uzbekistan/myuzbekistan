@@ -9,8 +9,8 @@ public partial class PackageDiscountView
     [property: DataMember] public double DiscountPercentage { get; set; }
     [property: DataMember] public double DiscountPrice { get; set; }
     [property: DataMember] public ContentStatus Status { get; set; }
-    [property: DataMember] public DateTime StartDate { get; set; }
-    [property: DataMember] public DateTime EndDate { get; set; }
+    [property: DataMember] public DateTime? StartDate { get; set; }
+    [property: DataMember] public DateTime? EndDate { get; set; }
 
     public override bool Equals(object? o)
     {

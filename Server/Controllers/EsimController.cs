@@ -1,0 +1,50 @@
+using ActualLab.CommandR;
+using ActualLab.Fusion;
+using Microsoft.AspNetCore.Mvc;
+using myuzbekistan.Shared;
+
+namespace Server.Controllers;
+
+[Route("api/esim")]
+[ApiController]
+public class EsimController(
+    IESimOrderService esimOrderService,
+    ISessionResolver sessionResolver,
+    ICommander commander) : ControllerBase
+{
+    [HttpGet]
+    public async Task<IActionResult> GetList([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionResolver.GetSession(cancellationToken);
+        if (session == null)
+        {
+            return Unauthorized();
+        }
+        var orders = await esimOrderService.GetAll(options, session, cancellationToken);
+        return Ok(orders);
+    }
+
+    [HttpGet("/{id}")]
+    public async Task<IActionResult> Get(long id, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionResolver.GetSession(cancellationToken);
+        if (session == null)
+        {
+            return Unauthorized();
+        }
+        var orders = await esimOrderService.Get(id, session, cancellationToken);
+        return Ok(orders);
+    }
+
+    [HttpPost("order")]
+    public async Task<IActionResult> MakeOrder([FromBody] CreateESimOrderView view, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionResolver.GetSession(cancellationToken);
+        if (session == null)
+        {
+            return Unauthorized();
+        }
+        var countries = await commander.Call(new MakeESimOrderCommand(session, view.PackageId), cancellationToken);
+        return Ok(countries);
+    }
+}

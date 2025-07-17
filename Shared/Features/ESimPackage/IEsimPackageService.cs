@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;
 
 public interface IESimPackageService : IComputeService
 {
@@ -19,6 +19,12 @@ public interface IESimPackageService : IComputeService
 
     [CommandHandler]
     Task SyncPackages(SyncESimPackagesCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task UpdateDiscount(UpdatePackageDiscountCommand command, CancellationToken cancellationToken = default);
+
+    [CommandHandler]
+    Task MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default);
 
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }

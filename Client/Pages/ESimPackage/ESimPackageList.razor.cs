@@ -9,7 +9,7 @@ public partial class ESimPackageList : MixedStateComponent<TableResponse<ESimPac
     private readonly string[] SortColumns = 
     [
         "PackageId", "CountryCode", "CountryName", "DataVolume", "ValidDays", 
-        "Network", "ActivationPolicy", "Status", "Price", "CustomPrice"
+        "Network", "ActivationPolicy", "Status", "Price", "CustomPrice", "Discount", "DiscountPrice"
     ];
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
@@ -25,6 +25,29 @@ public partial class ESimPackageList : MixedStateComponent<TableResponse<ESimPac
     {
         var ESimPackages = await ESimPackageService.GetAll(MutableState.Value, cancellationToken);
         return ESimPackages;
+    }
+
+    private async Task OpenDiscountDialog(ESimPackageView view)
+    {
+        var dialogParameters = new DialogParameters
+        {
+            { nameof(DiscountDialog.ESimPackageView), view },
+            { nameof(DiscountDialog.PackageDiscountView), new PackageDiscountView() 
+            {
+                Id = view.PackageDiscountId ?? 0,
+            }}
+        };
+
+        var dialogOptions = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            BackdropClick = false,
+            NoHeader = true
+        };
+
+        await Injector.DialogService.ShowAsync<DiscountDialog>(null, dialogParameters, dialogOptions);
     }
 
     private async Task Delete(long Id, CancellationToken cancellationToken = default)

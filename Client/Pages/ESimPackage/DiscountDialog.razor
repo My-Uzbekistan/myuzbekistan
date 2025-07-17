@@ -1,36 +1,51 @@
 <MudDialog>
     <DialogContent>
-        <MudText Typo="Typo.h6">Discount for {}</MudText>
-        <MudDivider/>
-        <MudTextField @bind-Value="PackageDiscountView.DiscountPercentage" 
-                      Label="@L["DiscountPercentage"]" 
-                      AutoFocus="true" 
-                      Class="mt-3"
-                      Variant="Variant.Text" 
-                      Required="true" />
-        <MudTextField @bind-Value="PackageDiscountView.DiscountPrice" 
-                      Label="@L["DiscountPrice"]"
-                      AutoFocus="true" 
-                      Class="mt-3"
-                      Variant="Variant.Text" 
-                      Required="true" />
-        <MudDatePicker @bind-Value="PackageDiscountView.StartDate" 
-                       Label="@L["StartDate"]" 
-                       Class="mt-3" 
-                       Variant="Variant.Text"
-                       Required="true" />
-        <MudDatePicker @bind-Value="PackageDiscountView.EndDate"
-                       Label="@L["EndDate"]" 
-                        Class="mt-3" 
-                       Variant="Variant.Text"
-                       Required="true" />
-        <MudSelect Margin="Margin.Dense" For="@(() => PackageDiscountView.Status)" Class="mt-3" @bind-Value="PackageDiscountView.Status" Label="@L["Status"]" T="ContentStatus" Required="true" Variant="Variant.Text">
-            <MudSelectItem T="ContentStatus" Value="(ContentStatus)ContentStatus.Active">@L["Active"]</MudSelectItem>
-            <MudSelectItem T="ContentStatus" Value="(ContentStatus)ContentStatus.Inactive">@L["Inactive"]</MudSelectItem>
-        </MudSelect>
-        <input type="hidden" @bind-value="PackageDiscountView.Id">
+        <div class="pa-4">
+            <MudText Typo="Typo.h6">Discount for @ESimPackageView.PackageId</MudText>
+            <MudDivider />
+            <MudNumericField @bind-Value="@ESimPackageView.CustomPrice"
+                             Label="@L["PackagePrice"]"
+                             ReadOnly="true"
+                             Class="mt-3"
+                             Variant="Variant.Text"
+                             Required="true" />
+            <MudDivider/>
+            <MudNumericField Value="@PackageDiscountView.DiscountPercentage"
+                             ValueChanged="DiscountPercentageChanged"
+                             Label="@L["DiscountPercentage"]"
+                             AutoFocus="true"
+                             T="double"
+                             Class="mt-3"
+                             Variant="Variant.Text"
+                             Required="true" />
+            <MudNumericField Value="@PackageDiscountView.DiscountPrice"
+                             ValueChanged="DiscountPriceChanged"
+                             Label="@L["DiscountPrice"]"
+                             Class="mt-3"
+                             T="double"
+                             Variant="Variant.Text"
+                             Required="true" />
+            <MudDatePicker @bind-Date="PackageDiscountView.StartDate"
+                           Label="@L["StartDate"]"
+                           Class="mt-3"
+                           Editable="true"
+                           Variant="Variant.Text"
+                           Required="true" />
+            <MudDatePicker @bind-Date="PackageDiscountView.EndDate"
+                           Label="@L["EndDate"]"
+                           Class="mt-3"
+                           Editable="true"
+                           Variant="Variant.Text"
+                           Required="true" />
+            <MudSelect Margin="Margin.Dense" For="@(() => PackageDiscountView.Status)" Class="mt-3" @bind-Value="PackageDiscountView.Status" Label="@L["Status"]" T="ContentStatus" Required="true" Variant="Variant.Text">
+                <MudSelectItem T="ContentStatus" Value="(ContentStatus)ContentStatus.Active">@L["Active"]</MudSelectItem>
+                <MudSelectItem T="ContentStatus" Value="(ContentStatus)ContentStatus.Inactive">@L["Inactive"]</MudSelectItem>
+            </MudSelect>
+            <input type="hidden" @bind-value="PackageDiscountView.Id">
+        </div>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@Cancel">@L["Cancel"]</MudButton>
+        <MudButton OnClick="@Submit">@L["Save"]</MudButton>
     </DialogActions>
 </MudDialog>

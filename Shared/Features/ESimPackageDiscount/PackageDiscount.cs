@@ -9,4 +9,16 @@ public class PackageDiscountEntity : BaseEntity
     public ContentStatus Status { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
+
+    public PackageDiscountView MapToView()
+        => new()
+        {
+            Id = Id,
+            ESimPackageId = ESimPackageId,
+            DiscountPercentage = DiscountPercentage,
+            DiscountPrice = DiscountPrice,
+            Status = Status,
+            StartDate = StartDate,
+            EndDate = EndDate
+        };
 }

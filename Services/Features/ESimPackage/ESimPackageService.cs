@@ -5,7 +5,9 @@ namespace myuzbekistan.Services;
 public class ESimPackageService(
     IServiceProvider services, 
     IAiraloCountryService airaloCountryService,
-    IAiraloPackageService airaloPackageService) 
+    IAiraloPackageService airaloPackageService,
+    ICurrencyService currencyService,
+    IUserService userService) 
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
     #region Queries
@@ -16,7 +18,7 @@ public class ESimPackageService(
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var eSimPackage = from s in dbContext.ESimPackages select s;
 
-        if (!String.IsNullOrEmpty(options.Search))
+        if (!string.IsNullOrEmpty(options.Search))
         {
             eSimPackage = eSimPackage.Where(s =>
                      s.PackageId.Contains(options.Search)
@@ -27,7 +29,24 @@ public class ESimPackageService(
 
         var count = await eSimPackage.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await eSimPackage.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-        return new TableResponse<ESimPackageView>() { Items = items.MapToViewList(), TotalItems = count };
+        var views = items.MapToViewList();
+        var currency = await currencyService.GetUsdCourse(cancellationToken);
+        double rate = double.Parse(currency.Rate);
+        foreach (var view in views)
+        {
+            view.Price = view.Price * rate;
+            if (view.PackageDiscountId.HasValue)
+            {
+                var packageDiscount = await dbContext.PackageDiscounts
+                    .FirstOrDefaultAsync(x => x.Id == view.PackageDiscountId, cancellationToken);
+                if (packageDiscount != null)
+                {
+                    view.PackageDiscountView = packageDiscount.MapToView();
+                }
+            }
+        }
+
+        return new TableResponse<ESimPackageView>() { Items = views, TotalItems = count };
     }
 
     public async virtual Task<ESimPackageView> Get(long Id, CancellationToken cancellationToken = default)
@@ -38,7 +57,11 @@ public class ESimPackageService(
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
             ?? throw new ValidationException("ESimPackageEntity Not Found");
 
-        return eSimPackage.MapToView();
+        var view = eSimPackage.MapToView();
+        var currency = await currencyService.GetUsdCourse(cancellationToken);
+        double rate = double.Parse(currency.Rate);
+        view.Price = view.Price * rate;
+        return view;
     }
 
     #endregion
@@ -87,8 +110,9 @@ public class ESimPackageService(
         var eSimPackage = await dbContext.ESimPackages
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
             ?? throw new ValidationException("ESimPackageEntity Not Found");
-
+        double price = eSimPackage.Price;
         Reattach(eSimPackage, command.Entity, dbContext);
+        eSimPackage.Price = price;
         dbContext.Update(eSimPackage);
 
         await dbContext.SaveChangesAsync(cancellationToken);
@@ -136,6 +160,70 @@ public class ESimPackageService(
         Console.WriteLine($"SyncPackages completed in {stopwatch.ElapsedMilliseconds} ms");
     }
 
+    public virtual async Task UpdateDiscount(UpdatePackageDiscountCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var eSimPackage = await dbContext.ESimPackages
+            .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
+            ?? throw new NotFoundException("ESimPackageEntity Not Found");
+
+        var packageDiscount = await dbContext.PackageDiscounts
+                .FirstOrDefaultAsync(x => x.Id == eSimPackage.PackageDiscountId, cancellationToken);
+        if (packageDiscount is null)
+        {
+            packageDiscount = new()
+            {
+                ESimPackageId = command.Entity.Id,
+                DiscountPercentage = command.Entity.PackageDiscountView.DiscountPercentage,
+                DiscountPrice = command.Entity.PackageDiscountView.DiscountPrice,
+                Status = command.Entity.PackageDiscountView.Status,
+                StartDate = ConvertToUtc(command.Entity.PackageDiscountView.StartDate),
+                EndDate = ConvertToUtc(command.Entity.PackageDiscountView.EndDate),
+            };
+        }
+        else
+        {
+            packageDiscount.DiscountPercentage = command.Entity.PackageDiscountView.DiscountPercentage;
+            packageDiscount.DiscountPrice = command.Entity.PackageDiscountView.DiscountPrice;
+            packageDiscount.Status = command.Entity.PackageDiscountView.Status;
+            packageDiscount.StartDate = ConvertToUtc(command.Entity.PackageDiscountView.StartDate);
+            packageDiscount.EndDate = ConvertToUtc(command.Entity.PackageDiscountView.EndDate);
+        }
+        packageDiscount.ESimPackage = null;
+        dbContext.Update(packageDiscount);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        eSimPackage.PackageDiscountId = packageDiscount.Id;
+        dbContext.Update(eSimPackage);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public virtual async Task MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var eSimPackage = await dbContext.ESimPackages
+            .FirstOrDefaultAsync(x => x.PackageId == command.PackageId, cancellationToken)
+            ?? throw new NotFoundException("ESimPackageEntity Not Found");
+
+        var user = await userService.GetUserAsync(command.Session, cancellationToken)
+            ?? throw new NotFoundException("User Not Found");
+
+        ESimOrderEntity eSimOrder = new()
+        {
+
+        }
+    }
+
     #endregion
 
     #region Helpers
@@ -162,5 +250,20 @@ public class ESimPackageService(
         _ => eSimPackage.OrderBy(o => o.Id),
 
     };
+
+    public static DateTime ConvertToUtc(DateTime? inputDate)
+    {
+        if (!inputDate.HasValue)
+            return DateTime.UtcNow;
+
+        var date = inputDate.Value;
+
+        // Assume Local if unspecified
+        if (date.Kind == DateTimeKind.Unspecified)
+            date = DateTime.SpecifyKind(date, DateTimeKind.Local);
+
+        return date.ToUniversalTime();
+    }
+
     #endregion
 }

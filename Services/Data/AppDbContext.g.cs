@@ -24,4 +24,6 @@ public partial class AppDbContext : DbContextBase
     public DbSet<CardPrefixEntity> CardPrefixes { get; protected set; } = null!;
     public DbSet<CardColorEntity> CardColors { get; protected set; } = null!;
     public DbSet<ESimPackageEntity> ESimPackages { get; protected set; } = null!;
+    public DbSet<ESimOrderEntity> ESimOrders { get; protected set; } = null!;
+    public DbSet<PackageDiscountEntity> PackageDiscounts { get; protected set; } = null!;
 }

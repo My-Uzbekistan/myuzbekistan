@@ -16,19 +16,24 @@ public class AiraloPackageService(IServiceProvider services,
         DefaultValueHandling = DefaultValueHandling.Ignore
     };
 
-    public virtual async Task<PackageResponseView> GetCountryPackagesAsync(string countrySlug, CancellationToken cancellationToken = default)
+    public virtual async Task<PackageResponseView> GetCountryPackagesAsync(string? countrySlug, CancellationToken cancellationToken = default)
     {
         await Invalidate();
-        var canGet = CountryCodes.Dictionary.TryGetValue(countrySlug, out var countryCode);
-        if (!canGet)
+        string url = $"{configuration["Airalo:Host"]}/v2/packages";
+        if (!string.IsNullOrEmpty(countrySlug))
         {
-            Console.WriteLine(countrySlug);
-            return new();
+            var canGet = CountryCodes.Dictionary.TryGetValue(countrySlug, out var countryCode);
+            if (!canGet)
+            {
+                Console.WriteLine(countrySlug);
+                return new();
+            }
+            url += $"?filter[country]={countryCode}";
         }
         var token = await airaloTokenService.GetTokenAsync(cancellationToken);
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var response = await httpClient.GetAsync($"{configuration["Airalo:Host"]}/v2/packages?filter[country]={countryCode}", cancellationToken);
+        var response = await httpClient.GetAsync(url, cancellationToken);
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var packages = JsonConvert.DeserializeObject<PackageResponseView>(content, jsonSerializerSettings)
