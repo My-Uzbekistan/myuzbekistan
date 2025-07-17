@@ -18,7 +18,7 @@ public class V2CategoryController(ICategoryService categoryService, IContentServ
     [HttpGet]
     public async Task<List<CategoryApi>> GetCategories([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
     {
-        return await _categoryService.GetCategories(cancellationToken);
+        return await _categoryService.GetCategories(cancellationToken,true);
     }
 
     [HttpGet("main-page")]

@@ -6,7 +6,6 @@ using System.Reactive;
 namespace myuzbekistan.Shared;
 public interface ICategoryService:IComputeService
 {
-    [ComputeMethod]
     Task<TableResponse<CategoryView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
     [ComputeMethod]
     Task<List<CategoryView>> Get(long Id, CancellationToken cancellationToken = default);
@@ -18,7 +17,8 @@ public interface ICategoryService:IComputeService
     Task Delete(DeleteCategoryCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }
 
-    Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default);
+
+    Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default, bool isNewApi = false);
 
     Task<List<MainPageApi>> GetMainPageApi(TableOptions options,CancellationToken cancellationToken = default,bool isNewApi = false);
 }

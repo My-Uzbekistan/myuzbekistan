@@ -36,8 +36,15 @@ public static partial class ContentMapper
 
         if (newApi)
         {
-            source.Photo = Constants.MinioPath + source.Photo;
-            source.Photos = source.Photos.Select(x => Constants.MinioPath + x).ToList();
+            if (!string.IsNullOrEmpty(source.Photo))
+            {
+                source.Photo = Constants.MinioPath + source.Photo;
+            }
+
+            if (source.Photos != null)
+            {
+                source.Photos = [.. source.Photos.Where(x => !string.IsNullOrEmpty(x)).Select(x => Constants.MinioPath + x)];
+            }
         }
 
         return source;
@@ -68,7 +75,7 @@ public static partial class ContentMapper
 
     private static List<FacilityItemDto> MapToFacilitiesOfString(List<FacilityEntity> source)
     {
-        return source.Select(x => new FacilityItemDto { Name = x.Name, Icon = x.Icon.Path, Id = x.Id }).ToList();
+        return source.Select(x => new FacilityItemDto { Name = x.Name, Icon = Constants.MinioPath +  x.Icon.Path, Id = x.Id }).ToList();
     }
     private static string MapToString(FileEntity source)
     {

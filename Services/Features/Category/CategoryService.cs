@@ -13,7 +13,9 @@ namespace myuzbekistan.Services;
 public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICategoryService
 {
     #region Queries
-    public async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default,bool isNewApi = false)
+    [ComputeMethod]
+
+    public virtual async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default,bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
@@ -59,7 +61,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                             ? x.GlobalRecommended
                             : x.Recommended && x.RegionId == options.RegionId)
                     .FirstOrDefault()
-                    ?.MapToApi(),
+                    ?.MapToApi(isNewApi),
                 c.ViewType,
                 [.. ContentQuery(c.Contents!,options).OrderBy(_ => Guid.NewGuid())
                 .Select(x => x.MapToApi(isNewApi))]))
@@ -102,14 +104,14 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
     }
 
     //[ComputeMethod]
-    public async virtual Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default)
+    public async virtual Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default,bool isNewApi = false)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var category = from s in dbContext.Categories.Include(x => x.Icon)
                        where s.Status == ContentStatus.Active && s.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName && s.ViewType != ViewType.More
                        orderby s.Order
-                       select new CategoryApi(s.Name, s.Icon!.Path!, s.Id);
+                       select new CategoryApi(s.Name, (isNewApi ? Constants.MinioPath : "" ) +   s.Icon!.Path!, s.Id);
 
         return [.. category];
     }

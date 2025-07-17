@@ -86,8 +86,9 @@ public class ContentService(IServiceProvider services, ICategoryService category
     }
 
     [ComputeMethod]
-    public async virtual Task<List<MainPageContent>> GetContents(long CategoryId, long userId, TableOptions options, CancellationToken cancellationToken = default, bool isNewApi = false)
+    public virtual async Task<List<MainPageContent>> GetContents(long CategoryId, long userId, TableOptions options, CancellationToken cancellationToken = default, bool isNewApi = false)
     {
+            
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
@@ -382,7 +383,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
     {
         if (Invalidation.IsActive)
         {
-            _ = await Invalidate();
+            //_ = await Invalidate();
             return;
         }
 
