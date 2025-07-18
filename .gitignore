@@ -375,3 +375,5 @@ FodyWeavers.xsd
 /.env
 NuGet.Config
 /Server/wwwroot/files
+/Server/appsettings.Development.json
+/Server/appsettings.json
