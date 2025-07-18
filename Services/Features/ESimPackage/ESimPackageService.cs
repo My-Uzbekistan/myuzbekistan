@@ -7,7 +7,8 @@ public class ESimPackageService(
     IAiraloCountryService airaloCountryService,
     IAiraloPackageService airaloPackageService,
     ICurrencyService currencyService,
-    IUserService userService) 
+    IUserService userService,
+    ICommander commander) 
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
     #region Queries
@@ -218,12 +219,43 @@ public class ESimPackageService(
         var user = await userService.GetUserAsync(command.Session, cancellationToken)
             ?? throw new NotFoundException("User Not Found");
 
-        ESimOrderEntity eSimOrder = new()
+        double price = eSimPackage.CustomPrice;
+        PackageDiscountEntity? discountEntity = null;
+        if (eSimPackage.PackageDiscountId > 0)
         {
+            discountEntity = await dbContext.PackageDiscounts
+                .FirstOrDefaultAsync(x => x.Id == eSimPackage.PackageDiscountId, cancellationToken);
+            if (discountEntity is not null &&
+                discountEntity.Status == ContentStatus.Active &&
+                discountEntity.StartDate <= DateTime.UtcNow &&
+                discountEntity.EndDate >= DateTime.UtcNow)
+            {
+                price = discountEntity.DiscountPrice;
+            }
+            else
+            {
+                discountEntity = null;
+            }
+        }
 
+        InvoiceRequest invoiceRequest = new()
+        {
+            Amount = (decimal)eSimPackage.CustomPrice,
+            Description = "A purchase of eSIM package",
+            MerchantId = 1
+        };
+
+        await commander.Call(new CreateInvoiceCommand(command.Session, invoiceRequest), cancellationToken);
+
+        var result = await commander.Call(new OrderArialoPackageCommand(command.PackageId), cancellationToken);
+        var order = (ESimOrderView)result;
+        order.UserId = user.Id;
+        order.CustomPrice = eSimPackage.CustomPrice;
+        if (discountEntity is not null)
+        {
+            order.DiscountPercentage = discountEntity.DiscountPercentage;
         }
     }
-
     #endregion
 
     #region Helpers

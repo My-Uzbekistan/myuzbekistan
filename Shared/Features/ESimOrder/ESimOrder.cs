@@ -26,8 +26,10 @@ public class ESimOrderEntity : BaseEntity
     public string QrCodeUrl { get; set; } = string.Empty;
     public string DirectAppleUrl { get; set; } = string.Empty;
     public string ManualInstallation { get; set; } = string.Empty;
-    public string QrCodeInstallation { get; set; } = string.Empty; 
+    public string QrCodeInstallation { get; set; } = string.Empty;
     #endregion
 
+    public double CustomPrice { get; set; }
+    public double? DiscountPercentage { get; set; }
     public long UserId { get; set; }
 }

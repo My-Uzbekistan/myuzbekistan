@@ -38,6 +38,9 @@ public partial class ESimOrderView
 
     #endregion
 
+    [property: DataMember] public double CustomPrice { get; set; }
+    [property: DataMember] public double? DiscountPercentage { get; set; }
+
     public override bool Equals(object? o)
     {
         var other = o as ESimOrderView;
@@ -50,4 +53,33 @@ public partial class ESimOrderView
 
     public override int GetHashCode()
         => HashCode.Combine(Id, OrderId, PackageId, UserId, SimCreatedAt);
-}
+
+    public static implicit operator ESimOrderView(OrderPackageView src)
+        => new()
+        {
+            // Order data
+            OrderId = src.Data.Id,
+            OrderCode = src.Data.Code,
+            Currency = src.Data.Currency,
+            Type = src.Data.Type,
+            EsimType = src.Data.EsimType,
+            Package = src.Data.Package,
+            PackageId = src.Data.PackageId,
+            Data = src.Data.Data,
+            Price = src.Data.Price,
+            Validity = src.Data.Validity,
+
+            // Sim data (use first sim if available)
+            SimId = src.Data.Sims.Count > 0 ? src.Data.Sims[0].Id : 0,
+            SimCreatedAt = src.Data.Sims.Count > 0 && DateTime.TryParse(src.Data.Sims[0].CreatedAt, out var simCreated) ? simCreated : default,
+            Iccid = src.Data.Sims.Count > 0 ? src.Data.Sims[0].Iccid : string.Empty,
+            Lpa = src.Data.Sims.Count > 0 ? src.Data.Sims[0].Lpa : string.Empty,
+            MatchingId = src.Data.Sims.Count > 0 ? src.Data.Sims[0].MatchingId : string.Empty,
+            ConfirmationCode = src.Data.Sims.Count > 0 ? src.Data.Sims[0].ConfirmationCode : null,
+            QrCode = src.Data.Sims.Count > 0 ? src.Data.Sims[0].Qrcode : string.Empty,
+            QrCodeUrl = src.Data.Sims.Count > 0 ? src.Data.Sims[0].QrcodeUrl : string.Empty,
+            DirectAppleUrl = src.Data.Sims.Count > 0 ? src.Data.Sims[0].DirectAppleInstallationUrl : string.Empty,
+            ManualInstallation = src.Data.ManualInstallation,
+            QrCodeInstallation = src.Data.QrCodeInstallation,
+        };
+}                          

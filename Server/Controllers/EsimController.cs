@@ -36,6 +36,30 @@ public class EsimController(
         return Ok(orders);
     }
 
+    [HttpGet("/{id}/details")]
+    public async Task<IActionResult> GetDetails(long id, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionResolver.GetSession(cancellationToken);
+        if (session == null)
+        {
+            return Unauthorized();
+        }
+        var order = await esimOrderService.Get(id, session, cancellationToken);
+        using var httpClient = new HttpClient();
+        var qrCodeBytes = await httpClient.GetByteArrayAsync(order.QrCode, cancellationToken);
+        var base64 = Convert.ToBase64String(qrCodeBytes);
+
+        var data = new
+        {
+            iccid = order.Iccid,
+            smdpAddress = order.Lpa,
+            activationCode = order.QrCode,
+            qrCodeImageBase64 = base64
+        };
+
+        return Ok(order);
+    }
+
     [HttpPost("order")]
     public async Task<IActionResult> MakeOrder([FromBody] CreateESimOrderView view, CancellationToken cancellationToken = default)
     {
