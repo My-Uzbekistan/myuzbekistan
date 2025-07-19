@@ -1,10 +1,6 @@
 ﻿namespace myuzbekistan.Shared;
 
-
-public interface IAiraloBalanceService : IComputeService
+public interface IAiraloBalanceService
 {
-    [ComputeMethod]
     Task<AiraloBalanceView> Get(CancellationToken cancellationToken = default);
-
-    Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }

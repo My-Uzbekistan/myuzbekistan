@@ -34,6 +34,7 @@ public static class FusionServerExtension
         fusion.AddService<IAiraloTokenService, AiraloTokenService>();
         fusion.AddService<IAiraloPackageService, AiraloPackageService>();
         fusion.AddService<IESimPackageService, ESimPackageService>();
+        fusion.AddService<IESimOrderService, ESimOrderService>();
 
         return fusion;
     }

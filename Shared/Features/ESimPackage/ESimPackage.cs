@@ -18,9 +18,9 @@ public class ESimPackageEntity : BaseEntity
     public long? PackageDiscountId { get; set; }
     public PackageDiscountEntity? PackageDiscountEntity { get; set; }
 
-    public bool IsRoaming { get; set; }
-    public string ImageUrl { get; set; } = string.Empty;
-    public List<string> Info { get; set; } = [];
+    public bool? IsRoaming { get; set; }
+    public string? ImageUrl { get; set; } = string.Empty;
+    public List<string>? Info { get; set; } = [];
     public string? OtherInfo { get; set; }
-    public List<PackageResponseCoverage> Coverage { get; set; } = [];
+    public List<PackageResponseCoverage>? Coverage { get; set; } = [];
 }

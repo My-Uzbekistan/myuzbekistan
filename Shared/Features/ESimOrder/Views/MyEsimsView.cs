@@ -8,9 +8,9 @@ public partial class MyEsimsView
     [property: DataMember] public string CountryName { get; set; } = string.Empty;
     [property: DataMember] public string OperatorName { get; set; } = string.Empty;
     [property: DataMember] public string DataValume { get; set; } = string.Empty;
-    [property: DataMember] public double RemainingData { get; set; } = string.Empty;
-    [property: DataMember] public DateTime? ActivationDate { get; set; } = string.Empty;
-    [property: DataMember] public int ValidDays { get; set; } = string.Empty;
+    [property: DataMember] public double RemainingData { get; set; }
+    [property: DataMember] public DateTime? ActivationDate { get; set; }
+    [property: DataMember] public int ValidDays { get; set; }
     [property: DataMember] public string ImageUrl { get; set; } = string.Empty;
 
     public override bool Equals(object? o)

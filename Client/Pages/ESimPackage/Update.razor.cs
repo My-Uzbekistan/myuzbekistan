@@ -14,7 +14,7 @@ public partial class Update : ComputedStateComponent<ESimPackageView>
     {
         Processing = true;
 
-        var response = await Injector.Commander.Run(new UpdateESimPackageCommand(Injector.Session, entity));
+        var response = await Injector.Commander.Run(new UpdateESimPackageCommand(entity));
         if (response.HasError)
         {
             Injector.Snackbar.Add(L["Error"] + " : " + response.Error?.Message, Severity.Success);

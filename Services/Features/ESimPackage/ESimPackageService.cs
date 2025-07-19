@@ -6,9 +6,10 @@ public class ESimPackageService(
     IServiceProvider services, 
     IAiraloCountryService airaloCountryService,
     IAiraloPackageService airaloPackageService,
+    IAiraloTokenService airaloTokenService,
+    IConfiguration configuration,
     ICurrencyService currencyService,
     IUserService userService,
-    IAiraloBalanceService airaloBalanceService,
     ICommander commander) 
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
@@ -91,22 +92,6 @@ public class ESimPackageService(
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async virtual Task Delete(DeleteESimPackageCommand command, CancellationToken cancellationToken = default)
-    {
-        if (Invalidation.IsActive)
-        {
-            _ = await Invalidate();
-            return;
-        }
-        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-        var eSimPackage = await dbContext.ESimPackages
-            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw new ValidationException("ESimPackageEntity Not Found");
-        eSimPackage.Status = ContentStatus.Inactive;
-        dbContext.Update(eSimPackage);
-        await dbContext.SaveChangesAsync(cancellationToken);
-    }
-
     public async virtual Task Update(UpdateESimPackageCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
@@ -123,6 +108,22 @@ public class ESimPackageService(
         eSimPackage.Price = price;
         dbContext.Update(eSimPackage);
 
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+    
+    public async virtual Task Delete(DeleteESimPackageCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var eSimPackage = await dbContext.ESimPackages
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
+            ?? throw new ValidationException("ESimPackageEntity Not Found");
+        eSimPackage.Status = ContentStatus.Inactive;
+        dbContext.Update(eSimPackage);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -167,13 +168,12 @@ public class ESimPackageService(
                         Reattach(existingPackage, package, dbContext);
                         existingPackage.Id = id;
                         existingPackage.Status = status;
-                        dbContext.Update(existingPackage);
+                        var view = existingPackage.MapToView();
+                        await commander.Call(new UpdateESimPackageCommand(view), cancellationToken);
                     }
                     else
                     {
-                        ESimPackageEntity eSimPackage = new ESimPackageEntity();
-                        Reattach(eSimPackage, package, dbContext);
-                        dbContext.Add(eSimPackage);
+                        await commander.Call(new CreateESimPackageCommand(package), cancellationToken);
                     }
                 }
             }
@@ -264,7 +264,7 @@ public class ESimPackageService(
                 discountEntity = null;
             }
         }
-
+        IAiraloBalanceService airaloBalanceService = new AiraloBalanceService(airaloTokenService, configuration);
         var balanceCheck = await airaloBalanceService.Get(cancellationToken);
         if (balanceCheck is null || balanceCheck.Data.Balances.AvailableBalance.Amount < price)
         {

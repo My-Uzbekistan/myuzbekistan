@@ -12,9 +12,8 @@ public class AiraloBalanceService(IAiraloTokenService airaloTokenService,
         DefaultValueHandling = DefaultValueHandling.Ignore
     };
 
-    public virtual async Task<AiraloBalanceView> Get(CancellationToken cancellationToken = default)
+    public async Task<AiraloBalanceView> Get(CancellationToken cancellationToken = default)
     {
-        await Invalidate();
         var token = await airaloTokenService.GetTokenAsync(cancellationToken);
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -31,12 +30,5 @@ public class AiraloBalanceService(IAiraloTokenService airaloTokenService,
                      ?? throw new InvalidOperationException("Failed to deserialize Airalo balance response.");
 
         return result;
-    }
-
-    [ComputeMethod]
-    public Task<Unit> Invalidate()
-    {
-        Invalidation.Begin();
-        return TaskExt.UnitTask;
     }
 }

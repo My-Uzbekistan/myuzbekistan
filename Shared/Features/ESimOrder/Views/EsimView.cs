@@ -27,7 +27,6 @@ public partial class EsimView
     {
         var other = o as EsimView;
         return other?.Id == Id &&
-                other?.CountrySlug == CountrySlug &&
                 other?.CountryName == CountryName &&
                 other?.OperatorName == OperatorName &&
                 other?.DataValume == DataValume &&
@@ -40,5 +39,5 @@ public partial class EsimView
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Id, CountrySlug, CountryName, OperatorName, ICCID);
+        => HashCode.Combine(Id, CountryName, OperatorName, ICCID);
 }

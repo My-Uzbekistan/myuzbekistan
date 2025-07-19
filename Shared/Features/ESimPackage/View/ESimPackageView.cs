@@ -19,6 +19,11 @@ public partial class ESimPackageView
     [property: DataMember] public string Network { get; set; } = string.Empty;
     [property: DataMember] public string ActivationPolicy { get; set; } = string.Empty;
     [property: DataMember] public ContentStatus Status { get; set; }
+    [property: DataMember] public bool? IsRoaming { get; set; }
+    [property: DataMember] public string? ImageUrl { get; set; } = string.Empty;
+    [property: DataMember] public List<string>? Info { get; set; } = [];
+    [property: DataMember] public string? OtherInfo { get; set; }
+    [property: DataMember] public List<PackageResponseCoverage>? Coverage { get; set; } = [];
 
     public override bool Equals(object? o)
     {
@@ -61,7 +66,12 @@ public partial class ESimPackageView
                     Price = package.Price,
                     Network = provider.Title,
                     ActivationPolicy = provider.ActivationPolicy,
-                    OperatorName = provider.Title
+                    OperatorName = provider.Title,
+                    IsRoaming = provider.IsRoaming,
+                    ImageUrl = provider.Image.Url,
+                    Info = provider.Info,
+                    OtherInfo = provider.OtherInfo,
+                    Coverage = provider.Coverages
                 };
                 result.Add(packageView);
             }

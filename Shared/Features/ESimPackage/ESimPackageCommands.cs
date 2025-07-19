@@ -1,10 +1,10 @@
 namespace myuzbekistan.Shared;
 
 [DataContract, MemoryPackable]
-public partial record CreateESimPackageCommand([property: DataMember] Session Session, [property: DataMember] ESimPackageView Entity) : ISessionCommand<ESimPackageView>;
+public partial record CreateESimPackageCommand([property: DataMember] ESimPackageView Entity) : ICommand<ESimPackageView>;
 
 [DataContract, MemoryPackable]
-public partial record UpdateESimPackageCommand([property: DataMember] Session Session, [property: DataMember] ESimPackageView Entity) : ISessionCommand<ESimPackageView>;
+public partial record UpdateESimPackageCommand([property: DataMember] ESimPackageView Entity) : ICommand<ESimPackageView>;
 
 [DataContract, MemoryPackable]
 public partial record DeleteESimPackageCommand([property: DataMember] Session Session, [property: DataMember] long Id) : ISessionCommand<ESimPackageView>;
