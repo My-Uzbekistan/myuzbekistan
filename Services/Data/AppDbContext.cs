@@ -77,7 +77,21 @@ public partial class AppDbContext : DbContextBase
             .HasColumnType("text[]")
             .HasDefaultValueSql("'{}'");
 
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
 
+        modelBuilder.Entity<ESimPackageEntity>()
+            .Property(x => x.Coverage)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<List<PackageResponseCoverage>>(v, jsonOptions) ?? new List<PackageResponseCoverage>()
+            );
+
+        //modelBuilder.Entity<PackageResponseCoverage>().HasNoKey();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

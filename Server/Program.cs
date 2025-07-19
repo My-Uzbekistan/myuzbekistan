@@ -1,13 +1,31 @@
-﻿using BackuptaGram;
+using ActualLab.CommandR.Configuration;
+using ActualLab.Fusion;
+using ActualLab.Fusion.Client.Caching;
+using ActualLab.Fusion.Extensions;
+using ActualLab.Fusion.Server;
+using ActualLab.Rpc;
+using ActualLab.Rpc.Server;
+using BackuptaGram;
 using Coravel;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Minio;
+using MudBlazor;
+using MudBlazor.Services;
 using MudBlazorWebApp1.Components.Account;
 using myuzbekistan.Services;
 using Server;
 using Server.Infrastructure;
 using Server.Infrastructure.ServiceCollection;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using tusdotnet.Stores;
 using UTC.Minio;
@@ -66,12 +84,6 @@ services.AddAuthorizationCore(config =>
 services.AddHttpClient("multicard", (client) =>
 {
     client.BaseAddress = new Uri(cfg.GetValue<string>("Multicard:Url")!);
-    client.DefaultRequestHeaders.Add("accept", "application/json");
-});
-
-services.AddHttpClient("globalpay", (client) =>
-{
-    client.BaseAddress = new Uri(cfg.GetValue<string>("GlobalPay:Url")!);
     client.DefaultRequestHeaders.Add("accept", "application/json");
 });
 
@@ -236,6 +248,7 @@ builder.Services.AddHostedService<TelegramBotService>();
 //services.AddScoped<IUFileService, TusUploadHelper>();
 
 var app = builder.Build();
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -264,6 +277,16 @@ app.UseWebSockets(new WebSocketOptions()
 });
 #endregion
 
+#region BackgroundJobs
+
+var provider = app.Services;
+provider.UseScheduler(scheduler =>
+{
+    scheduler.ScheduleWithParams<ESimPackageSyncner>().Daily();
+});
+
+#endregion
+
 app.UseFusionSession();
 app.UseRequestLocalization();
 
@@ -275,7 +298,6 @@ UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Minio);
 //UFile.Server.UFileRegistration.UseFileServer(app, UploadType.Tus);
 
 app.UseCors();
-app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

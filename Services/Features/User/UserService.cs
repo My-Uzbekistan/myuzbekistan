@@ -1,4 +1,4 @@
-﻿using ActualLab.Async;
+using ActualLab.Async;
 using ActualLab.Fusion;
 using ActualLab.Fusion.EntityFramework;
 using ClosedXML.Excel;
@@ -13,7 +13,11 @@ using System.Threading;
 namespace myuzbekistan.Services;
 
 #region Queries
-public class UserService(IServiceProvider services,IDbContextFactory<ApplicationDbContext> dbContextFactory) : DbServiceBase<ApplicationDbContext>(services), IUserService
+public class UserService(
+    IServiceProvider services,
+    IDbContextFactory<ApplicationDbContext> dbContextFactory,
+    IAuth auth) 
+    : DbServiceBase<ApplicationDbContext>(services), IUserService
 {
 
     public async virtual Task<TableResponse<ApplicationUser>> GetAll(TableOptions options, CancellationToken cancellationToken)
@@ -27,6 +31,17 @@ public class UserService(IServiceProvider services,IDbContextFactory<Application
         return new TableResponse<ApplicationUser>() { Items = items, TotalItems = count };
     }
 
+    public virtual async Task<ApplicationUser> GetUserAsync(Session session, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var userSession = await auth.GetUser(session, cancellationToken);
+        long userId = long.Parse(userSession!.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
+        var user = dbContext.Users.FirstOrDefault(x => x.Id == userId)
+            ?? throw new NotFoundException("User Not Found");
+
+        return user;
+    }
 
     #endregion
 
@@ -185,5 +200,6 @@ public class UserService(IServiceProvider services,IDbContextFactory<Application
             _ = await Invalidate();
         }
     }
+
     #endregion
 }

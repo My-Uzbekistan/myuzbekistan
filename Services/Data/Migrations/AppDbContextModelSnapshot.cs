@@ -600,6 +600,195 @@ namespace Services.Migrations
                     b.ToTable("ContentRequests");
                 });
 
+            modelBuilder.Entity("myuzbekistan.Shared.ESimOrderEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("ActivationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ConfirmationCode")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("CustomPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DirectAppleUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double?>("DiscountPercentage")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("EsimType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Iccid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Lpa")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ManualInstallation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MatchingId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OrderCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Package")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PackageId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
+                    b.Property<string>("QrCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("QrCodeInstallation")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("QrCodeUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SimCreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SimId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Validity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ESimOrders");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ActivationPolicy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CountryName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Coverage")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("CustomPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("DataVolume")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.PrimitiveCollection<List<string>>("Info")
+                        .HasColumnType("text[]");
+
+                    b.Property<bool?>("IsRoaming")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Network")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OperatorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OtherInfo")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("PackageDiscountId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PackageId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ValidDays")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ESimPackages");
+                });
+
             modelBuilder.Entity("myuzbekistan.Shared.FacilityEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -929,6 +1118,46 @@ namespace Services.Migrations
                     b.HasIndex("MerchantCategoryId", "MerchantCategoryLocale");
 
                     b.ToTable("Merchants");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.PackageDiscountEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("DiscountPercentage")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("DiscountPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<long>("ESimPackageId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ESimPackageId")
+                        .IsUnique();
+
+                    b.ToTable("PackageDiscounts");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.PaymentEntity", b =>
@@ -1304,6 +1533,17 @@ namespace Services.Migrations
                     b.Navigation("MerchantCategory");
                 });
 
+            modelBuilder.Entity("myuzbekistan.Shared.PackageDiscountEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.ESimPackageEntity", "ESimPackage")
+                        .WithOne("PackageDiscountEntity")
+                        .HasForeignKey("myuzbekistan.Shared.PackageDiscountEntity", "ESimPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ESimPackage");
+                });
+
             modelBuilder.Entity("myuzbekistan.Shared.RegionEntity", b =>
                 {
                     b.HasOne("myuzbekistan.Shared.RegionEntity", "ParentRegion")
@@ -1337,6 +1577,11 @@ namespace Services.Migrations
             modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
                 {
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
+                {
+                    b.Navigation("PackageDiscountEntity");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>

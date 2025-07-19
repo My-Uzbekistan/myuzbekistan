@@ -9,6 +9,7 @@
     <MudNavLink Href="/facilities" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Tag" IconColor="Color.Inherit">@L["Facility"]</MudNavLink>
     <MudNavLink Href="/favorites" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Favorite" IconColor="Color.Inherit">@L["Favorite"]</MudNavLink>
     <MudNavLink Href="/files" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Attachment" IconColor="Color.Inherit">@L["File"]</MudNavLink>
+    <MudNavLink Href="/esim-packages" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.SimCard" IconColor="Color.Inherit">@L["ESimPackages"]</MudNavLink>
     <MudNavLink Href="/languages" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Language" IconColor="Color.Inherit">@L["Language"]</MudNavLink>
     <MudNavLink Href="/reviews" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Reviews" IconColor="Color.Inherit">@L["Review"]</MudNavLink>
     @if (Claims.Any(x => x.Type == ClaimTypes.Role && x.Value == "Admin"))

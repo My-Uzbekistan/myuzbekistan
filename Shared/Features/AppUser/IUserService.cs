@@ -1,4 +1,4 @@
-﻿using ActualLab.Async;
+using ActualLab.Async;
 using ActualLab.CommandR.Configuration;
 using ActualLab.Fusion;
 using System.Reactive;
@@ -9,7 +9,10 @@ public interface IUserService:IComputeService
 {
     [ComputeMethod]
     Task<TableResponse<ApplicationUser>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
-    
+
+    [ComputeMethod]
+    Task<ApplicationUser> GetUserAsync(Session session, CancellationToken cancellationToken = default);
+
     [ComputeMethod]
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 

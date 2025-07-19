@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using myuzbekistan.Shared;
 using OpenTelemetry.Trace;
 using Shared.Localization;
@@ -42,7 +42,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
         }
         else
         {
-             httpResponse = exception switch
+            httpResponse = exception switch
             {
                 MultiException e when e.MultiErrorWrapper?.Error != null =>
                     new ErrorResponse(400, e.MultiErrorWrapper.Error.Code, e.MultiErrorWrapper.Error.Details),
