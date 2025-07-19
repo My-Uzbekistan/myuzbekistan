@@ -275,7 +275,7 @@ public class ESimPackageService(
         {
             Amount = (decimal)eSimPackage.CustomPrice,
             Description = "A purchase of eSIM package",
-            MerchantId = 1
+            MerchantId = -777,
         };
 
         await commander.Call(new CreateInvoiceCommand(command.Session, invoiceRequest), cancellationToken);

@@ -90,8 +90,6 @@ public partial class AppDbContext : DbContextBase
                 v => JsonSerializer.Serialize(v, jsonOptions),
                 v => JsonSerializer.Deserialize<List<PackageResponseCoverage>>(v, jsonOptions) ?? new List<PackageResponseCoverage>()
             );
-
-        //modelBuilder.Entity<PackageResponseCoverage>().HasNoKey();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
