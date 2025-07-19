@@ -468,4 +468,16 @@
   <data name="DeleteAll" xml:space="preserve">
     <value>Delete All</value>
   </data>
+  <data name="CardAlreadyExists" xml:space="preserve">
+    <value>Card Already Exists</value>
+  </data>
+  <data name="CardHolderNameRequired" xml:space="preserve">
+    <value>Card Holder Name Required</value>
+  </data>
+  <data name="SmsNotificationNumberRequired" xml:space="preserve">
+    <value>Sms Notification Number Required</value>
+  </data>
+  <data name="NumberFormatForGlobalPay" xml:space="preserve">
+    <value>The phone number must be in the format 998XXXXXXXXX (e.g. 998997961883)</value>
+  </data>
 </root>

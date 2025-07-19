@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using System.Runtime.CompilerServices;
 
 namespace myuzbekistan.Shared;
 
@@ -25,10 +26,22 @@ public class ErrorResponse(int status, string code, string message)
 }
 
 
-public class ServiceException(string service, string method, string message, string code = "400") : Exception(message)
+public class MyUzException : Exception
 {
-    public string Service { get; set; } = service;
-    public string Method { get; set; } = method;
-    public string Code { get; set; } = code;
-    public new string Message { get; set; } = message;
+    public string Service { get; set; }
+    public string Method { get; set; }
+    public string Code { get; set; }
+    public new string Message { get; set; }
+
+    public MyUzException(
+        string message,
+        string code = "400",
+        [CallerFilePath] string service = "",
+        [CallerMemberName] string method = "") : base(message)
+    {
+        Service = System.IO.Path.GetFileNameWithoutExtension(service); // Извлекаем имя файла без расширения
+        Method = method;
+        Code = code;
+        Message = message;
+    }
 }

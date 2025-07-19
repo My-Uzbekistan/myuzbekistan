@@ -1,41 +1,61 @@
-﻿using ActualLab.CommandR;
-using ActualLab.Fusion;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Localization;
 using myuzbekistan.Services;
-using myuzbekistan.Shared;
+using Shared.Localization;
 
 namespace Server.Controllers
 {
     [Route("api/cards")]
     [ApiController]
     [Authorize]
-    public class CardController(ICardService cardService, ICardPrefixService cardPrefixService,ICardColorService cardColorService , GlobalPayService globalPayService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
+    public class CardController(ICardService cardService, ICardPrefixService cardPrefixService, ICardColorService cardColorService, GlobalPayService globalPayService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
     {
 
         [HttpPost("bind-card")]
         public async Task<IActionResult> BindCard([FromBody] PaymentVendorCardRequest request, CancellationToken cancellationToken)
         {
             var cardPrefix = await cardPrefixService.GetTypeByCardNumber(request.Token!, cancellationToken);
-           
+            var extCardTypes = new[] { "Visa", "MasterCard" };
+
             var userId = User.Id();
-            var session = await sessionResolver.GetSession();
+            var session = await sessionResolver.GetSession(cancellationToken);
             var card = await cardService.CheckCard(userId, request.Token!, cancellationToken);
             if (card)
             {
-                throw new Exception("Card already exists.");
+                throw new MyUzException("CardAlreadyExists");
             }
+            if (extCardTypes.Contains(cardPrefix.CardType) && string.IsNullOrEmpty(request.CardHolderName))
+            {
+                throw new MyUzException("CardHolderNameRequired");
+            }
+            else if (extCardTypes.Contains(cardPrefix.CardType) && (request.Cvv == null  || request.Cvv == 0))
+            {
+                throw new MyUzException("CvvRequired");
+
+            }
+            else if (extCardTypes.Contains(cardPrefix.CardType) && !string.IsNullOrEmpty(request.SmsNotificationNumber))
+            {
+                throw new MyUzException("SmsNotificationNumberMustBeNullForExternalCards");
+
+            }
+
+            else if(!extCardTypes.Contains(cardPrefix.CardType) &&  string.IsNullOrEmpty(request.SmsNotificationNumber))
+            {
+                throw new MyUzException("SmsNotificationNumberRequired");
+
+            }
+
             var cardInfo = await globalPayService.BindCard(new GPBindCardRequest
             {
                 CardHolderName = request.CardHolderName,
                 SmsNotificationNumber = request.SmsNotificationNumber,
                 CardNumber = request.Token!.Replace(" ", ""),
-                ExpiryDate = request.Expiry,
-            }
-                );
-            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView {  Id = request.CardColorId } ,  Name = request.Name }), cancellationToken: cancellationToken);
+                ExpiryDate = request.Expiry
+            });
 
-            return Ok(new { cardId = res } );
+            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView { Id = request.CardColorId }, Name = request.Name ,Cvv = request.Cvv}), cancellationToken: cancellationToken);
+
+            return Ok(new { cardId = res });
         }
 
 
@@ -48,7 +68,7 @@ namespace Server.Controllers
         [HttpGet("card-colors")]
         public async Task<IActionResult> CardColor(CancellationToken cancellationToken = default)
         {
-            return Ok(await cardColorService.GetAll(new TableOptions { Page = 1 , PageSize = 200}));
+            return Ok(await cardColorService.GetAll(new TableOptions { Page = 1, PageSize = 200 }));
         }
 
         [HttpPost("confirm-card/{id:long}")]

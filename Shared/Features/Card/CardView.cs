@@ -24,6 +24,7 @@ public partial class  CardView
     [property: DataMember, JsonPropertyName("code")] public CardColorView? Code { get; set; } = null!;
     [property: DataMember, JsonPropertyName("name")] public string? Name { get; set; } = null!;
     [property: DataMember, JsonPropertyName("name")] public decimal? Balance { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("cvv")] public int? Cvv { get; set; } 
 
     public override bool Equals(object? o)
     {

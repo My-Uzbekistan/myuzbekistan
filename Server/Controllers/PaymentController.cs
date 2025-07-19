@@ -16,19 +16,20 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
     {
         if (topUp.Amount <= 0)
         {
-            return BadRequest(new { Message = "Amount must be greater than 0" });
+            throw new MyUzException("AmountMustBeGreaterThanZero");
         }
+        topUp.Amount *=100;
         var userId = User.Id();
         var card = await cardService.Get(topUp.CardId, userId, cancellationToken);
         var res = await globalPayService.CreatePayment(userId, topUp.Amount, card);
-        return Ok(new { Message = res });
+        return Ok(new { PaymentId = res.ExternalId });
     }
 
     [HttpPost("confirm-top-up")]
     public async Task<IActionResult> ConfirmTopUp([FromBody] ConfirmTopUpRequest confirmTopUp)
     {
         long userId = User.Id();
-        await globalPayService.ConfirmPayment(confirmTopUp.PaymentId, confirmTopUp.Otp);
+        await globalPayService.ConfirmPayment(confirmTopUp.PaymentId);
         return Ok();
     }
 
@@ -36,7 +37,6 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
 
 public class ConfirmTopUpRequest
 {
-    public string Otp { get; set; } = null!;
     public string PaymentId { get; set; } = null!;
 }
 

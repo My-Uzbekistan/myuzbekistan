@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Shared.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,12 +25,15 @@ public class PaymentVendorCardRequest
 
     [JsonPropertyName("smsNotificationNumber")]
     [JsonProperty("smsNotificationNumber")]
-    [Required]
+    [RegularExpression(@"^998\d{9}$",ErrorMessageResourceType = typeof(SharedResource), ErrorMessageResourceName= "NumberFormatForGlobalPay")]
     public string? SmsNotificationNumber { get; set; } = null!;
     [JsonPropertyName("cardHolderName")]
     [JsonProperty("cardHolderName")]
-    [RegularExpression(@"^\d{2}((0[1-9])|(1[0-2]))$", ErrorMessage = "Expiry должен быть в формате YYMM (например, 2603)")]
     public string? CardHolderName { get; set; }
+
+    [JsonPropertyName("cvv")]
+    [JsonProperty("cvv")]
+    public int? Cvv { get; set; } = null!;
 
     [JsonPropertyName("name")]
     [JsonProperty("name")]

@@ -468,4 +468,16 @@
   <data name="DeleteAll" xml:space="preserve">
     <value>Barchasini o'chiring</value>
   </data>
+  <data name="CardAlreadyExists" xml:space="preserve">
+    <value>Karta allaqachon mavjud</value>
+  </data>
+  <data name="CardHolderNameRequired" xml:space="preserve">
+    <value>Karta egasi nomi talab qilinadi</value>
+  </data>
+  <data name="SmsNotificationNumberRequired" xml:space="preserve">
+    <value>SMS-xabarlar soni talab qilinadi</value>
+  </data>
+  <data name="NumberFormatForGlobalPay" xml:space="preserve">
+    <value>Telefon raqami 998xxxxxxxxxx formatida bo'lishi kerak (masalan 998997961838)</value>
+  </data>
 </root>

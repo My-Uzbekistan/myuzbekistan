@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace myuzbekistan.Shared;  
 
@@ -18,5 +19,6 @@ public partial class CardEntity : BaseEntity
     public string? Pinfl { get; set; }
     public string? Ps { get; set; } = null!;
     public string? Status { get; set; }
-    
+    public int? Cvv { get; set; } 
+
 }

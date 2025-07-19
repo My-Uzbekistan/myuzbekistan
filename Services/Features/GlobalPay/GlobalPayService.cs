@@ -31,6 +31,7 @@ public class GPBindCardRequest
     [JsonProperty("cardHolderName")]
     [Required]
     public string? CardHolderName { get; set; } = null!;
+
 }
 
 public class GPBindCardResponse
@@ -312,7 +313,7 @@ public class GlobalPayService(
         Total = amount,
     };
 
-    private int serviceId = 10;
+    private int serviceId = 110;
 
     public async Task<string> CreateInvoice(decimal amount)
     {
@@ -378,7 +379,7 @@ public class GlobalPayService(
         var card = await cardService.Get(payment.CardId, payment.UserId);
         var paymentRequest = new GPConfirmPaymentRequest
         {
-            Id = paymentId,
+            Id = payment.TransactionId!,
             ExternalId = payment.ExternalId!,
             CardToken = card.CardToken,
             //CardSecurityCode = cardSecurityCode,
@@ -392,6 +393,7 @@ public class GlobalPayService(
         var session = await sessionResolver.GetSession();
 
         payment.PaymentStatus = content.Status == "APPROVED" ? PaymentStatus.Completed : PaymentStatus.Failed;
+        payment.CallbackData = resultString;
         await commander.Call(new UpdatePaymentCommand(session, payment));
 
         if (payment.PaymentStatus == PaymentStatus.Completed)

@@ -28,7 +28,7 @@
             <MudTd DataLabel="Path">
                 @if (imageExtensions.Contains(context.Extension))
                 {
-                    <img src="@context.Path" height="50" class="mr-1" />
+                    <ImageView fileEntity="@context" />
                 }
                 else
                 {

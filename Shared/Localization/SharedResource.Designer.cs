@@ -151,6 +151,24 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Card Already Exists.
+        /// </summary>
+        public static string CardAlreadyExists {
+            get {
+                return ResourceManager.GetString("CardAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Card Holder Name Required.
+        /// </summary>
+        public static string CardHolderNameRequired {
+            get {
+                return ResourceManager.GetString("CardHolderNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to categories.
         /// </summary>
         public static string categories {
@@ -691,6 +709,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The phone number must be in the format 998XXXXXXXXX (e.g. 998997961883).
+        /// </summary>
+        public static string NumberFormatForGlobalPay {
+            get {
+                return ResourceManager.GetString("NumberFormatForGlobalPay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Order.
         /// </summary>
         public static string Order {
@@ -975,6 +1002,15 @@ namespace Shared.Localization {
         public static string Site {
             get {
                 return ResourceManager.GetString("Site", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sms Notification Number Required.
+        /// </summary>
+        public static string SmsNotificationNumberRequired {
+            get {
+                return ResourceManager.GetString("SmsNotificationNumberRequired", resourceCulture);
             }
         }
         

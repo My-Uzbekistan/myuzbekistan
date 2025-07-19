@@ -468,4 +468,16 @@
   <data name="NoImagesFound!UploadYourFirstImage" xml:space="preserve">
     <value>Изображения не найдены! Загрузите свое первое изображение</value>
   </data>
+  <data name="NumberFormatForGlobalPay" xml:space="preserve">
+    <value>Номер телефона должен быть в формате 998XXXXXXXXX (например, 998997961883)</value>
+  </data>
+  <data name="CardAlreadyExists" xml:space="preserve">
+    <value>Карта уже существует</value>
+  </data>
+  <data name="CardHolderNameRequired" xml:space="preserve">
+    <value>Требуется имя держателя карты</value>
+  </data>
+  <data name="SmsNotificationNumberRequired" xml:space="preserve">
+    <value>Требуется номер уведомления SMS</value>
+  </data>
 </root>

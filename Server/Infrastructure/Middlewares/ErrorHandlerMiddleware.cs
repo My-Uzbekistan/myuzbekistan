@@ -1,5 +1,7 @@
-﻿using myuzbekistan.Shared;
+﻿using Microsoft.Extensions.Localization;
+using myuzbekistan.Shared;
 using OpenTelemetry.Trace;
+using Shared.Localization;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -8,7 +10,7 @@ using System.Text.Json.Serialization;
 namespace Server.Infrastructure;
 
 public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger,
-    IAlertaGram alertaGram, IWebHostEnvironment env)
+    IAlertaGram alertaGram, IWebHostEnvironment env, IStringLocalizer<SharedResource> @L)
 {
     public async Task Invoke(HttpContext context)
     {
@@ -34,9 +36,9 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
         }
 
         ErrorResponse httpResponse;
-        if (exception is myuzbekistan.Shared.ServiceException customEx)
+        if (exception is myuzbekistan.Shared.MyUzException customEx)
         {
-            httpResponse = new ErrorResponse(400, customEx.Code, $"{customEx.Service}---{customEx.Method}---{customEx.Message}");
+            httpResponse = new ErrorResponse(400, $"{customEx.Service}---{customEx.Method}---{customEx.Message}", @L[customEx.Message]);
         }
         else
         {
@@ -62,7 +64,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
 
         }
 
-        logger.LogError(exception, exception.Message);
+        logger.LogError(exception, httpResponse.Code);
 
         // ✅ Добавляем проверку, чтобы избежать ошибки
         if (!context.Response.HasStarted)
