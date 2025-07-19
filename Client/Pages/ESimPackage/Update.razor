@@ -1,0 +1,10 @@
+@page "/esim-packages/{Id:long}"
+@inherits ComputedStateComponent<ESimPackageView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.ESimPackage._Form OnSubmit="OnSubmit"
+                         Model="Model"
+                         Processing="@Processing"
+                         IsNew="false" />

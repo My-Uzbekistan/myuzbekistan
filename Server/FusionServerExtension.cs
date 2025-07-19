@@ -30,6 +30,11 @@ public static class FusionServerExtension
         fusion.AddService<ISimCountryService, SimCountryService>();
         fusion.AddService<ICardPrefixService, CardPrefixService>();
         fusion.AddService<ICardColorService, CardColorService>();
+        fusion.AddService<IAiraloCountryService, AiraloCountryService>();
+        fusion.AddService<IAiraloTokenService, AiraloTokenService>();
+        fusion.AddService<IAiraloPackageService, AiraloPackageService>();
+        fusion.AddService<IESimPackageService, ESimPackageService>();
+        fusion.AddService<IESimOrderService, ESimOrderService>();
 
         return fusion;
     }
