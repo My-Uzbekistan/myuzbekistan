@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Minio;
 using MudBlazor;
 using MudBlazor.Services;
 using MudBlazorWebApp1.Components.Account;
