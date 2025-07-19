@@ -21,6 +21,7 @@ public sealed partial record TableOptions
     [property: DataMember] public int SortDirection { get; set; } = 1;
 
     [property: DataMember] public string? Search { get; set; }
+    [property: DataMember] public string? CountrySlug { get; set; }
 
     [property: DataMember] public DateOnly? From { get; set; }
 

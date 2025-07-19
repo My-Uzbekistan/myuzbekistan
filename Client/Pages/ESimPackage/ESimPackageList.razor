@@ -6,6 +6,11 @@
 }
 
 <ListContainer Title="ESimPackage">
+    <Actions>
+        <MudButton OnClick="SyncPackages" Variant="Variant.Filled" Color="Color.Primary">
+            @L["SyncPackages"]
+        </MudButton>
+    </Actions>
     <ChildContent>
         <UTCTable Values=@Items SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">
             <MudTd>@context.PackageId</MudTd>

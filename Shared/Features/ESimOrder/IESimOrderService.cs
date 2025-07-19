@@ -8,6 +8,12 @@ public interface IESimOrderService : IComputeService
     [ComputeMethod]
     Task<ESimOrderView> Get(long Id, Session? session, CancellationToken cancellationToken = default);
 
+    [ComputeMethod]
+    Task<TableResponse<MyEsimsView>> GetAllEsim(TableOptions options, Session? session, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
+    Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default);
+
     [CommandHandler]
     Task Create(CreateESimOrderCommand command, CancellationToken cancellationToken = default);
 

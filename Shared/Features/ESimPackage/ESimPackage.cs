@@ -1,7 +1,10 @@
+using System.Text.Json;
+
 namespace myuzbekistan.Shared;
 
 public class ESimPackageEntity : BaseEntity
 {
+    public string OperatorName { get; set; } = string.Empty;
     public string PackageId { get; set; } = string.Empty;
     public string CountryCode { get; set; } = string.Empty;
     public string CountryName { get; set; } = string.Empty;
@@ -14,4 +17,10 @@ public class ESimPackageEntity : BaseEntity
     public ContentStatus Status { get; set; } = ContentStatus.Active;
     public long? PackageDiscountId { get; set; }
     public PackageDiscountEntity? PackageDiscountEntity { get; set; }
+
+    public bool IsRoaming { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
+    public List<string> Info { get; set; } = [];
+    public string? OtherInfo { get; set; }
+    public List<PackageResponseCoverage> Coverage { get; set; } = [];
 }

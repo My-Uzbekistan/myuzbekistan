@@ -20,7 +20,7 @@ public class EsimController(
         {
             return Unauthorized();
         }
-        var orders = await esimOrderService.GetAll(options, session, cancellationToken);
+        var orders = await esimOrderService.GetAllEsim(options, session, cancellationToken);
         return Ok(orders);
     }
 
@@ -32,7 +32,7 @@ public class EsimController(
         {
             return Unauthorized();
         }
-        var orders = await esimOrderService.Get(id, session, cancellationToken);
+        var orders = await esimOrderService.GetEsim(id, session, cancellationToken);
         return Ok(orders);
     }
 

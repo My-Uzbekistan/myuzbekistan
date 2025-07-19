@@ -30,5 +30,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                     join.HasKey(x => new { x.UserId, x.RoleId });
                 }
             );
+
+        var jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+
+        builder.Entity<ESimPackageEntity>()
+            .Property(x => x.Coverage)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, jsonOptions),
+                v => JsonSerializer.Deserialize<List<PackageResponseCoverage>>(v, jsonOptions) ?? new List<PackageResponseCoverage>()
+            );
     }
 }

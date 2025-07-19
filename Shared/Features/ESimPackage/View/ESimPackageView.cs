@@ -9,6 +9,7 @@ public partial class ESimPackageView
     [property: DataMember] public long? PackageDiscountId { get; set; }
     [property: DataMember] public PackageDiscountView PackageDiscountView { get; set; } = new();
     [property: DataMember] public string PackageId { get; set; } = string.Empty;
+    [property: DataMember] public string OperatorName { get; set; } = string.Empty;
     [property: DataMember] public string CountryCode { get; set; } = string.Empty;
     [property: DataMember] public string CountryName { get; set; } = string.Empty;
     [property: DataMember] public string DataVolume { get; set; } = string.Empty;
@@ -59,7 +60,8 @@ public partial class ESimPackageView
                     ValidDays = package.Day,
                     Price = package.Price,
                     Network = provider.Title,
-                    ActivationPolicy = provider.ActivationPolicy
+                    ActivationPolicy = provider.ActivationPolicy,
+                    OperatorName = provider.Title
                 };
                 result.Add(packageView);
             }

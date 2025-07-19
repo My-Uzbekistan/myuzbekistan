@@ -16,7 +16,7 @@ public partial class OrderPackageStatusView
 public partial class OrderPackageStatusData
 {
     [DataMember, JsonProperty("remaining")]
-    public int Remaining { get; set; }
+    public double Remaining { get; set; }
 
     [DataMember, JsonProperty("total")]
     public int Total { get; set; }

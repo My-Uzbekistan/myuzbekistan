@@ -28,7 +28,8 @@ public class ESimOrderEntity : BaseEntity
     public string ManualInstallation { get; set; } = string.Empty;
     public string QrCodeInstallation { get; set; } = string.Empty;
     #endregion
-
+    public DateTime? ActivationDate { get; set; }
+    public DateTime? ExpirationDate { get; set; }
     public double CustomPrice { get; set; }
     public double? DiscountPercentage { get; set; }
     public long UserId { get; set; }

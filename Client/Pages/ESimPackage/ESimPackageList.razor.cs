@@ -64,4 +64,21 @@ public partial class ESimPackageList : MixedStateComponent<TableResponse<ESimPac
             Injector.Snackbar.Add(L["SuccessDelete"], Severity.Success);
         }
     }
+
+    private void SyncPackages()
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Injector.Commander.Run(new SyncESimPackagesCommand());
+            }
+            catch (Exception ex)
+            {
+                Injector.Snackbar.Add(L["SyncPackagesFailed"] + ": " + ex.Message, Severity.Error);
+            }
+        });
+
+        Injector.Snackbar.Add(L["SyncPackagesStarted"], Severity.Info);
+    }
 }

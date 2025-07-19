@@ -8,6 +8,7 @@ public class ESimPackageService(
     IAiraloPackageService airaloPackageService,
     ICurrencyService currencyService,
     IUserService userService,
+    IAiraloBalanceService airaloBalanceService,
     ICommander commander) 
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
@@ -18,6 +19,12 @@ public class ESimPackageService(
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var eSimPackage = from s in dbContext.ESimPackages select s;
+
+        if (!string.IsNullOrEmpty(options.CountrySlug) &&
+            CountryCodes.Dictionary.TryGetValue(options.CountrySlug, out var countryCode))
+        {
+            eSimPackage = eSimPackage.Where(x => x.CountryCode == countryCode);
+        }
 
         if (!string.IsNullOrEmpty(options.Search))
         {
@@ -119,46 +126,66 @@ public class ESimPackageService(
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    private static DateTime _lastSyncTime = DateTime.MinValue;
+    private static readonly SemaphoreSlim _syncLock = new(1, 1);
+
     public virtual async Task SyncPackages(SyncESimPackagesCommand command, CancellationToken cancellationToken = default)
     {
-        if (Invalidation.IsActive)
+        await _syncLock.WaitAsync(cancellationToken);
+        try
         {
-            _ = await Invalidate();
-            return;
-        }
-        Stopwatch stopwatch = Stopwatch.StartNew();
-        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
-
-        var countries = await airaloCountryService.GetAllAsync(Language.en, cancellationToken);
-        foreach (var country in countries)
-        {
-            var packages = await airaloPackageService.GetCountryPackagesAsync(country.Slug, cancellationToken);
-            var esimPackages = ESimPackageView.FromApiResponse(packages);
-            foreach (var package in esimPackages)
+            if ((DateTime.UtcNow - _lastSyncTime) < TimeSpan.FromHours(1))
             {
-                var existingPackage = await dbContext.ESimPackages
-                    .FirstOrDefaultAsync(x => x.PackageId == package.PackageId && x.CountryCode == package.CountryCode, cancellationToken);
-                if (existingPackage != null && existingPackage.Price != package.Price)
+                Console.WriteLine("SyncPackages skipped due to debounce (less than 1 hour since last execution).");
+                return;
+            }
+
+            _lastSyncTime = DateTime.UtcNow;
+
+            if (Invalidation.IsActive)
+            {
+                _ = await Invalidate();
+                return;
+            }
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+
+            var countries = await airaloCountryService.GetAllAsync(Language.en, cancellationToken);
+            foreach (var country in countries)
+            {
+                var packages = await airaloPackageService.GetCountryPackagesAsync(country.Slug, cancellationToken);
+                var esimPackages = ESimPackageView.FromApiResponse(packages);
+                foreach (var package in esimPackages)
                 {
-                    long id = existingPackage.Id;
-                    var status = existingPackage.Status;
-                    Reattach(existingPackage, package, dbContext);
-                    existingPackage.Id = id;
-                    existingPackage.Status = status;
-                    dbContext.Update(existingPackage);
-                }
-                else
-                {
-                    ESimPackageEntity eSimPackage = new ESimPackageEntity();
-                    Reattach(eSimPackage, package, dbContext);
-                    dbContext.Add(eSimPackage);
+                    var existingPackage = await dbContext.ESimPackages
+                        .FirstOrDefaultAsync(x => x.PackageId == package.PackageId && x.CountryCode == package.CountryCode, cancellationToken);
+                    if (existingPackage != null && existingPackage.Price != package.Price)
+                    {
+                        long id = existingPackage.Id;
+                        var status = existingPackage.Status;
+                        Reattach(existingPackage, package, dbContext);
+                        existingPackage.Id = id;
+                        existingPackage.Status = status;
+                        dbContext.Update(existingPackage);
+                    }
+                    else
+                    {
+                        ESimPackageEntity eSimPackage = new ESimPackageEntity();
+                        Reattach(eSimPackage, package, dbContext);
+                        dbContext.Add(eSimPackage);
+                    }
                 }
             }
-        }
 
-        await dbContext.SaveChangesAsync(cancellationToken);
-        stopwatch.Stop();
-        Console.WriteLine($"SyncPackages completed in {stopwatch.ElapsedMilliseconds} ms");
+            await dbContext.SaveChangesAsync(cancellationToken);
+            stopwatch.Stop();
+            Console.WriteLine($"SyncPackages completed in {stopwatch.ElapsedMilliseconds} ms");
+        }
+        finally
+        {
+            _syncLock.Release();
+        }
     }
 
     public virtual async Task UpdateDiscount(UpdatePackageDiscountCommand command, CancellationToken cancellationToken = default)
@@ -236,6 +263,12 @@ public class ESimPackageService(
             {
                 discountEntity = null;
             }
+        }
+
+        var balanceCheck = await airaloBalanceService.Get(cancellationToken);
+        if (balanceCheck is null || balanceCheck.Data.Balances.AvailableBalance.Amount < price)
+        {
+            throw new BadRequestException("Insufficient balance to make an order.");
         }
 
         InvoiceRequest invoiceRequest = new()
