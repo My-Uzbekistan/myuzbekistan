@@ -46,12 +46,13 @@ public partial class  CardView
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class CardInfo
 {
-    [property: DataMember, JsonPropertyName("user_id")] public long UserId { get; set; }
+    //[property: DataMember, JsonPropertyName("user_id")] public long UserId { get; set; }
     //[property: DataMember, JsonPropertyName("expiration_date")] public string? ExpirationDate { get; set; }
     //[property: DataMember, JsonPropertyName("phone")] public string Phone { get; set; } = null!;
-    [property: DataMember, JsonPropertyName("holder_name")] public string HolderName { get; set; } = null!;
+    //[property: DataMember, JsonPropertyName("holder_name")] public string HolderName { get; set; } = null!;
     [property: DataMember, JsonPropertyName("card_number")] public string CardNumber { get; set; } = null!;
     [property: DataMember, JsonPropertyName("status")] public string Status { get; set; } = null!;
+    [property: DataMember, JsonPropertyName("status_message")] public string StatusMessage { get; set; } = null!;
     [property: DataMember, JsonPropertyName("ps")] public string Ps { get; set; } = null!;
     [property: DataMember, JsonPropertyName("id")] public long Id { get; set; }
     [property: DataMember, JsonPropertyName("is_external")] public bool IsExternal
