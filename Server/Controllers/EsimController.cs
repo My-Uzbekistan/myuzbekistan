@@ -1,17 +1,35 @@
-using ActualLab.CommandR;
-using ActualLab.Fusion;
-using Microsoft.AspNetCore.Mvc;
-using myuzbekistan.Shared;
-
 namespace Server.Controllers;
 
 [Route("api/esim")]
 [ApiController]
-public class EsimController(
+[Authorize]
+public class EsimController(IAiraloCountryService airaloCountryService,
+    IESimPackageService eSimPackageService,
     IESimOrderService esimOrderService,
     ISessionResolver sessionResolver,
     ICommander commander) : ControllerBase
 {
+    [HttpGet("countries/{language}")]
+    public async Task<IActionResult> GetAllAsync(string language, CancellationToken cancellationToken = default)
+    {
+        var countries = await airaloCountryService.GetAllAsync(language.ConvertToLanguage(), cancellationToken);
+        return Ok(countries);
+    }
+
+    [HttpGet("countries/{language}/popular")]
+    public async Task<IActionResult> GetPopularAsync(string language, CancellationToken cancellationToken = default)
+    {
+        var popularCountries = await airaloCountryService.GetPopularAsync(language.ConvertToLanguage(), cancellationToken);
+        return Ok(popularCountries);
+    }
+
+    [HttpGet("plans")]
+    public async Task<IActionResult> GetPlansAsync([FromQuery] string? countrySlug, CancellationToken cancellationToken = default)
+    {
+        var countries = await eSimPackageService.GetAll(new TableOptions() { CountrySlug = countrySlug }, cancellationToken);
+        return Ok(countries);
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetList([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
     {

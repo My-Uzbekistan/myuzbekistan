@@ -121,7 +121,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
         }
 
 
-        return prefix ?? throw new ValidationException(
+        return prefix ?? throw new NotFoundException(
             "Card prefix not found for the provided card number.");
     }
 
@@ -133,7 +133,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
         var cardprefix = await dbContext.CardPrefixes
             .Include(x => x.CardBrand)
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw new ValidationException("CardPrefixEntity Not Found");
+            ?? throw new NotFoundException("CardPrefixEntity Not Found");
 
         return cardprefix.MapToView();
     }
@@ -170,7 +170,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
         var cardprefix = await dbContext.CardPrefixes
             .Include(x => x.CardBrand)
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw new ValidationException("CardPrefixEntity Not Found");
+            ?? throw new NotFoundException("CardPrefixEntity Not Found");
 
         Reattach(cardprefix, command.Entity, dbContext);
 
@@ -188,7 +188,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
         var cardprefix = await dbContext.CardPrefixes
             .Include(x => x.CardBrand)
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw new ValidationException("CardPrefixEntity Not Found");
+            ?? throw new NotFoundException("CardPrefixEntity Not Found");
         dbContext.Remove(cardprefix);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

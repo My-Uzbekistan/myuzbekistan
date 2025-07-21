@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Internal;
 using myuzbekistan.Services;
 
 public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFactory<ApplicationDbContext> dbContextFactory, MerchantNotifierService merchantNotifier) : DbServiceBase<AppDbContext>(services), IInvoiceService
@@ -36,7 +36,7 @@ public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFac
         var invoice = await dbContext.Invoices
             .Include(x => x.Merchant)
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw new ValidationException("InvoiceEntity Not Found");
+            ?? throw new NotFoundException("InvoiceEntity Not Found");
 
         return invoice.MapToView();
     }
@@ -58,7 +58,7 @@ public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFac
         var userSession = await auth.GetUser(command.Session, cancellationToken);
         long userId = long.Parse(userSession!.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
         var user = userContext.Users.FirstOrDefault(x => x.Id == userId)
-            ?? throw new ValidationException("User Not Found");
+            ?? throw new NotFoundException("User Not Found");
 
 
         if (user.Balance < command.InvoiceRequest.Amount)
@@ -100,7 +100,7 @@ public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFac
         var invoice = await dbContext.Invoices
             .Include(x => x.Merchant)
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw new ValidationException("InvoiceEntity Not Found");
+            ?? throw new NotFoundException("InvoiceEntity Not Found");
 
         Reattach(invoice, command.Entity, dbContext);
 
@@ -118,7 +118,7 @@ public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFac
         var invoice = await dbContext.Invoices
             .Include(x => x.Merchant)
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw new ValidationException("InvoiceEntity Not Found");
+            ?? throw new NotFoundException("InvoiceEntity Not Found");
         dbContext.Remove(invoice);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

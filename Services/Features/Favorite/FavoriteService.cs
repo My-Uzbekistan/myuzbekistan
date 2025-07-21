@@ -66,7 +66,7 @@ public class FavoriteService(IServiceProvider services, IContentService contentS
         .Include(x => x.Content)
         .FirstOrDefaultAsync(x => x.Id == Id);
 
-        return favorite == null ? throw new ValidationException("FavoriteEntity Not Found") : favorite.MapToView();
+        return favorite == null ? throw new NotFoundException("FavoriteEntity Not Found") : favorite.MapToView();
     }
 
     #endregion

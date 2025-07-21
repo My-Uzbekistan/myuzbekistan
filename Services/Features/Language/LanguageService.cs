@@ -43,7 +43,7 @@ public class LanguageService(IServiceProvider services) : DbServiceBase<AppDbCon
         var language = dbContext.Languages
         .Where(x => x.Id == Id).ToList();
         
-        return language == null ? throw new ValidationException("LanguageEntity Not Found") : language.MapToViewList();
+        return language == null ? throw new NotFoundException("LanguageEntity Not Found") : language.MapToViewList();
     }
 
     #endregion

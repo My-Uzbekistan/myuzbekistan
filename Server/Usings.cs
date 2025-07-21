@@ -1,4 +1,4 @@
-﻿global using Microsoft.AspNetCore.HttpOverrides;
+global using Microsoft.AspNetCore.HttpOverrides;
 global using Microsoft.EntityFrameworkCore;
 global using EF.Audit.Core.Extensions;
 global using ActualLab.Fusion;
@@ -54,3 +54,4 @@ global using tusdotnet.Models;
 global using tusdotnet.Models.Configuration;
 global using UFile.Server;
 global using UFile.Shared;
+global using Microsoft.AspNetCore.Authorization;

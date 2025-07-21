@@ -46,7 +46,7 @@ public class FacilityService(IServiceProvider services) : DbServiceBase<AppDbCon
         .Where(x => x.Id == Id)
         .ToList();
         
-        return facility == null ? throw new ValidationException("FacilityEntity Not Found") : facility.MapToViewList();
+        return facility == null ? throw new NotFoundException("FacilityEntity Not Found") : facility.MapToViewList();
     }
 
     #endregion

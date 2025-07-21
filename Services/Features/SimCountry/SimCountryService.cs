@@ -35,7 +35,7 @@ public class SimCountryService(IServiceProvider services) : DbServiceBase<AppDbC
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var simcountry = await dbContext.SimCountries
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw  new ValidationException("SimCountryEntity Not Found");
+            ?? throw new NotFoundException("SimCountryEntity Not Found");
         
         return simcountry.MapToView();
     }
@@ -71,7 +71,7 @@ public class SimCountryService(IServiceProvider services) : DbServiceBase<AppDbC
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var simcountry = await dbContext.SimCountries
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw  new ValidationException("SimCountryEntity Not Found");
+            ?? throw new NotFoundException("SimCountryEntity Not Found");
 
         Reattach(simcountry, command.Entity, dbContext);
         
@@ -88,7 +88,7 @@ public class SimCountryService(IServiceProvider services) : DbServiceBase<AppDbC
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var simcountry = await dbContext.SimCountries
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw  new ValidationException("SimCountryEntity Not Found");
+            ?? throw new NotFoundException("SimCountryEntity Not Found");
         dbContext.Remove(simcountry);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

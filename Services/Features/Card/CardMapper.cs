@@ -1,6 +1,3 @@
-using Riok.Mapperly.Abstractions;
-using myuzbekistan.Shared;
-
 namespace myuzbekistan.Services;
 
 [Mapper]

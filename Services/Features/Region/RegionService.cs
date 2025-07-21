@@ -86,7 +86,7 @@ public class RegionService(IServiceProvider services) : DbServiceBase<AppDbConte
         .Include(x => x.ParentRegion)
         .Where(x => x.Id == Id).ToListAsync(cancellationToken: cancellationToken);
         
-        return region == null ? throw new ValidationException("RegionEntity Not Found") : region.MapToViewList();
+        return region == null ? throw new NotFoundException("RegionEntity Not Found") : region.MapToViewList();
     }
 
     #endregion

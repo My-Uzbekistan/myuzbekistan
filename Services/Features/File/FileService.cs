@@ -41,7 +41,7 @@ public class FileService(IServiceProvider services) : DbServiceBase<AppDbContext
         var file = await dbContext.Files
         .FirstOrDefaultAsync(x => x.Id == Id);
         
-        return file == null ? throw new ValidationException("FileEntity Not Found") : file.MapToView();
+        return file == null ? throw new NotFoundException("FileEntity Not Found") : file.MapToView();
     }
 
     #endregion

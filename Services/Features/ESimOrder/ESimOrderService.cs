@@ -34,7 +34,7 @@ public class ESimOrderService(
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var esimOrder = await dbContext.ESimOrders
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw new ValidationException("ESimOrderEntity Not Found");
+            ?? throw new NotFoundException("ESimOrderEntity Not Found");
 
         if (session is not null)
         {
@@ -102,7 +102,7 @@ public class ESimOrderService(
             ?? throw new NotFoundException("User not found");
         var esimOrder = await dbContext.ESimOrders
             .FirstOrDefaultAsync(x => x.Id == Id && x.UserId == user.Id, cancellationToken)
-            ?? throw new ValidationException("ESimOrderEntity Not Found");
+            ?? throw new NotFoundException("ESimOrderEntity Not Found");
         var package = await dbContext.ESimPackages
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PackageId == esimOrder.PackageId, cancellationToken)

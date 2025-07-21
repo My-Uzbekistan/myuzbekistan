@@ -37,7 +37,7 @@ public class AiraloPackageService(IServiceProvider services,
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var packages = JsonConvert.DeserializeObject<PackageResponseView>(content, jsonSerializerSettings)
-            ?? throw new InvalidOperationException("Failed to deserialize package response.");
+            ?? throw new BadRequestException("Failed to deserialize package response.");
 
         return packages;
     }
@@ -58,7 +58,7 @@ public class AiraloPackageService(IServiceProvider services,
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var result = JsonConvert.DeserializeObject<OrderPackageStatusView>(content, jsonSerializerSettings)
-                     ?? throw new InvalidOperationException("Failed to deserialize SIM usage response.");
+                     ?? throw new BadRequestException("Failed to deserialize SIM usage response.");
 
         return result;
     }
@@ -76,7 +76,7 @@ public class AiraloPackageService(IServiceProvider services,
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var result = JsonConvert.DeserializeObject<OrderPackageView>(content, jsonSerializerSettings)
-                     ?? throw new InvalidOperationException("Failed to deserialize order response.");
+                     ?? throw new BadRequestException("Failed to deserialize order response.");
         return result;
     }
 
@@ -112,7 +112,7 @@ public class AiraloPackageService(IServiceProvider services,
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var result = JsonConvert.DeserializeObject<OrderPackageView>(content, jsonSerializerSettings)
-                     ?? throw new InvalidOperationException("Failed to deserialize order response.");
+                     ?? throw new BadRequestException("Failed to deserialize order response.");
 
         return result;
     }
@@ -144,7 +144,7 @@ public class AiraloPackageService(IServiceProvider services,
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var result = JsonConvert.DeserializeObject<TopupOrderView>(content, jsonSerializerSettings)
-                     ?? throw new InvalidOperationException("Failed to deserialize order response.");
+                     ?? throw new BadRequestException("Failed to deserialize order response.");
 
         return result;
     }

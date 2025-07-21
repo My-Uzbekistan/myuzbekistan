@@ -336,7 +336,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
         .Include(x => x.Facilities!).ThenInclude(x => x.Icon)
 
         .Where(x => x.Id == Id);
-        return content == null ? throw new ValidationException("ContentEntity Not Found") : content.ToList().MapToViewList();
+        return content == null ? throw new NotFoundException("ContentEntity Not Found") : content.ToList().MapToViewList();
     }
 
     #endregion
@@ -443,7 +443,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
         .Include(x => x.Languages)
         .Include(x => x.Facilities)
         .Include(x => x.Region)
-        .Where(x => x.Id == con.Id).ToList() ?? throw new ValidationException("ContentEntity Not Found");
+        .Where(x => x.Id == con.Id).ToList() ?? throw new NotFoundException("ContentEntity Not Found");
 
         foreach (var item in command.Entity)
         {
