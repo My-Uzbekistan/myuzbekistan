@@ -11,6 +11,18 @@ namespace Server.Controllers
     public class CardController(ICardService cardService, ICardPrefixService cardPrefixService, ICardColorService cardColorService, GlobalPayService globalPayService, ICommander commander, ISessionResolver sessionResolver) : ControllerBase
     {
 
+        public static string MaskCardNumber(string cardNumber)
+        {
+            if (string.IsNullOrWhiteSpace(cardNumber) || cardNumber.Length < 10)
+                throw new ArgumentException("Card number must be at least 10 characters long.");
+
+            var firstSix = cardNumber.Substring(0, 6);
+            var lastFour = cardNumber.Substring(cardNumber.Length - 4);
+            var maskedMiddle = new string('*', cardNumber.Length - 10);
+
+            return $"{firstSix}{maskedMiddle}{lastFour}";
+        }
+
         [HttpPost("bind-card")]
         public async Task<IActionResult> BindCard([FromBody] PaymentVendorCardRequest request, CancellationToken cancellationToken)
         {
@@ -19,6 +31,7 @@ namespace Server.Controllers
 
             var userId = User.Id();
             var session = await sessionResolver.GetSession(cancellationToken);
+            var token = request.Token.Contains("*") ? request.Token! : MaskCardNumber(request.Token);
             var card = await cardService.CheckCard(userId, request.Token!, cancellationToken);
             if (card)
             {
@@ -53,7 +66,17 @@ namespace Server.Controllers
                 ExpiryDate = request.Expiry
             });
 
-            var res = await commander.Call(new CreateCardCommand(session, new CardView { UserId = userId, CardToken = cardInfo.CardToken, ExpirationDate = request.Expiry, Code = new CardColorView { Id = request.CardColorId }, Name = request.Name ,Cvv = request.Cvv}), cancellationToken: cancellationToken);
+            
+            var res = await commander.Call(new CreateCardCommand(session, new CardView { 
+                UserId = userId, 
+                CardToken = cardInfo.CardToken, 
+                ExpirationDate = request.Expiry,
+                CardPan = MaskCardNumber(request.Token),
+                Cvv = request.Cvv,
+                Ps = cardInfo.ProcessingType,
+                HolderName = request.CardHolderName,
+                Status = extCardTypes.Contains(cardPrefix.CardType) ? "Active" : null
+            }), cancellationToken: cancellationToken);
 
             return Ok(new { cardId = res });
         }
@@ -84,8 +107,8 @@ namespace Server.Controllers
             confirmedCard.Id = cardInfo.Id;
             confirmedCard.UserId = userId;
             confirmedCard.ExpirationDate = cardInfo.ExpirationDate;
-            confirmedCard.Name = cardInfo.Name;
-            confirmedCard.Code = cardInfo.Code;
+            confirmedCard.Ps = cardInfo.Ps;
+            confirmedCard.HolderName = cardInfo.HolderName;
             await commander.Call(new UpdateCardCommand(session, confirmedCard), cancellationToken: cancellationToken);
 
             return Ok();

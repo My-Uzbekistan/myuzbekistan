@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +12,14 @@ using myuzbekistan.Shared;
 
 #nullable disable
 
-namespace Services.Migrations
+namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721130508_RemoveColorNameColumnsInCardsTable")]
+    partial class RemoveColorNameColumnsInCardsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -390,8 +393,8 @@ namespace Services.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CardBrand")
-                        .HasColumnType("text");
+                    b.Property<long?>("CardBrandId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("CardType")
                         .IsRequired()
@@ -407,6 +410,8 @@ namespace Services.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CardBrandId");
 
                     b.ToTable("CardPrefixes");
                 });
@@ -1410,6 +1415,15 @@ namespace Services.Migrations
                         .HasForeignKey("LanguagesId", "LanguagesLocale")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.CardPrefixEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.FileEntity", "CardBrand")
+                        .WithMany()
+                        .HasForeignKey("CardBrandId");
+
+                    b.Navigation("CardBrand");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>

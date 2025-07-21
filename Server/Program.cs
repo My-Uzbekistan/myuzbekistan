@@ -87,6 +87,12 @@ services.AddHttpClient("multicard", (client) =>
     client.DefaultRequestHeaders.Add("accept", "application/json");
 });
 
+services.AddHttpClient("globalpay", (client) =>
+{
+    client.BaseAddress = new Uri(cfg.GetValue<string>("GlobalPay:Url")!);
+    client.DefaultRequestHeaders.Add("accept", "application/json");
+});
+
 services.AddScoped<MultiCardService>();
 services.AddScoped<GlobalPayService>();
 
@@ -248,7 +254,7 @@ builder.Services.AddHostedService<TelegramBotService>();
 //services.AddScoped<IUFileService, TusUploadHelper>();
 
 var app = builder.Build();
-app.UseMiddleware<ErrorHandlerMiddleware>();
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -302,6 +308,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<FusionAuthMiddleWare>();
 
 #region Mapping

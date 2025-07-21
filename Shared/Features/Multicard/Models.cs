@@ -35,14 +35,6 @@ public class PaymentVendorCardRequest
     [JsonProperty("cvv")]
     public int? Cvv { get; set; } = null!;
 
-    [JsonPropertyName("name")]
-    [JsonProperty("name")]
-    public string? Name { get; set; }
-    [JsonPropertyName("cardColorId")]
-    [JsonProperty("cardColorId")]
-    public long CardColorId { get; set; }
-
-
 }
 
 public class MultiTokenResponse

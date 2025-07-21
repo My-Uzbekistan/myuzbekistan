@@ -1,23 +1,9 @@
-﻿using ActualLab.CommandR;
-using ActualLab.Fusion;
-using AspNet.Security.OAuth.Apple;
+﻿using AspNet.Security.OAuth.Apple;
 using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using myuzbekistan.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Server.Controllers;
 

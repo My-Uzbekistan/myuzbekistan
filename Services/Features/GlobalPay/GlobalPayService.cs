@@ -297,7 +297,6 @@ public class GlobalPayService(
             Phone = content.CardNumber,
             Ps = content.ProcessingType,
             Status = "Active",
-            Name = content.BankName,
             Balance = content.Balance / 100m, // Предполагается, что баланс возвращается в копейках
         };
     }

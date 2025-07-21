@@ -14,6 +14,12 @@ public class Datum
     public string country_2 { get; set; }
     public string country_3 { get; set; }
     public string iso_code { get; set; }
+    // Replace the problematic switch expression inside the LINQ Select with a helper method call.
+    // Add this helper method to the CardPrefixService class:
+
+   
+    // Then, update the Select in GetTypeByCardNumber to use the helper method:
+
 }
 
 public class BinCheckerApiResponse
@@ -25,6 +31,9 @@ public class BinCheckerApiResponse
 public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixService> logger, ICommander commander) : DbServiceBase<AppDbContext>(services), ICardPrefixService
 {
     #region Queries
+
+  
+
 
     [ComputeMethod]
     public async virtual Task<TableResponse<CardPrefixView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)
@@ -58,6 +67,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
 
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
+
         var prefix = await dbContext.CardPrefixes
             .FromSqlInterpolated($@"
             SELECT *
@@ -68,10 +78,12 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
             .AsNoTracking()
             .Select(p => new CardPrefixApi
             {
+                
                 Prefix = p.Prefix,
                 BankName = p.BankName,
-                CardBrand = p.CardBrand != null ? p.CardBrand.Path : null,
+                CardBrand = CardHelper.GetCardBrandImage(p.CardType),
                 CardType = p.CardType
+                
             })
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -90,19 +102,22 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
                 var type = responseData.data[0].brand == "HUMOCARD" ? "Humo" :
                      responseData.data[0].brand == "VISA" ? "Visa" :
                      responseData.data[0].brand == "CHINA UNION PAY" ? "UnionPay" :
-                     responseData.data[0].brand == "MASTERCARD" ? "MasterCard" : "Uzcard"
-                     ;
+                     responseData.data[0].brand == "MASTERCARD" ? "MasterCard" : "Uzcard";
+
                 prefix = new CardPrefixApi
                 {
                     Prefix = uint.Parse(responseData.data[0].bin),
                     BankName = responseData.data[0].bank ?? "unknown",
-                    CardType = type
+                    CardType = type,
+                    CardBrand = CardHelper.GetCardBrandImage(type)
                 };
                 await commander.Call(new CreateCardPrefixCommand(new Session("~"), new CardPrefixView
                 {
                     Prefix = uint.Parse(responseData.data[0].bin),
                     BankName = responseData.data[0].bank ?? "unknown",
                     CardType = type,
+                    CardBrand = CardHelper.GetCardBrandImage(type)
+
                 }), cancellationToken: cancellationToken);
             }
             else
@@ -112,7 +127,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
                 {
                     Prefix = uint.Parse(cardNumber.Substring(0, 6)), // Возвращаем первые 6 цифр как префикс
                     BankName = "unknown",
-                    CardBrand = null,
+                    CardBrand = CardHelper.GetCardBrandImage(null),
                     CardType = "unknown"
                 };
             }
@@ -203,9 +218,7 @@ public class CardPrefixService(IServiceProvider services, ILogger<CardPrefixServ
     {
         CardPrefixMapper.From(cardprefixView, cardprefix);
 
-        if (cardprefix.CardBrand != null)
-            cardprefix.CardBrand = dbContext.Files
-            .First(x => x.Id == cardprefix.CardBrand.Id);
+      
     }
 
     private static void Sorting(ref IQueryable<CardPrefixEntity> cardprefix, TableOptions options)

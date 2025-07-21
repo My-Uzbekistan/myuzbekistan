@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System.Text.Json.Serialization;
 
 namespace myuzbekistan.Shared;  
@@ -7,8 +8,6 @@ namespace myuzbekistan.Shared;
 [SkipGeneration]
 public partial class CardEntity : BaseEntity
 {
-    public CardColorEntity Code { get; set; } = null!;
-    public string? Name { get; set; } = null!;
     public long? CardId { get; set; }
     public long UserId { get; set; }
     public string? ExpirationDate { get; set; } // MM/YY
@@ -20,5 +19,11 @@ public partial class CardEntity : BaseEntity
     public string? Ps { get; set; } = null!;
     public string? Status { get; set; }
     public int? Cvv { get; set; } 
+    public bool IsExternal
+    {
+        get => Ps == "VISA" || Ps == "MASTERCARD";
+        set { /* Needed for serialization, but can be left empty or throw if you want to make it read-only */ }
+    }
+    public string? Icon { get; set; } = null!;
 
 }
