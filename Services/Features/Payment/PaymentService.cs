@@ -41,7 +41,7 @@ public class PaymentService(IServiceProvider services) : DbServiceBase<AppDbCont
         var payment = await dbContext.Payments
         .FirstOrDefaultAsync(x => x.Id == Id);
         
-        return payment == null ? throw new ValidationException("PaymentEntity Not Found") : payment.MapToView();
+        return payment == null ? throw new NotFoundException("PaymentEntity Not Found") : payment.MapToView();
     }
 
     public async virtual Task<PaymentView> GetByExternalId(string externalId, CancellationToken cancellationToken = default)
@@ -51,7 +51,7 @@ public class PaymentService(IServiceProvider services) : DbServiceBase<AppDbCont
         var payment = await dbContext.Payments
         .FirstOrDefaultAsync(x => x.ExternalId == externalId);
 
-        return payment == null ? throw new ValidationException("PaymentEntity Not Found") : payment.MapToView();
+        return payment == null ? throw new NotFoundException("PaymentEntity Not Found") : payment.MapToView();
     }
 
 
@@ -63,7 +63,7 @@ public class PaymentService(IServiceProvider services) : DbServiceBase<AppDbCont
         var payment = await dbContext.Payments
         .FirstOrDefaultAsync(x => x.TransactionId == Id);
         
-        return payment == null ? throw new ValidationException("PaymentEntity Not Found") : payment.MapToView();
+        return payment == null ? throw new NotFoundException("PaymentEntity Not Found") : payment.MapToView();
     }
 
     #endregion

@@ -1,4 +1,4 @@
-using myuzbekistan.Services;
+namespace myuzbekistan.Services;
 
 public class CardColorService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICardColorService 
 {
@@ -33,7 +33,7 @@ public class CardColorService(IServiceProvider services) : DbServiceBase<AppDbCo
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var cardcolor = await dbContext.CardColors
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw  new ValidationException("CardColorEntity Not Found");
+            ?? throw new NotFoundException("CardColorEntity Not Found");
         
         return cardcolor.MapToView();
     }
@@ -69,7 +69,7 @@ public class CardColorService(IServiceProvider services) : DbServiceBase<AppDbCo
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var cardcolor = await dbContext.CardColors
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw  new ValidationException("CardColorEntity Not Found");
+            ?? throw new NotFoundException("CardColorEntity Not Found");
 
         Reattach(cardcolor, command.Entity, dbContext);
         
@@ -86,7 +86,7 @@ public class CardColorService(IServiceProvider services) : DbServiceBase<AppDbCo
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var cardcolor = await dbContext.CardColors
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw  new ValidationException("CardColorEntity Not Found");
+            ?? throw new NotFoundException("CardColorEntity Not Found");
         dbContext.Remove(cardcolor);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

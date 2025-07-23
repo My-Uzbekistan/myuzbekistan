@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Services;
+namespace myuzbekistan.Services;
 
 public class AiraloTokenService(IConfiguration configuration) : IAiraloTokenService
 {
@@ -27,7 +27,7 @@ public class AiraloTokenService(IConfiguration configuration) : IAiraloTokenServ
         var data = JsonConvert.DeserializeObject<AiraloTokenResponseView>(json, jsonSerializerSettings);
         if (data is null || data.Data is null || string.IsNullOrEmpty(data.Data.AccessToken))
         {
-            throw new InvalidOperationException("Failed to retrieve Airalo token.");
+            throw new BadRequestException("Failed to retrieve Airalo token.");
         }
 
         return data.Data.AccessToken;

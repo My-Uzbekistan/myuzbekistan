@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office.Word;
+using DocumentFormat.OpenXml.Office.Word;
 using myuzbekistan.Services;
 
 public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IMerchantCategoryService
@@ -56,7 +56,7 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
             .Include(x => x.ServiceType)
             .Where(x => x.Id == Id).ToListAsync(cancellationToken: cancellationToken);
 
-        return merchantcategory == null ? throw new ValidationException("MerchantCategoryEntity Not Found") : merchantcategory.MapToViewList();
+        return merchantcategory == null ? throw new NotFoundException("MerchantCategoryEntity Not Found") : merchantcategory.MapToViewList();
     }
 
     #endregion

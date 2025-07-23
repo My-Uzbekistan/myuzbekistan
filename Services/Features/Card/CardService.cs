@@ -1,10 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using ActualLab.Fusion;
-using myuzbekistan.Shared;
-using ActualLab.Fusion.EntityFramework;
-using System.ComponentModel.DataAnnotations;
-using ActualLab.Async;
-using System.Reactive;
 namespace myuzbekistan.Services;
 
 public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICardService 
@@ -87,10 +80,11 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         var card = await dbContext.Cards
         .FirstOrDefaultAsync(x => x.UserId == userId && x.Id == Id);
         
-        return card == null ? throw new ValidationException("CardEntity Not Found") : card.MapToView();
+        return card == null ? throw new NotFoundException("CardEntity Not Found") : card.MapToView();
     }
 
     #endregion
+
     #region Mutations
     public async virtual Task<long> Create(CreateCardCommand command, CancellationToken cancellationToken = default)
     {
@@ -144,7 +138,6 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         await dbContext.SaveChangesAsync(cancellationToken);
     }
     #endregion
-
 
     #region External
     private static string token;

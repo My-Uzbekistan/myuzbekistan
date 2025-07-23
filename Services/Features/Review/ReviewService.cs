@@ -39,7 +39,7 @@ public class ReviewService(IServiceProvider services) : DbServiceBase<AppDbConte
         var review = await dbContext.Reviews
         .FirstOrDefaultAsync(x => x.Id == Id);
         
-        return review == null ? throw new ValidationException("ReviewEntity Not Found") : review.MapToView();
+        return review == null ? throw new NotFoundException("ReviewEntity Not Found") : review.MapToView();
     }
 
     #endregion

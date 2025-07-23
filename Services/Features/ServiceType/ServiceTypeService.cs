@@ -41,7 +41,7 @@ public class ServiceTypeService(IServiceProvider services) : DbServiceBase<AppDb
         var servicetype = await dbContext.ServiceTypes
             .Where(x => x.Id == Id)
             .ToListAsync(cancellationToken)
-            ?? throw new ValidationException("ServiceTypeEntity Not Found");
+            ?? throw new NotFoundException("ServiceTypeEntity Not Found");
 
         return servicetype.MapToViewList();
     }
@@ -84,7 +84,7 @@ public class ServiceTypeService(IServiceProvider services) : DbServiceBase<AppDb
         var stp = command.Entity.First();
 
         var serviceType = dbContext.ServiceTypes
-        .Where(x => x.Id == stp.Id).ToList() ?? throw new ValidationException("MerchantCategoryEntity Not Found");
+        .Where(x => x.Id == stp.Id).ToList() ?? throw new NotFoundException("MerchantCategoryEntity Not Found");
         foreach (var item in command.Entity)
         {
             Reattach(serviceType.First(x => x.Locale == item.Locale), item, dbContext);

@@ -48,10 +48,7 @@ public class ESimPackageService(
             {
                 var packageDiscount = await dbContext.PackageDiscounts
                     .FirstOrDefaultAsync(x => x.Id == view.PackageDiscountId, cancellationToken);
-                if (packageDiscount != null)
-                {
-                    view.PackageDiscountView = packageDiscount.MapToView();
-                }
+                view.PackageDiscountView = packageDiscount?.MapToView();
             }
         }
 
@@ -64,7 +61,7 @@ public class ESimPackageService(
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var eSimPackage = await dbContext.ESimPackages
             .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
-            ?? throw new ValidationException("ESimPackageEntity Not Found");
+            ?? throw new NotFoundException("ESimPackageEntity Not Found");
 
         var view = eSimPackage.MapToView();
         var currency = await currencyService.GetUsdCourse(cancellationToken);
@@ -102,7 +99,7 @@ public class ESimPackageService(
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var eSimPackage = await dbContext.ESimPackages
             .FirstOrDefaultAsync(x => x.Id == command.Entity.Id, cancellationToken)
-            ?? throw new ValidationException("ESimPackageEntity Not Found");
+            ?? throw new NotFoundException("ESimPackageEntity Not Found");
         double price = eSimPackage.Price;
         Reattach(eSimPackage, command.Entity, dbContext);
         eSimPackage.Price = price;
@@ -121,7 +118,7 @@ public class ESimPackageService(
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var eSimPackage = await dbContext.ESimPackages
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken)
-            ?? throw new ValidationException("ESimPackageEntity Not Found");
+            ?? throw new NotFoundException("ESimPackageEntity Not Found");
         eSimPackage.Status = ContentStatus.Inactive;
         dbContext.Update(eSimPackage);
         await dbContext.SaveChangesAsync(cancellationToken);

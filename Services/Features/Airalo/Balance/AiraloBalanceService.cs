@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Serialization;
 
 namespace myuzbekistan.Shared;
 
@@ -27,7 +27,7 @@ public class AiraloBalanceService(IAiraloTokenService airaloTokenService,
 
         var content = await response.Content.ReadAsStringAsync(cancellationToken);
         var result = JsonConvert.DeserializeObject<AiraloBalanceView>(content, jsonSerializerSettings)
-                     ?? throw new InvalidOperationException("Failed to deserialize Airalo balance response.");
+                     ?? throw new BadRequestException("Failed to deserialize Airalo balance response.");
 
         return result;
     }

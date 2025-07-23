@@ -105,7 +105,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             merchant = merchant.Where(x => x.Locale.Equals(LangHelper.currentLocale));
         #endregion
         var merchantC = await merchant.FirstOrDefaultAsync(cancellationToken: cancellationToken)
-        ?? throw new ValidationException("MerchantEntity Not Found");
+        ?? throw new NotFoundException("MerchantEntity Not Found");
 
         return merchantC.MapToResponse();
     }
@@ -123,7 +123,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             .ThenInclude(x => x.Logo)
             .Where(x => x.Id == Id)
             .ToListAsync(cancellationToken)
-            ?? throw new ValidationException("MerchantEntity Not Found");
+            ?? throw new NotFoundException("MerchantEntity Not Found");
 
         return merchant.MapToViewList();
     }

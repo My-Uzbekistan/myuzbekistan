@@ -170,7 +170,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 
 
 
-        return category == null ? throw new ValidationException("CategoryEntity Not Found") : category.MapToViewList();
+        return category == null ? throw new NotFoundException("CategoryEntity Not Found") : category.MapToViewList();
     }
 
     #endregion
