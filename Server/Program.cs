@@ -7,6 +7,7 @@ using ActualLab.Rpc;
 using ActualLab.Rpc.Server;
 using BackuptaGram;
 using Coravel;
+using Humanizer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.HttpLogging;
@@ -352,12 +353,7 @@ using (var scope = app.Services.CreateScope())
     Seeds.SeedAboutContent(dbContext);
 }
 
-
-
 app.Run();
-
-
-
 
 public class CustomPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : class
 {
