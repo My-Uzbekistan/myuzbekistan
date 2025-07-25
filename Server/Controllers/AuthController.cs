@@ -1,5 +1,6 @@
-﻿using AspNet.Security.OAuth.Apple;
+using AspNet.Security.OAuth.Apple;
 using Google.Apis.Auth;
+using Humanizer;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -56,7 +57,7 @@ public class AuthController : ControllerBase
                     {
                         access_token = accessToken,
                         refresh_token = refreshToken,
-                        expires = DateTime.Now.AddMinutes(30).Millisecond
+                        expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
                     });
                 }
                 finally
@@ -159,7 +160,7 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.Now.AddMinutes(30).Millisecond
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
             });
         }
         finally
@@ -262,7 +263,7 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.Now.AddMinutes(30).Millisecond
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
             });
         }
         finally
@@ -329,7 +330,7 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.Now.AddMinutes(30).Millisecond
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
             });
         }
         finally
@@ -364,7 +365,7 @@ public class AuthController : ControllerBase
         {
             access_token = newAccessToken,
             refresh_token = newRefreshToken,
-            expires = DateTime.Now.AddMinutes(30).Millisecond
+            expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
         });
     }
 
