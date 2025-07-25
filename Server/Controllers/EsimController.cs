@@ -39,6 +39,11 @@ public class EsimController(IAiraloCountryService airaloCountryService,
             return Unauthorized();
         }
         var orders = await esimOrderService.GetAllEsim(options, session, cancellationToken);
+        if (orders is null || orders.TotalItems == 0)
+        {
+            return NoContent();
+        }
+
         return Ok(orders);
     }
 
