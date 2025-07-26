@@ -1,0 +1,19 @@
+﻿﻿<MudPaper Class="pa-5">
+    <MudGrid>
+        <MudItem lg="12" xs="12">
+            <MudText>
+                @Title
+            </MudText>
+        </MudItem>
+        <MudItem lg="12" xs="12">
+            <MudText Typo="Typo.h4" Class="text-center">
+                @Count.FormatThousands()
+            </MudText>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public int Count { get; set; } = 0;
+}

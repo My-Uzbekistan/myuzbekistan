@@ -1,0 +1,5 @@
+﻿@page "/app-users/{Id:long}"
+@inherits ComputedStateComponent<UserView>
+@{
+    var Model = State.GetValue(Injector);
+}

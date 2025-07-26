@@ -6,7 +6,13 @@ public interface IESimPackageService : IComputeService
     Task<TableResponse<ESimPackageView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
+    Task<UserCountsView> GetCounts(CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
     Task<ESimPackageView> Get(long Id, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
+    Task<UserView> GetUserAsync(long Id, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Create(CreateESimPackageCommand command, CancellationToken cancellationToken = default);

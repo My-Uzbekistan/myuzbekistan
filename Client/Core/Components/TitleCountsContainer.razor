@@ -1,0 +1,32 @@
+﻿<MudGrid Class="mb-3">
+    @foreach (var title in Titles)
+    {
+        <MudItem lg="@container_width">
+            @if(title.Linkable)
+            {
+                <MudLink Href="@title.Link" Underline="Underline.None">
+                    <TitleCountCard Title="@title.Title" Count="@title.Count" />
+                </MudLink>
+            }
+            else
+            {
+                <TitleCountCard Title="@title.Title" Count="@title.Count" />
+            }
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    [Parameter] public TitleContainerType TitleContainerType { get; set; } = TitleContainerType.Single;
+    [Parameter] public List<TitleCountModel> Titles { get; set; } = [];
+
+    private int container_width => TitleContainerType switch
+    {
+        TitleContainerType.Single => 12,
+        TitleContainerType.Double => 6,
+        TitleContainerType.Triple => 4,
+        TitleContainerType.Quadruple => 3,
+        TitleContainerType.Sextuple => 2,
+        _ => 12
+    };
+}

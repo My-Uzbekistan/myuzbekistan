@@ -8,6 +8,8 @@ namespace myuzbekistan.Shared;
 
 public static class DateExtensions
 {
+    public static string FormatThousands(this int number)
+        => number.ToString("N0").Replace(", ", " ").Replace(",", " ");
     public static DateTime EndOfDay(this DateTime date)
     {
         return new DateTime(date.Year, date.Month, date.Day, 23, 59, 59, 999);

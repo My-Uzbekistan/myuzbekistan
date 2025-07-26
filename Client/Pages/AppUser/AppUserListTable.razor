@@ -1,0 +1,29 @@
+﻿@if (Values == null && Values?.Items == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else
+{
+    <TitleCountsContainer TitleContainerType="TitleContainerType.Triple" Titles="@TitleCounts" />
+
+    <MudPaper Elevation="1" Width="100%" Class="pa-4">
+        <MudTable Items="Values.Items" T="UserView" RowsPerPage="MutableState.Value.PageSize" Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
+            <HeaderContent>
+                <TableSorter Columns="SortColumns" MutableState="MutableState" T="UserView" />
+                <MudTh Style="padding: 15px 0px;">@L["Action"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                @ChildContent((context))
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>@L["TableBottom"]</MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>@L["Loading"]...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudPagination Class="mt-4" Selected="MutableState!.Value.Page" SelectedChanged="PageChanged" Count="Count()" />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+}

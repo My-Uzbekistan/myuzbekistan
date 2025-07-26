@@ -1,17 +1,18 @@
-using ActualLab.Async;
-using ActualLab.CommandR.Configuration;
-using ActualLab.Fusion;
-using System.Reactive;
-
 namespace myuzbekistan.Shared;
 
-public interface IUserService:IComputeService
+public interface IUserService : IComputeService
 {
     [ComputeMethod]
     Task<TableResponse<ApplicationUser>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
+    Task<TableResponse<UserView>> GetAllUsers(TableOptions options, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
     Task<ApplicationUser> GetUserAsync(Session session, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
+    Task<ApplicationUser> GetAsync(long id, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }

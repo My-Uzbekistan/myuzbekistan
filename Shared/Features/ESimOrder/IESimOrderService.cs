@@ -12,7 +12,7 @@ public interface IESimOrderService : IComputeService
     Task<TableResponse<MyEsimsView>> GetAllEsim(TableOptions options, Session? session, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
-    Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default);
+    Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default, bool exploreMore = true, long userId = 0);
 
     [CommandHandler]
     Task Create(CreateESimOrderCommand command, CancellationToken cancellationToken = default);

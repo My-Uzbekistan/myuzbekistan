@@ -10,10 +10,29 @@ public class ESimPackageService(
     IConfiguration configuration,
     ICurrencyService currencyService,
     IUserService userService,
+    IESimOrderService eSimOrderService,
     ICommander commander) 
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
     #region Queries
+    public async virtual Task<UserCountsView> GetCounts(CancellationToken cancellationToken)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var users = await userService.GetAllUsers(new TableOptions() { PageSize = 1 }, cancellationToken);
+        var packagesCount = await dbContext.ESimPackages
+            .Where(x => x.Status == ContentStatus.Active)
+            .CountAsync(cancellationToken: cancellationToken);
+
+        var countries = await airaloCountryService.GetAllAsync(Language.en, cancellationToken);
+
+        return new()
+        {
+            PackagesCount = packagesCount,
+            UsersCount = users.TotalItems,
+            CountriesCount = countries.Count
+        };
+    }
 
     public async virtual Task<TableResponse<ESimPackageView>> GetAll(TableOptions options, CancellationToken cancellationToken = default)
     {
@@ -40,7 +59,7 @@ public class ESimPackageService(
         var items = await eSimPackage.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         var views = items.MapToViewList();
         var currency = await currencyService.GetUsdCourse(cancellationToken);
-        double rate = double.Parse(currency.Rate);
+        double rate = double.Parse(currency.Rate.Replace(",", "."), CultureInfo.InvariantCulture);
         foreach (var view in views)
         {
             view.Price = view.Price * rate;
@@ -68,6 +87,28 @@ public class ESimPackageService(
         double rate = double.Parse(currency.Rate);
         view.Price = view.Price * rate;
         return view;
+    }
+
+    public async virtual Task<UserView> GetUserAsync(long Id, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        ApplicationUser user = await userService.GetAsync(Id, cancellationToken);
+
+        var userOrders = await dbContext.ESimOrders
+            .Where(x => x.UserId == Id)
+            .ToListAsync(cancellationToken);
+        List<EsimView> userEsims = [];
+        foreach (var esim in userOrders)
+        {
+            var package = await eSimOrderService.GetEsim(esim.Id, null, cancellationToken)
+                ?? throw new NotFoundException("ESimOrder Not Found");
+            userEsims.Add(package);
+        }
+
+        UserView userView = user;
+        userView.Orders = userEsims;
+        return userView;
     }
 
     #endregion

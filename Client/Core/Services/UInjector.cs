@@ -10,7 +10,8 @@ public class UInjector(UICommander UICommander,
                        NavigationManager NavigationManager,
                        ISnackbar Snackbar,
                        PageHistoryState PageHistoryState,
-                       IDialogService DialogService)
+                       IDialogService DialogService,
+                       IJSRuntime jSRuntime)
 {
     public UICommander Commander { get; set; } = UICommander;
     public Session Session { get; set; } = Session;
@@ -18,6 +19,7 @@ public class UInjector(UICommander UICommander,
     public ISnackbar Snackbar { get; set; } = Snackbar;
     public PageHistoryState PageHistoryState { get; set; } = PageHistoryState;
     public IDialogService DialogService { get; set; } = DialogService;
+    public IJSRuntime JsRuntime { get; } = jSRuntime;
     public Exception? Exception { get; set; }
     public string BackUrl { get; set; } = string.Empty;
 

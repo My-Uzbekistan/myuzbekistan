@@ -1,0 +1,25 @@
+﻿@page "/app-users"
+@inherits MixedStateComponent<TableResponse<UserView>,TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="User">
+    <ChildContent>
+        <AppUserListTable Values=@Items SortColumns="SortColumns" MutableState=MutableState TitleCounts="@TitleCounts">
+
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="FullName">@context.FullName</MudTd>
+            <MudTd DataLabel="Email">@context.Email</MudTd>
+            <MudTd DataLabel="Balance">@context.Balance</MudTd>
+            
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    <MudLink Href="@($"/app-users/{context.Id}")">
+                        <MudIconButton Icon="@Icons.Material.Filled.RemoveRedEye" Color="Color.Primary" Size="Size.Small" />
+                    </MudLink>
+                </div>
+            </MudTd>
+        </AppUserListTable>
+    </ChildContent>
+</ListContainer>

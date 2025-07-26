@@ -83,14 +83,14 @@ public class ESimOrderService(
                 DataValume = package.DataVolume,
                 RemainingData = dataUsage.Data.Remaining,
                 ValidDays = package.ValidDays,
-                ImageUrl = package.ImageUrl
+                ImageUrl = package.ImageUrl ?? string.Empty
             });
         }
 
         return new() { Items = result, TotalItems = count };
     }
 
-    public virtual async Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default)
+    public virtual async Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default, bool exploreMore = true, long userId = 0)
     {
         if (session is null)
         {
@@ -98,10 +98,15 @@ public class ESimOrderService(
         }
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var user = await userService.GetUserAsync(session, cancellationToken)
+        ApplicationUser user;
+        if (userId == 0)
+        {
+            user = await userService.GetUserAsync(session, cancellationToken)
             ?? throw new NotFoundException("User not found");
+            userId = user.Id;
+        }
         var esimOrder = await dbContext.ESimOrders
-            .FirstOrDefaultAsync(x => x.Id == Id && x.UserId == user.Id, cancellationToken)
+            .FirstOrDefaultAsync(x => x.Id == Id && x.UserId == userId, cancellationToken)
             ?? throw new NotFoundException("ESimOrderEntity Not Found");
         var package = await dbContext.ESimPackages
             .AsNoTracking()
@@ -109,10 +114,14 @@ public class ESimOrderService(
             ?? throw new NotFoundException("ESimPackage not found");
         var dataUsage = await airaloPackageService.GetOrderPackageStatusAsync(esimOrder.Iccid, cancellationToken)
             ?? throw new NotFoundException("OrderPackageStatus not found");
-        var otherPackages = await dbContext.ESimPackages
+        List<ESimPackageEntity> otherPackages = [];
+        if (exploreMore)
+        {
+            otherPackages = await dbContext.ESimPackages
             .AsNoTracking()
             .Where(x => x.CountryCode == package.CountryCode && x.CountryName == package.CountryName)
             .ToListAsync(cancellationToken);
+        }
 
         return new()
         {
@@ -123,7 +132,7 @@ public class ESimOrderService(
             OperatorName = package.OperatorName,
             DataValume = package.DataVolume,
             ValidDays = package.ValidDays,
-            ImageUrl = package.ImageUrl,
+            ImageUrl = package.ImageUrl ?? string.Empty,
             RemainingData = dataUsage.Data.Remaining,
             Status = dataUsage.Data.Status,
             QrCode = esimOrder.QrCode,

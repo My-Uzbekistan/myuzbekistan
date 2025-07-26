@@ -1,14 +1,6 @@
-using ActualLab.Async;
-using ActualLab.Fusion;
-using ActualLab.Fusion.EntityFramework;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using myuzbekistan.Services;
-using myuzbekistan.Shared;
-using System.Reactive;
-using System.Threading;
 
 namespace myuzbekistan.Services;
 
@@ -16,9 +8,22 @@ namespace myuzbekistan.Services;
 public class UserService(
     IServiceProvider services,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
-    IAuth auth) 
+    IAuth auth)
     : DbServiceBase<ApplicationDbContext>(services), IUserService
 {
+    public async virtual Task<TableResponse<UserView>> GetAllUsers(TableOptions options, CancellationToken cancellationToken)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var count = dbContext.Users.Count();
+        var items = dbContext.Users
+            .Include(x => x.Roles)
+            .Where(x => x.Roles.Count > 0 && x.Roles.Any(x => x.Name == "User"))
+            .Paginate(options)
+            .Select(x => (UserView)x)
+            .ToList();
+        return new TableResponse<UserView>() { Items = items, TotalItems = count };
+    }
 
     public async virtual Task<TableResponse<ApplicationUser>> GetAll(TableOptions options, CancellationToken cancellationToken)
     {
@@ -39,6 +44,16 @@ public class UserService(
             ?? throw new UnauthorizedAccessException("User session not found");
         long userId = long.Parse(userSession.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
         var user = dbContext.Users.FirstOrDefault(x => x.Id == userId)
+            ?? throw new NotFoundException("User Not Found");
+
+        return user;
+    }
+
+    public virtual async Task<ApplicationUser> GetAsync(long id, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var user = dbContext.Users.FirstOrDefault(x => x.Id == id)
             ?? throw new NotFoundException("User Not Found");
 
         return user;
