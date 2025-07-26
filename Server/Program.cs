@@ -1,32 +1,13 @@
-using ActualLab.CommandR.Configuration;
-using ActualLab.Fusion;
-using ActualLab.Fusion.Client.Caching;
-using ActualLab.Fusion.Extensions;
-using ActualLab.Fusion.Server;
-using ActualLab.Rpc;
-using ActualLab.Rpc.Server;
 using BackuptaGram;
 using Coravel;
-using Humanizer;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
-using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 using Minio;
-using MudBlazor;
-using MudBlazor.Services;
 using MudBlazorWebApp1.Components.Account;
 using myuzbekistan.Services;
 using Server;
 using Server.Infrastructure;
 using Server.Infrastructure.ServiceCollection;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using tusdotnet.Stores;
 using UTC.Minio;
@@ -261,7 +242,6 @@ builder.Services.AddHostedService<TelegramBotService>();
 //services.AddScoped<IUFileService, TusUploadHelper>();
 
 var app = builder.Build();
-app.UseMiddleware<ErrorHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -276,6 +256,7 @@ else
     app.UseResponseCompression();
 }
 
+app.UseMiddleware<ErrorHandlerMiddleware>();
 #region Loggin Proxy Socket
 app.UseHttpLogging();
 
@@ -354,38 +335,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
-public class CustomPasswordHasher<TUser> : IPasswordHasher<TUser> where TUser : class
-{
-    private readonly ILogger<CustomPasswordHasher<TUser>> _logger;
-
-    public CustomPasswordHasher(ILogger<CustomPasswordHasher<TUser>> logger)
-    {
-        _logger = logger;
-    }
-
-    public string HashPassword(TUser user, string password)
-    {
-        return GetMD5Hash(password);
-    }
-
-    public PasswordVerificationResult VerifyHashedPassword(TUser user, string hashedPassword, string providedPassword)
-    {
-        if (hashedPassword == HashPassword(user, providedPassword))
-            return PasswordVerificationResult.Success;
-        else
-            return PasswordVerificationResult.Failed;
-    }
-    private string GetMD5Hash(string input)
-    {
-        using (var md5 = System.Security.Cryptography.MD5.Create())
-        {
-            var inputBytes = Encoding.UTF8.GetBytes(input);
-            var hashBytes = md5.ComputeHash(inputBytes);
-            return Convert.ToHexString(hashBytes);
-        }
-    }
-
-
-}
-
