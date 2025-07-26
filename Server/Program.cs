@@ -261,7 +261,7 @@ builder.Services.AddHostedService<TelegramBotService>();
 //services.AddScoped<IUFileService, TusUploadHelper>();
 
 var app = builder.Build();
-
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -315,7 +315,6 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<FusionAuthMiddleWare>();
 
 #region Mapping
