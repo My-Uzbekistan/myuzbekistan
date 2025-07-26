@@ -1,9 +1,5 @@
 using Microsoft.Extensions.Localization;
-using myuzbekistan.Shared;
-using OpenTelemetry.Trace;
 using Shared.Localization;
-using System.Diagnostics;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
@@ -90,7 +86,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
             }
 
             await alertaGram.NotifyErrorAsync($"{message}",
-                $"{httpResponse.Status}", "Simkomat");
+                $"{httpResponse.Status}", "MyUzbekistan");
         }
     }
 }
