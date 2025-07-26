@@ -208,6 +208,7 @@ services.AddScoped<LayoutService>();
 services.AddSingleton<UserContext>();
 services.AddScoped<PageHistoryState>();
 services.AddScoped<UInjector>();
+services.AddTransient<ESimPackageSyncner>();
 #endregion
 #region File
 //UFile.Server.UFileRegistration.AddFileServer(services,UploadType.Minio, cfg);
