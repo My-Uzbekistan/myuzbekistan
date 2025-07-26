@@ -10,7 +10,7 @@
 
 	<!--MICROSOFT-->
 	<ItemGroup>
-		<PackageReference Include="AlertaGram" Version="1.0.4" />
+		<PackageReference Include="AlertaGram" Version="2.0.3" />
 		<PackageReference Include="AspNet.Security.OAuth.Apple" Version="9.2.0" />
 		
 		

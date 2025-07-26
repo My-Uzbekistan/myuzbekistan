@@ -85,8 +85,7 @@ public class ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMi
                 message = message.Substring(0, maxLength);
             }
 
-            await alertaGram.NotifyErrorAsync($"{message}",
-                $"{httpResponse.Status}", "MyUzbekistan");
+            await alertaGram.NotifyExceptionAsync(exception, true, "MyUzbekistan");
         }
     }
 }

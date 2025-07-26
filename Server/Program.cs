@@ -33,7 +33,7 @@ services.AddHttpLogging(logging =>
 #region DATABASE
 var dbType = cfg.GetValue<string>("DatabaseProviderConfiguration:ProviderType");
 services.AddDataBase<AppDbContext>(env, cfg, (DataBaseType)Enum.Parse(typeof(DataBaseType), dbType!, true));
-services.AddAlertaGram(cfg);
+services.AddAlertaGram();
 services.AddBackuptaGram(cfg);
 services.AddMinio(cfg);
 services.AddSingleton<IMinioUpload>(s =>
