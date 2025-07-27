@@ -1,27 +1,39 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
 
 namespace Server.Infrastructure;
-public class Debouncer(int debounceInterval)
+public class Debouncer
 {
-    private Dictionary<string, Timer> timers = [];
+    private readonly int debounceInterval;
+    private readonly ConcurrentDictionary<string, Timer> timers = new();
+
+    public Debouncer(int debounceInterval)
+    {
+        this.debounceInterval = debounceInterval;
+    }
 
     public void Debounce(string key, Action action)
     {
-        if (timers.ContainsKey(key))
-        {
-            timers[key].Change(debounceInterval, Timeout.Infinite);
-        }
-        else
-        {
-            action(); // Немедленное выполнение действия при первом вызове
-
-            Timer timer = new(_ =>
+        timers.AddOrUpdate(
+            key,
+            // Key doesn't exist -> run action and create timer
+            k =>
             {
-                timers.Remove(key);
-                
-            }, null, debounceInterval, Timeout.Infinite);
+                action(); // Execute action immediately for first call
+                return CreateTimer(k);
+            },
+            // Key exists -> just reset timer
+            (k, existingTimer) =>
+            {
+                existingTimer.Change(debounceInterval, Timeout.Infinite);
+                return existingTimer;
+            });
+    }
 
-            timers.Add(key, timer);
-        }
+    private Timer CreateTimer(string key)
+    {
+        return new Timer(_ =>
+        {
+            timers.TryRemove(key, out var _);
+        }, null, debounceInterval, Timeout.Infinite);
     }
 }

@@ -82,7 +82,7 @@ public partial class ContentDto
     [property: DataMember] public string? Address { get; set; } = null!;
     [property: DataMember] public bool IsFavorite { get; set; }
     [property: DataMember] public string Region { get; set; } = null!;
-    [property: DataMember] public long RegionId { get; set; } 
+    [property: DataMember] public long? RegionId { get; set; } 
 }
 
 [DataContract, MemoryPackable]
