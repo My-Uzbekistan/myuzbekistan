@@ -1,0 +1,49 @@
+﻿@inject UInjector Injector
+<div style="padding: 5px 0px; display: flex; justify-content: space-between; align-items: center; @Style">
+    <div>
+        <MudText Class="mud-text-secondary" Style="font-size: 12px;">@Label</MudText>
+        <MudText Class="mb-2 mt-1" Style="font-size: 15px;">@Value</MudText>
+    </div>
+    @if (IsLinkable)
+    {
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <MudLink Href="@Link">
+                <MudIcon Icon="@Icons.Material.Filled.ArrowOutward" />
+            </MudLink>
+        </div>
+    }
+    else if (Copyable)
+    {
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <MudIconButton OnClick="CopyToClipboard" Icon="@Icons.Material.Filled.ContentCopy" />
+        </div>
+    }
+</div>
+
+<script>
+    function copyTextToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function () {
+            console.log('Text copied to clipboard');
+        }).catch(function (error) {
+            console.error('Could not copy text: ', error);
+        });
+    }
+</script>
+
+@code {
+    [Parameter] public string? Value { get; set; } = "Value";
+    [Parameter] public string? Label { get; set; } = "Label";
+    [Parameter] public bool Copyable { get; set; } = false;
+    [Parameter] public bool IsLinkable { get; set; } = false;
+    [Parameter] public string? Link { get; set; } = string.Empty;
+    [Parameter] public string Style { get; set; } = "padding: 0px 15px;";
+
+    private void CopyToClipboard()
+    {
+        if (!string.IsNullOrEmpty(Value))
+        {
+            Injector.JsRuntime.InvokeVoidAsync("copyTextToClipboard", Value);
+            Injector.Snackbar.Add(L["ContentCopied"], Severity.Success);
+        }
+    }
+}

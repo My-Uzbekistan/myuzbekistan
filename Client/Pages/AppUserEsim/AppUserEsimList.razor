@@ -1,0 +1,20 @@
+﻿<MudPaper Elevation="1" Width="100%" Class="pa-4">
+    <MudTable Items="EsimViews" T="EsimView" RowsPerPage="50" Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
+        <RowTemplate>
+            <MudTd DataLabel="PackageId">@context.PackageId</MudTd>
+            <MudTd DataLabel="CountryName">@context.CountryName</MudTd>
+            <MudTd DataLabel="OperatorName">@context.OperatorName</MudTd>
+            <MudTd DataLabel="DataValume">@context.DataValume</MudTd>
+            <MudTd DataLabel="RemainingData">@context.RemainingData</MudTd>
+            <MudTd DataLabel="ValidDays">@context.ValidDays</MudTd>
+            <MudTd DataLabel="ActivationDate">@context.ActivationDate</MudTd>
+            <MudTd DataLabel="Status">@context.Status</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>@L["TableBottom"]</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>@L["Loading"]...</MudText>
+        </LoadingContent>
+    </MudTable>
+</MudPaper>

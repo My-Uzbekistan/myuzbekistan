@@ -3,3 +3,58 @@
 @{
     var Model = State.GetValue(Injector);
 }
+
+<MudGrid Class="pa-4">
+    <MudItem lg="4">
+        <MudPaper>
+            <div>
+                <div style="width: 100%; padding: 15px;">
+                    <MudText Typo="Typo.h6">@L["UserDetails"]</MudText>
+                </div>
+                <div style="width: 100%; margin-bottom: 5px;">
+                    <MudDivider />
+                </div>
+
+                <div style="display: flex; justify-content: flex-start; align-items: center; padding: 15px;">
+                    <div style="display: flex; justify-items: flex-start; align-items: center;">
+                        <div style="background-color: white; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                            <MudPaper Style="width: 100%; height: 100%; background-color: inherit; cursor: pointer;" Elevation="0">
+                                @{
+                                    string imageUrl = Model.ProfilePictureUrl ?? "/Images/avatar.png";
+                                }
+                                <img src="@imageUrl"
+                                     style="width: 100%; height: 100%; object-fit: contain;" />
+                            </MudPaper>
+                        </div>
+                        <div style="margin-left: 10px; font-size: 16px; font-weight: 400;">
+                            @Model.FullName
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 100%; margin-bottom: 5px;">
+                    <MudDivider />
+                </div>
+                <LableValueLink Label="@L["CreatedAt"]" Value="@(Model.CreatedAt.ToString("dd.MM.yyyy HH:mm"))" />
+
+                <div style="width: 100%; margin-bottom: 5px;">
+                    <MudDivider />
+                </div>
+                <LableValueLink Label="@L["UserName"]" Value="@(Model.UserName)" />
+
+                <div style="width: 100%; margin-bottom: 5px;">
+                    <MudDivider />
+                </div>
+                <LableValueLink Label="@L["Email"]" Value="@(Model.Email)" />
+
+                <div style="width: 100%; margin-bottom: 5px;">
+                    <MudDivider />
+                </div>
+                <LableValueLink Label="@L["Balance"]" Value="@(((int)Model.Balance).FormatThousands())" />
+            </div>
+        </MudPaper>
+    </MudItem>
+    <MudItem lg="8">
+        <Client.Pages.AppUserEsim.AppUserEsimList EsimViews="@Model.Orders" />
+    </MudItem>
+</MudGrid>

@@ -28,6 +28,12 @@ public partial class AppUserListTable
         InvalidState();
     }
 
+    private void OnSearch(string text)
+    {
+        MutableState.Value.Search = text;
+        InvalidState();
+    }
+
     private void InvalidState()
     {
         Injector.PageHistoryState.SetPage(MutableState);

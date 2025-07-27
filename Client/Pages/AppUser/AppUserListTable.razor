@@ -7,6 +7,14 @@ else
     <TitleCountsContainer TitleContainerType="TitleContainerType.Triple" Titles="@TitleCounts" />
 
     <MudPaper Elevation="1" Width="100%" Class="pa-4">
+        <MudPaper Class="d-flex flex-row-reverse flex-wrap flex-grow-1 gap-4 mb-4" Elevation="0">
+            <MudGrid Justify="Justify.SpaceBetween" Style="align-items:baseline">
+                <MudItem xs="12" lg="3">
+                    <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@MutableState.Value.Search" Margin="Margin.Dense" Label="@L["Search"]" Variant="Variant.Outlined" Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
         <MudTable Items="Values.Items" T="UserView" RowsPerPage="MutableState.Value.PageSize" Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
             <HeaderContent>
                 <TableSorter Columns="SortColumns" MutableState="MutableState" T="UserView" />

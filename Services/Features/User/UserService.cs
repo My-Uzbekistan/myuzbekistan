@@ -8,7 +8,6 @@ namespace myuzbekistan.Services;
 public class UserService(
     IServiceProvider services,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
-    IAlertaGram alertaGram,
     IAuth auth)
     : DbServiceBase<ApplicationDbContext>(services), IUserService
 {
@@ -16,8 +15,18 @@ public class UserService(
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var count = dbContext.Users.Count();
-        var items = dbContext.Users
+
+        var users = from s in dbContext.Users select s;
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            users = users.Where(x => !string.IsNullOrEmpty(x.FullName) && x.FullName.Contains(options.Search) ||
+                                     !string.IsNullOrEmpty(x.UserName) && x.UserName.Contains(options.Search) ||
+                                     !string.IsNullOrEmpty(x.Email) && x.Email.Contains(options.Search));
+        }
+
+        var count = users.Count();
+        var items = users
             .Include(x => x.Roles)
             .Where(x => x.Roles.Count > 0 && x.Roles.Any(x => x.Name == "User"))
             .Paginate(options)
