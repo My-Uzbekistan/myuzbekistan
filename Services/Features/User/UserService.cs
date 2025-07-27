@@ -8,6 +8,7 @@ namespace myuzbekistan.Services;
 public class UserService(
     IServiceProvider services,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
+    IAlertaGram alertaGram,
     IAuth auth)
     : DbServiceBase<ApplicationDbContext>(services), IUserService
 {
@@ -46,8 +47,8 @@ public class UserService(
         var user = dbContext.Users.FirstOrDefault(x => x.Id == userId);
         if (user is null)
         {
-            Console.WriteLine("User not found! Claims:");
-            Console.WriteLine(JsonConvert.SerializeObject(userSession.Claims));
+            
+            await alertaGram.NotifyAsync(JsonConvert.SerializeObject(userSession.Claims), "MyUzbekistan");
             throw new NotFoundException("User not found");
         }
 
