@@ -43,8 +43,13 @@ public class UserService(
         var userSession = await auth.GetUser(session, cancellationToken) 
             ?? throw new UnauthorizedAccessException("User session not found");
         long userId = long.Parse(userSession.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
-        var user = dbContext.Users.FirstOrDefault(x => x.Id == userId)
-            ?? throw new NotFoundException("User Not Found");
+        var user = dbContext.Users.FirstOrDefault(x => x.Id == userId);
+        if (user is null)
+        {
+            Console.WriteLine("User not found! Claims:");
+            Console.WriteLine(JsonConvert.SerializeObject(userSession.Claims));
+            throw new NotFoundException("User not found");
+        }
 
         return user;
     }
