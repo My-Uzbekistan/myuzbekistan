@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using myuzbekistan.Shared;
 using System;
 using System.Collections.Generic;
@@ -61,6 +61,20 @@ public static class Seeds
         else
         {
             Console.WriteLine("ℹ️ Администратор travelAdmin уже существует.");
+            existingAdmin.Balance = 1_000_000; // Устанавливаем баланс для существующего администратора
+            var updateResult = await userManager.UpdateAsync(existingAdmin);
+            if (updateResult.Succeeded)
+            {
+                Console.WriteLine("✅ Баланс администратора travelAdmin успешно обновлен!");
+            }
+            else
+            {
+                Console.WriteLine("❌ Ошибка при обновлении баланса администратора:");
+                foreach (var error in updateResult.Errors)
+                {
+                    Console.WriteLine($"- {error.Description}");
+                }
+            }
         }
     }
 
