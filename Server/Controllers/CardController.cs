@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using myuzbekistan.Services;
 using Shared.Localization;
@@ -63,7 +64,7 @@ namespace Server.Controllers
                 CardHolderName = request.CardHolderName,
                 SmsNotificationNumber = request.SmsNotificationNumber,
                 CardNumber = request.Token!.Replace(" ", ""),
-                ExpiryDate = request.Expiry
+                ExpiryDate = request.Expiry,
             });
 
             
@@ -75,7 +76,7 @@ namespace Server.Controllers
                 Cvv = request.Cvv,
                 Ps = cardInfo.ProcessingType,
                 HolderName = request.CardHolderName,
-                Status = extCardTypes.Contains(cardPrefix.CardType) ? "Active" : null
+                Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
             }), cancellationToken: cancellationToken);
 
             return Ok(new { cardId = res });
@@ -109,6 +110,7 @@ namespace Server.Controllers
             confirmedCard.ExpirationDate = cardInfo.ExpirationDate;
             confirmedCard.Ps = cardInfo.Ps;
             confirmedCard.HolderName = cardInfo.HolderName;
+            confirmedCard.Status = "active";
             await commander.Call(new UpdateCardCommand(session, confirmedCard), cancellationToken: cancellationToken);
 
             return Ok();
@@ -120,6 +122,15 @@ namespace Server.Controllers
             var userId = User.Id();
             var cards = await cardService.GetCardByUserId(userId);
             return Ok(cards);
+        }
+
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> DeleteCard([FromRoute] long id, CancellationToken cancellationToken)
+        {
+            var userId = User.Id();
+            var session = await sessionResolver.GetSession(cancellationToken);
+            await commander.Call(new DeleteCardCommand(session, id,userId), cancellationToken: cancellationToken);
+            return NoContent();  
         }
 
     }
