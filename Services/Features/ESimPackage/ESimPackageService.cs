@@ -269,12 +269,12 @@ public class ESimPackageService(
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public virtual async Task MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default)
+    public virtual async Task<ESimOrderView> MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
         {
             _ = await Invalidate();
-            return;
+            return new();
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var eSimPackage = await dbContext.ESimPackages
@@ -302,8 +302,12 @@ public class ESimPackageService(
                 discountEntity = null;
             }
         }
+
         IAiraloBalanceService airaloBalanceService = new AiraloBalanceService(airaloTokenService, configuration);
         var balanceCheck = await airaloBalanceService.Get(cancellationToken);
+        var currency = await currencyService.GetUsdCourse(cancellationToken);
+        double rate = double.Parse(currency.Rate.Replace(",", "."), CultureInfo.InvariantCulture);
+        price /= rate;
         if (balanceCheck is null || balanceCheck.Data.Balances.AvailableBalance.Amount < price)
         {
             throw new BadRequestException("Insufficient balance to make an order.");
@@ -326,6 +330,8 @@ public class ESimPackageService(
         {
             order.DiscountPercentage = discountEntity.DiscountPercentage;
         }
+
+        return await commander.Call(new CreateESimOrderCommand(command.Session, order), cancellationToken);
     }
     #endregion
 

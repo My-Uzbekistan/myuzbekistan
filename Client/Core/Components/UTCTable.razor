@@ -5,7 +5,7 @@
 @inject PageHistoryState PageHistoryState
 @typeparam Tclass where Tclass : class
 
-@if ((Values == null || (Values?.Items == null || Values?.Items.Count() == 0)))
+@if (Values == null)
 {
     <MudProgressCircular Color="Color.Default" Indeterminate="true" />
 }

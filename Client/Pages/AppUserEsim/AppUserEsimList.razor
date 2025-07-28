@@ -1,7 +1,10 @@
-﻿<MudPaper Elevation="1" Width="100%" Class="pa-4">
+<MudPaper Elevation="1" Width="100%" Class="pa-4">
+    <MudPaper Class="d-flex flex-wrap flex-grow-1 gap-4 mb-4" Elevation="0">
+        <MudText Typo="Typo.h5">@L["UserOrders"]</MudText>
+    </MudPaper>
     <MudTable Items="EsimViews" T="EsimView" RowsPerPage="50" Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
         <RowTemplate>
-            <MudTd DataLabel="PackageId">@context.PackageId</MudTd>
+            <MudTd DataLabel="PackageId" Class="py-3">@context.PackageId</MudTd>
             <MudTd DataLabel="CountryName">@context.CountryName</MudTd>
             <MudTd DataLabel="OperatorName">@context.OperatorName</MudTd>
             <MudTd DataLabel="DataValume">@context.DataValume</MudTd>

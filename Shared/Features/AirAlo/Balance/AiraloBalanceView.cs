@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;
 
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
@@ -33,7 +33,7 @@ public partial class AiraloBalanceBalances
 public partial class AiraloBalanceAvailablebalance
 {
     [DataMember, JsonProperty("amount")]
-    public int Amount { get; set; }
+    public double Amount { get; set; }
     [DataMember, JsonProperty("currency")]
     public string Aurrency { get; set; } = string.Empty;
 }

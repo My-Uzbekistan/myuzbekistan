@@ -19,6 +19,17 @@ public static class DateExtensions
         return new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, 0);
     }
 
+    public static DateTime ToUtc(this DateTime dateTime)
+    {
+        return dateTime.Kind switch
+        {
+            DateTimeKind.Unspecified => DateTime.SpecifyKind(dateTime, DateTimeKind.Local).ToUniversalTime(),
+            DateTimeKind.Local => dateTime.ToUniversalTime(),
+            DateTimeKind.Utc => dateTime, // already UTC
+            _ => throw new ArgumentOutOfRangeException(nameof(dateTime.Kind), "Unknown DateTimeKind")
+        };
+    }
+
     public static long ToUnixTimeStamp(this DateTime dateTime)
     {
         // Ensure the DateTime is in UTC

@@ -1,7 +1,10 @@
-using Microsoft.EntityFrameworkCore.Internal;
 using myuzbekistan.Services;
 
-public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFactory<ApplicationDbContext> dbContextFactory, MerchantNotifierService merchantNotifier) : DbServiceBase<AppDbContext>(services), IInvoiceService
+public class InvoiceService(IServiceProvider services, 
+    IAuth auth, 
+    IDbContextFactory<ApplicationDbContext> dbContextFactory, 
+    MerchantNotifierService merchantNotifier,
+    IUserService userService) : DbServiceBase<AppDbContext>(services), IInvoiceService
 {
     #region Queries
 
@@ -55,11 +58,8 @@ public class InvoiceService(IServiceProvider services, IAuth auth, IDbContextFac
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         await using var userContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-        var userSession = await auth.GetUser(command.Session, cancellationToken);
-        long userId = long.Parse(userSession!.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
-        var user = userContext.Users.FirstOrDefault(x => x.Id == userId)
+        var user = await userService.GetUserAsync(command.Session, cancellationToken)
             ?? throw new NotFoundException("User Not Found");
-
 
         if (user.Balance < command.InvoiceRequest.Amount)
             throw new ValidationException("Insufficient balance to create invoice.");

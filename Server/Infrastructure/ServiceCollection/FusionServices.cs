@@ -95,10 +95,23 @@ namespace Server.Infrastructure.ServiceCollection
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, ServerAuthHelper serverAuthHelper, IAuth auth, ICommander commander, UserContext userContext,ISessionResolver sessionResolver)
+        public async Task InvokeAsync(HttpContext context, 
+            ServerAuthHelper serverAuthHelper, 
+            IAuth auth, 
+            ICommander commander, 
+            UserContext userContext,
+            ISessionResolver sessionResolver,
+            UserResolver userResolver)
         {
             userContext.UserClaims = context.User.Claims;
             userContext.Session = serverAuthHelper.Session;
+            long? userId = context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value != null
+                ? long.Parse(context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value ?? "0")
+                : null;
+            if (userId > 0)
+            {
+                userResolver.SetUserId(userId ?? 0, userContext.Session.Id);
+            }
             if (context is { Request.Path.Value: { } } &&
             (context.Request.Path.Value.Contains("api") || context.Request.Path.Value.Contains("rpc")) &&
             context.User?.Identity != null &&

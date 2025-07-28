@@ -8,6 +8,7 @@ namespace myuzbekistan.Services;
 public class UserService(
     IServiceProvider services,
     IDbContextFactory<ApplicationDbContext> dbContextFactory,
+    UserResolver userResolver,
     IAuth auth)
     : DbServiceBase<ApplicationDbContext>(services), IUserService
 {
@@ -51,14 +52,22 @@ public class UserService(
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
-        Log.LogError($"SessionId: {session.Id}, SessionHash: {session.Hash}");
-        Console.WriteLine($"SessionId: {session.Id}, SessionHash: {session.Hash}");
-
-        var userSession = await auth.GetUser(session, cancellationToken) 
-            ?? throw new UnauthorizedAccessException("User session not found");
-        long userId = long.Parse(userSession.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
+        var userSession = await auth.GetUser(session, cancellationToken);
+        long userId = 0;
+        if (userSession is null)
+        {
+            bool userMatched = userResolver.TryGetUserId(session.Id, out userId);
+            if (!userMatched || userId <= 0)
+            {
+                throw new NotFoundException("User not found in session or resolver.");
+            }
+        }
+        else
+        {
+            userId = long.Parse(userSession.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
+        }
         var user = dbContext.Users.FirstOrDefault(x => x.Id == userId)
-            ?? throw new NotFoundException($"User not found! Claims: {JsonConvert.SerializeObject(userSession.Claims)}");
+            ?? throw new NotFoundException($"User not found! Claims: {JsonConvert.SerializeObject(userSession?.Claims)}");
 
         return user;
     }

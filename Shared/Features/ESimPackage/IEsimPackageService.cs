@@ -30,7 +30,7 @@ public interface IESimPackageService : IComputeService
     Task UpdateDiscount(UpdatePackageDiscountCommand command, CancellationToken cancellationToken = default);
 
     [CommandHandler]
-    Task MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default);
+    Task<ESimOrderView> MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default);
 
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }

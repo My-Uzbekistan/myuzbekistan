@@ -92,22 +92,26 @@ public class ESimOrderService(
 
     public virtual async Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default, bool exploreMore = true, long userId = 0)
     {
-        if (session is null)
-        {
-            throw new BadRequestException("Session is required to get ESim details.");
-        }
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         ApplicationUser user;
-        if (userId == 0)
+        ESimOrderEntity? esimOrder = await dbContext.ESimOrders
+            .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
+            ?? throw new NotFoundException("ESimOrderEntity Not Found");
+        if (userId != 0 && esimOrder.UserId != userId)
+        {
+            throw new BadRequestException("You do not have permission to view this order.");
+        }
+        
+        if (session is not null)
         {
             user = await userService.GetUserAsync(session, cancellationToken)
-            ?? throw new NotFoundException("User not found");
-            userId = user.Id;
+                ?? throw new NotFoundException("User not found");
+            if (esimOrder.UserId != user.Id)
+            {
+                throw new BadRequestException("You do not have permission to view this order.");
+            }
         }
-        var esimOrder = await dbContext.ESimOrders
-            .FirstOrDefaultAsync(x => x.Id == Id && x.UserId == userId, cancellationToken)
-            ?? throw new NotFoundException("ESimOrderEntity Not Found");
         var package = await dbContext.ESimPackages
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.PackageId == esimOrder.PackageId, cancellationToken)
@@ -150,20 +154,22 @@ public class ESimOrderService(
 
     #region Mutations
 
-    public async virtual Task Create(CreateESimOrderCommand command, CancellationToken cancellationToken = default)
+    public async virtual Task<ESimOrderView> Create(CreateESimOrderCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
         {
             _ = await Invalidate();
-            return;
+            return new();
         }
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         ESimOrderEntity esimOrder = new();
         Reattach(esimOrder, command.Entity, dbContext);
-
+        esimOrder.SimCreatedAt = esimOrder.SimCreatedAt.ToUtc();
         dbContext.Update(esimOrder);
         await dbContext.SaveChangesAsync(cancellationToken);
+
+        return esimOrder.MapToView();
     }
 
     #endregion

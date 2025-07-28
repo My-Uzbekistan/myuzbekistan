@@ -15,7 +15,7 @@ public interface IESimOrderService : IComputeService
     Task<EsimView> GetEsim(long Id, Session? session, CancellationToken cancellationToken = default, bool exploreMore = true, long userId = 0);
 
     [CommandHandler]
-    Task Create(CreateESimOrderCommand command, CancellationToken cancellationToken = default);
+    Task<ESimOrderView> Create(CreateESimOrderCommand command, CancellationToken cancellationToken = default);
 
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }

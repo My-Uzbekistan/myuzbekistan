@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml.Office2010.Excel;
+
 namespace Server.Controllers;
 
 [Route("api/esim")]
@@ -91,7 +93,8 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         {
             return Unauthorized();
         }
-        var countries = await commander.Call(new MakeESimOrderCommand(session, view.PackageId), cancellationToken);
-        return Ok(countries);
+        var orderView = await commander.Call(new MakeESimOrderCommand(session, view.PackageId), cancellationToken);
+        var esimView = await esimOrderService.GetEsim(orderView.Id, session, cancellationToken);
+        return Ok(esimView);
     }
 }
