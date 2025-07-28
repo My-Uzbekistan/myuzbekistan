@@ -169,7 +169,8 @@ services.AddTransient<CurrencyInvalidateScheduler>();
 services.AddCors(cors => cors.AddDefaultPolicy(
    policy => policy
        .WithOrigins("http://localhost:7100", "https://localhost:7101", 
-                    "https://auth.utc.uz:44310", "http://localhost:5173")
+                    "https://auth.utc.uz:44310", "http://localhost:5173",
+                    "https://esim-front.vercel.app")
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()

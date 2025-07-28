@@ -50,6 +50,10 @@ public class UserService(
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+
+        Log.LogError($"SessionId: {session.Id}, SessionHash: {session.Hash}");
+        Console.WriteLine($"SessionId: {session.Id}, SessionHash: {session.Hash}");
+
         var userSession = await auth.GetUser(session, cancellationToken) 
             ?? throw new UnauthorizedAccessException("User session not found");
         long userId = long.Parse(userSession.Claims.First(x => x.Key.Equals(ClaimTypes.NameIdentifier)).Value);
