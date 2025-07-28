@@ -31,6 +31,13 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         var countries = await eSimPackageService.GetAll(new TableOptions() { CountrySlug = countrySlug }, cancellationToken);
         return Ok(countries);
     }
+    
+    [HttpGet("plans/{id}")]
+    public async Task<IActionResult> GetPlansAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var countries = await eSimPackageService.Get(id, cancellationToken);
+        return Ok(countries);
+    }
 
     [HttpGet]
     public async Task<IActionResult> GetList([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
@@ -49,7 +56,7 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         return Ok(orders);
     }
 
-    [HttpGet("/{id}")]
+    [HttpGet("my/{id}")]
     public async Task<IActionResult> Get(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);
@@ -61,7 +68,7 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         return Ok(orders);
     }
 
-    [HttpGet("/{id}/details")]
+    [HttpGet("my/details/{id}")]
     public async Task<IActionResult> GetDetails(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);
