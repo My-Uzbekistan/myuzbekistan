@@ -32,13 +32,13 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
     }
 
     [ComputeMethod]
-    public async virtual Task<List<CardInfo>> GetCardByUserId(long userId, CancellationToken cancellationToken = default)
+    public virtual async Task<List<CardInfo>> GetCardByUserId(long userId, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var card = from s in dbContext.Cards select s;
+        var card = from s  in dbContext.Cards select s ;
         
-        return card.ToList().MapToListInfo();
+        return card.Where(x=>x.Status == "active") .ToList().MapToListInfo();
     }
 
     public async virtual Task<bool> CheckCard(long userId, string pan, CancellationToken cancellationToken = default)
@@ -104,7 +104,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
     }
 
 
-    public async virtual Task Delete(DeleteCardCommand command, CancellationToken cancellationToken = default)
+    public virtual async Task Delete(DeleteCardCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
         {
@@ -113,7 +113,8 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var card = await dbContext.Cards
-        .FirstOrDefaultAsync(x => x.Id == command.Id);
+        .FirstOrDefaultAsync(x => x.Id == command.Id && x.UserId == command.UserId,
+            cancellationToken: cancellationToken);
         if (card == null) throw  new ValidationException("CardEntity Not Found");
         dbContext.Remove(card);
         await dbContext.SaveChangesAsync(cancellationToken);

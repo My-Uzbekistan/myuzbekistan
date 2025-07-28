@@ -77,8 +77,8 @@
         yesText: "Delete!", cancelText: @L["Cancel"]);
         if (result ?? false)
         {
-            await commander.Run(new DeleteCardCommand(Session,Id));
-            Snackbar.Add(@L["SuccessDelete"], Severity.Success);
+            // await commander.Run(new DeleteCardCommand(Session,Id,Session));
+            // Snackbar.Add(@L["SuccessDelete"], Severity.Success);
         }
     }
 }

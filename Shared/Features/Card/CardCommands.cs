@@ -14,5 +14,5 @@ public partial record CreateCardCommand([property: DataMember] Session Session,[
 public partial record UpdateCardCommand([property: DataMember] Session Session,[property: DataMember] CardView Entity):ISessionCommand<CardView>; 
 
 [DataContract, MemoryPackable]
-public partial record DeleteCardCommand([property: DataMember] Session Session,[property: DataMember] long Id):ISessionCommand<CardView>; 
+public partial record DeleteCardCommand([property: DataMember] Session Session,[property: DataMember] long Id,[property: DataMember] long UserId):ISessionCommand<CardView>; 
 
