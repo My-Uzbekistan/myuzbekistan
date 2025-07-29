@@ -8,18 +8,18 @@ namespace myuzbekistan.Services;
 public static partial class ContentMapper
 {
 
-    
+
     #region Usable
 
     public static ContentRequestEntity MapToRequest(this ContentRequestView src) => src.MapToRequestEntity();
     public static ContentRequestView MapToRequestV(this ContentRequestEntity src) => src.MapToRequestView();
 
-    public static ContentShort MapToShortApi(this ContentEntity src, bool newApi  = false)
+    public static ContentShort MapToShortApi(this ContentEntity src, bool newApi = false)
     {
         var source = src.ToShortApi();
         if (newApi)
         {
-            source.Photo = Constants.MinioPath + source.Photo;
+            source.Photo = string.IsNullOrEmpty(source.Photo) ? source.Photo : Constants.MinioPath + source.Photo;
         }
 
         return source;
@@ -27,8 +27,12 @@ public static partial class ContentMapper
     public static MainPageContent MapToApi(this ContentEntity src, bool newApi = false)
     {
         var source = src.ToApi();
-        source.Caption = src.Category.Caption;
-        source.viewType = src.Category.ViewType;
+        if (src.Category != null)
+        {
+            source.Caption = src.Category.Caption;
+            source.viewType = src.Category.ViewType;
+        }
+
         if (src.Languages != null)
         {
             source.Languages = [.. src.Languages.Select(x => x.Name)];
@@ -56,7 +60,7 @@ public static partial class ContentMapper
 
     #region Internal
 
-    
+
 
     private static List<string> MapToListOfString(ICollection<FileEntity> source)
     {
@@ -75,7 +79,7 @@ public static partial class ContentMapper
 
     private static List<FacilityItemDto> MapToFacilitiesOfString(List<FacilityEntity> source)
     {
-        return source.Select(x => new FacilityItemDto { Name = x.Name, Icon = Constants.MinioPath +  x.Icon.Path, Id = x.Id }).ToList();
+        return source.Select(x => new FacilityItemDto { Name = x.Name, Icon = Constants.MinioPath + x.Icon.Path, Id = x.Id }).ToList();
     }
     private static string MapToString(FileEntity source)
     {

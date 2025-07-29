@@ -21,7 +21,7 @@ public partial class MainPageContent
 {
     [property: DataMember] public long ContentId { get; set; }
     [property: DataMember] public string Title { get; set; } = string.Empty;
-    [property: DataMember] public string Caption { get; set; } = string.Empty;
+    [property: DataMember] public string? Caption { get; set; } = string.Empty;
     [property: DataMember] public List<string> Photos { get; set; } = [];
     [property: DataMember] public string Photo { get; set; } = string.Empty;
     [property: DataMember] public string Region { get; set; } = string.Empty;
