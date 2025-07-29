@@ -1,6 +1,6 @@
 namespace myuzbekistan.Services;
 
-public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICardService 
+public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), ICardService
 {
     #region Queries
     [ComputeMethod]
@@ -12,23 +12,23 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
 
         if (!String.IsNullOrEmpty(options.Search))
         {
-            card = card.Where(s => 
-                     s.ExpirationDate !=null && s.ExpirationDate.Contains(options.Search)
+            card = card.Where(s =>
+                     s.ExpirationDate != null && s.ExpirationDate.Contains(options.Search)
                     || s.CardPan.Contains(options.Search)
                     || s.CardToken.Contains(options.Search)
                     || s.Phone.Contains(options.Search)
                     || s.HolderName.Contains(options.Search)
-                    || s.Pinfl !=null && s.Pinfl.Contains(options.Search)
+                    || s.Pinfl != null && s.Pinfl.Contains(options.Search)
                     || s.Ps.Contains(options.Search)
                     || s.Status.Contains(options.Search)
             );
         }
 
         Sorting(ref card, options);
-        
+
         var count = await card.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await card.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
-        return new TableResponse<CardView>(){ Items = items.MapToViewList(), TotalItems = count };
+        return new TableResponse<CardView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
     [ComputeMethod]
@@ -36,9 +36,11 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var card = from s  in dbContext.Cards select s ;
-        
-        return card.Where(x=>x.Status == "active") .ToList().MapToListInfo();
+        var card = from s in dbContext.Cards
+                   where s.Status == "active" && s.UserId == userId
+                   select s;
+
+        return card.ToList().MapToListInfo();
     }
 
     public async virtual Task<bool> CheckCard(long userId, string pan, CancellationToken cancellationToken = default)
@@ -79,7 +81,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var card = await dbContext.Cards
         .FirstOrDefaultAsync(x => x.UserId == userId && x.Id == Id);
-        
+
         return card == null ? throw new NotFoundException("CardEntity Not Found") : card.MapToView();
     }
 
@@ -96,8 +98,8 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
 
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         CardEntity card = new CardEntity();
-        Reattach(card, command.Entity, dbContext); 
-        
+        Reattach(card, command.Entity, dbContext);
+
         dbContext.Update(card);
         await dbContext.SaveChangesAsync(cancellationToken);
         return card.Id;
@@ -115,7 +117,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         var card = await dbContext.Cards
         .FirstOrDefaultAsync(x => x.Id == command.Id && x.UserId == command.UserId,
             cancellationToken: cancellationToken);
-        if (card == null) throw  new ValidationException("CardEntity Not Found");
+        if (card == null) throw new ValidationException("CardEntity Not Found");
         dbContext.Remove(card);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
@@ -132,17 +134,17 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         var card = await dbContext.Cards
         .FirstOrDefaultAsync(x => x.Id == command.Entity!.Id);
 
-        if (card == null) throw  new ValidationException("CardEntity Not Found"); 
+        if (card == null) throw new ValidationException("CardEntity Not Found");
 
         Reattach(card, command.Entity, dbContext);
-        
+
         await dbContext.SaveChangesAsync(cancellationToken);
     }
     #endregion
 
     #region External
     private static string token;
-    
+
     #endregion
 
     #region Helpers
@@ -168,7 +170,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         "Status" => card.Ordering(options, o => o.Status),
         "Id" => card.Ordering(options, o => o.Id),
         _ => card.OrderBy(o => o.Id),
-        
+
     };
     #endregion
 }
