@@ -116,8 +116,7 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var card = await dbContext.Cards
         .FirstOrDefaultAsync(x => x.Id == command.Id && x.UserId == command.UserId,
-            cancellationToken: cancellationToken);
-        if (card == null) throw new ValidationException("CardEntity Not Found");
+            cancellationToken: cancellationToken) ?? throw new ValidationException("CardEntity Not Found");
         dbContext.Remove(card);
         await dbContext.SaveChangesAsync(cancellationToken);
     }

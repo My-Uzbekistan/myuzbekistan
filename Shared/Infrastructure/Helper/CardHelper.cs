@@ -8,14 +8,14 @@ namespace myuzbekistan.Shared;
 
 public class CardHelper
 {
-    public static string GetCardBrandImage(string? cardType)
+    public static string GetCardBrandImage(string cardType = "")
     {
-        return cardType switch
+        return cardType.ToLower() switch
         {
-            "Humo" => "https://minio.uzdc.uz/myzubekistan/Images/humo.png",
-            "Visa" => "https://minio.uzdc.uz/myzubekistan/Images/visa.png",
-            "MasterCard" => "https://minio.uzdc.uz/myzubekistan/Images/master.png",
-            "Uzcard" => "https://minio.uzdc.uz/myzubekistan/Images/uzcard.png",
+            "humo" => "https://minio.uzdc.uz/myzubekistan/Images/humo.png",
+            "visa" => "https://minio.uzdc.uz/myzubekistan/Images/visa.png",
+            "mastercard" => "https://minio.uzdc.uz/myzubekistan/Images/master.png",
+            "uzcard" => "https://minio.uzdc.uz/myzubekistan/Images/uzcard.png",
             _ => "https://minio.uzdc.uz/myzubekistan/Images/default.png"
         };
     }
