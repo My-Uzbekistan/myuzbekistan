@@ -1,14 +1,14 @@
-using System.Text.Json;
-
 namespace myuzbekistan.Shared;
 
 public class ESimPackageEntity : BaseEntity
 {
     public string OperatorName { get; set; } = string.Empty;
     public string PackageId { get; set; } = string.Empty;
-    public string CountryCode { get; set; } = string.Empty;
     public string CountryName { get; set; } = string.Empty;
+    public string CountryCode { get; set; } = string.Empty;
     public string DataVolume { get; set; } = string.Empty;
+    public int Voice { get; set; }
+    public int Text { get; set; }
     public int ValidDays { get; set; }
     public double Price { get; set; }
     public double CustomPrice { get; set; }
@@ -23,4 +23,9 @@ public class ESimPackageEntity : BaseEntity
     public List<string>? Info { get; set; } = [];
     public string? OtherInfo { get; set; }
     public List<PackageResponseCoverage>? Coverage { get; set; } = [];
+    public bool HasVoicePack { get; set; }
+
+    public long? ESimSlugId { get; set; }
+    public ESimSlugEntity? ESimSlug { get; set; }
+    public List<long> Locals { get; set; } = [];
 }

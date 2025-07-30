@@ -335,5 +335,7 @@ using (var scope = app.Services.CreateScope())
     await Seeds.SeedAdminAsync(userManager);
     Seeds.SeedAboutContent(dbContext);
 }
+var commander = app.Services.GetRequiredService<ICommander>();
+await commander.Call(new SyncESimSlugCommand());
 
 app.Run();

@@ -9,6 +9,9 @@ public partial class EsimView
     [property: DataMember] public string CountryName { get; set; } = string.Empty;
     [property: DataMember] public string OperatorName { get; set; } = string.Empty;
     [property: DataMember] public string DataValume { get; set; } = string.Empty;
+    [property: DataMember] public int Voice { get; set; }
+    [property: DataMember] public int Text { get; set; }
+    [property: DataMember] public bool HasVoicePack { get; set; }
     [property: DataMember] public double RemainingData { get; set; }
     [property: DataMember] public string? ActivationDate { get; set; } = string.Empty;
     [property: DataMember] public int ValidDays { get; set; }

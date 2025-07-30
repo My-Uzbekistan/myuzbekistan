@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +12,14 @@ using myuzbekistan.Shared;
 
 #nullable disable
 
-namespace Services.Migrations
+namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250730183421_ESimSlugs")]
+    partial class ESimSlugs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -756,10 +759,6 @@ namespace Services.Migrations
                     b.Property<bool?>("IsRoaming")
                         .HasColumnType("boolean");
 
-                    b.PrimitiveCollection<List<long>>("Locals")
-                        .IsRequired()
-                        .HasColumnType("bigint[]");
-
                     b.Property<string>("Network")
                         .IsRequired()
                         .HasColumnType("text");
@@ -784,16 +783,10 @@ namespace Services.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Text")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ValidDays")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Voice")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");

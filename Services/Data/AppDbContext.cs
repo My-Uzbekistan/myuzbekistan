@@ -90,6 +90,12 @@ public partial class AppDbContext : DbContextBase
                 v => JsonSerializer.Serialize(v, jsonOptions),
                 v => JsonSerializer.Deserialize<List<PackageResponseCoverage>>(v, jsonOptions) ?? new List<PackageResponseCoverage>()
             );
+
+        modelBuilder.Entity<ESimPackageEntity>()
+            .HasOne(x => x.ESimSlug)
+            .WithMany(x => x.ESimPackages)
+            .HasForeignKey(x => x.ESimSlugId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

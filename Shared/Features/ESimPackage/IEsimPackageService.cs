@@ -3,6 +3,9 @@ namespace myuzbekistan.Shared;
 public interface IESimPackageService : IComputeService
 {
     [ComputeMethod]
+    Task<TableResponse<ESimPackageClientView>> GetClientViewAll(TableOptions options, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
     Task<TableResponse<ESimPackageView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
@@ -10,6 +13,9 @@ public interface IESimPackageService : IComputeService
 
     [ComputeMethod]
     Task<ESimPackageView> Get(long Id, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
+    Task<ESimPackageClientView> GetClientView(long Id, Language language, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
     Task<UserView> GetUserAsync(long Id, CancellationToken cancellationToken = default);

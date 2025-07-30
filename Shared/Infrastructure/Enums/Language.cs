@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;
 
 public enum Language
 {
@@ -9,7 +9,7 @@ public enum Language
 
 public static class LanguageExtensions
 {
-    public static Language ConvertToLanguage(this string language)
+    public static Language ConvertToLanguage(this string? language)
         => language switch
         {
             "ru" => Language.ru,

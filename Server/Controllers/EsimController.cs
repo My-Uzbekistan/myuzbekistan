@@ -1,43 +1,69 @@
-using DocumentFormat.OpenXml.Office2010.Excel;
-
 namespace Server.Controllers;
 
 [Route("api/esim")]
 [ApiController]
-[Authorize]
-public class EsimController(IAiraloCountryService airaloCountryService,
+//[Authorize]
+public class EsimController(
     IESimPackageService eSimPackageService,
     IESimOrderService esimOrderService,
     ISessionResolver sessionResolver,
+    IESimSlugService esimSlugService,
     ICommander commander) : ControllerBase
 {
-    [HttpGet("countries/{language}")]
-    public async Task<IActionResult> GetAllAsync(string language, CancellationToken cancellationToken = default)
+    [HttpGet("countries")]
+    public async Task<IActionResult> GetAllAsync([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
     {
-        var countries = await airaloCountryService.GetAllAsync(language.ConvertToLanguage(), cancellationToken);
+        var countries = await esimSlugService.GetAllCountries(options, cancellationToken);
         return Ok(countries);
     }
 
-    [HttpGet("countries/{language}/popular")]
-    public async Task<IActionResult> GetPopularAsync(string language, CancellationToken cancellationToken = default)
+    [HttpGet("countries/popular")]
+    public async Task<IActionResult> GetPopularAsync([FromQuery] string language, CancellationToken cancellationToken = default)
     {
-        var popularCountries = await airaloCountryService.GetPopularAsync(language.ConvertToLanguage(), cancellationToken);
+        var popularCountries = await esimSlugService.GetAllPopularCountries(language.ConvertToLanguage(), cancellationToken);
         return Ok(popularCountries);
     }
 
-    [HttpGet("plans")]
-    public async Task<IActionResult> GetPlansAsync([FromQuery] string? countrySlug, CancellationToken cancellationToken = default)
+    [HttpGet("regions")]
+    public async Task<IActionResult> GetRegionsAsync([FromQuery] string language, CancellationToken cancellationToken = default)
     {
-        var countries = await eSimPackageService.GetAll(new TableOptions() { CountrySlug = countrySlug }, cancellationToken);
+        var countries = await esimSlugService.GetAllRegions(language.ConvertToLanguage(), cancellationToken);
+        return Ok(countries);
+    }
+
+    [HttpGet("plans/local")]
+    public async Task<IActionResult> GetLocalPlanAsync([FromQuery] string? countrySlug, CancellationToken cancellationToken = default)
+    {
+        var countries = await eSimPackageService.GetAll(
+            new TableOptions() { CountrySlug = countrySlug, SlugType = ESimSlugType.Local }, cancellationToken);
+        return Ok(countries);
+    }
+
+    [HttpGet("plans/regional")]
+    public async Task<IActionResult> GetPlansRegionalAsync([FromQuery] string? countrySlug, CancellationToken cancellationToken = default)
+    {
+        var countries = await eSimPackageService.GetClientViewAll(
+            new TableOptions() { CountrySlug = countrySlug, SlugType = ESimSlugType.Regional }, cancellationToken);
+        return Ok(countries);
+    }
+
+    [HttpGet("plans/global")]
+    public async Task<IActionResult> GetPlansGlobalAsync(CancellationToken cancellationToken = default)
+    {
+        var countries = await eSimPackageService.GetAll(
+            new TableOptions() { CountrySlug = "world", SlugType = ESimSlugType.Global }, cancellationToken);
         return Ok(countries);
     }
     
     [HttpGet("plans/{id}")]
-    public async Task<IActionResult> GetPlansAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? language, CancellationToken cancellationToken = default)
     {
-        var countries = await eSimPackageService.Get(id, cancellationToken);
+        var countries = await eSimPackageService.GetClientView(id, language.ConvertToLanguage(), cancellationToken);
         return Ok(countries);
     }
+
+
+    #region MyEsims
 
     [HttpGet]
     public async Task<IActionResult> GetList([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
@@ -56,7 +82,7 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         return Ok(orders);
     }
 
-    [HttpGet("my/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> Get(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);
@@ -68,7 +94,7 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         return Ok(orders);
     }
 
-    [HttpGet("my/details/{id}")]
+    [HttpGet("details/{id}")]
     public async Task<IActionResult> GetDetails(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);
@@ -77,18 +103,6 @@ public class EsimController(IAiraloCountryService airaloCountryService,
             return Unauthorized();
         }
         var order = await esimOrderService.Get(id, session, cancellationToken);
-        using var httpClient = new HttpClient();
-        var qrCodeBytes = await httpClient.GetByteArrayAsync(order.QrCode, cancellationToken);
-        var base64 = Convert.ToBase64String(qrCodeBytes);
-
-        var data = new
-        {
-            iccid = order.Iccid,
-            smdpAddress = order.Lpa,
-            activationCode = order.QrCode,
-            qrCodeImageBase64 = base64
-        };
-
         return Ok(order);
     }
 
@@ -104,4 +118,6 @@ public class EsimController(IAiraloCountryService airaloCountryService,
         var esimView = await esimOrderService.GetEsim(orderView.Id, session, cancellationToken);
         return Ok(esimView);
     }
+
+    #endregion
 }
