@@ -14,6 +14,8 @@ public partial class ESimPackageView
     [property: DataMember] public string CountryName { get; set; } = string.Empty;
     [property: DataMember] public string DataVolume { get; set; } = string.Empty;
     [property: DataMember] public int ValidDays { get; set; }
+    [property: DataMember] public int Voice { get; set; }
+    [property: DataMember] public int Text { get; set; }
     [property: DataMember] public double Price { get; set; }
     [property: DataMember] public double CustomPrice { get; set; }
     [property: DataMember] public string Network { get; set; } = string.Empty;
@@ -26,6 +28,7 @@ public partial class ESimPackageView
     [property: DataMember] public List<PackageResponseCoverage>? Coverage { get; set; } = [];
     [property: DataMember] public bool HasVoicePack { get; set; }
     [property: DataMember] public long SlugId { get; set; }
+    [property: DataMember] public List<long> Locals { get; set; } = [];
 
     public override bool Equals(object? o)
     {

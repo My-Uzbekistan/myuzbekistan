@@ -15,8 +15,8 @@ using myuzbekistan.Shared;
 namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250730104404_ESimSlugStructure")]
-    partial class ESimSlugStructure
+    [Migration("20250730195810_ESimPackageAdditionalFields")]
+    partial class ESimPackageAdditionalFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -744,7 +744,7 @@ namespace Services.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("ESimSlugId")
+                    b.Property<long?>("ESimSlugId")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("HasVoicePack")
@@ -758,6 +758,10 @@ namespace Services.Data.Migrations
 
                     b.Property<bool?>("IsRoaming")
                         .HasColumnType("boolean");
+
+                    b.PrimitiveCollection<List<long>>("Locals")
+                        .IsRequired()
+                        .HasColumnType("bigint[]");
 
                     b.Property<string>("Network")
                         .IsRequired()
@@ -783,10 +787,16 @@ namespace Services.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Text")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ValidDays")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Voice")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -1502,10 +1512,9 @@ namespace Services.Data.Migrations
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
                 {
                     b.HasOne("myuzbekistan.Shared.ESimSlugEntity", "ESimSlug")
-                        .WithMany()
+                        .WithMany("ESimPackages")
                         .HasForeignKey("ESimSlugId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ESimSlug");
                 });
@@ -1624,6 +1633,11 @@ namespace Services.Data.Migrations
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
                 {
                     b.Navigation("PackageDiscountEntity");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimSlugEntity", b =>
+                {
+                    b.Navigation("ESimPackages");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>

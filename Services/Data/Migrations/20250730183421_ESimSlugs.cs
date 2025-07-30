@@ -7,17 +7,22 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Services.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ESimSlugStructure : Migration
+    public partial class ESimSlugs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("""
+                DELETE FROM public."ESimOrders";
+                DELETE FROM public."PackageDiscounts";
+                DELETE FROM public."ESimPackages";
+            """);
+
             migrationBuilder.AddColumn<long>(
                 name: "ESimSlugId",
                 table: "ESimPackages",
                 type: "bigint",
-                nullable: false,
-                defaultValue: 0L);
+                nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "HasVoicePack",

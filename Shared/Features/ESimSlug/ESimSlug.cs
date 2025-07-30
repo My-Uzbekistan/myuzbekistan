@@ -10,6 +10,8 @@ public class ESimSlugEntity : BaseEntity
     public string? ImageUrl { get; set; }
     public ESimSlugType SlugType { get; set; }
 
+    public virtual ICollection<ESimPackageEntity> ESimPackages { get; set; } = [];
+
     public ESimSlugView ToView(Language language)
         => new()
         {

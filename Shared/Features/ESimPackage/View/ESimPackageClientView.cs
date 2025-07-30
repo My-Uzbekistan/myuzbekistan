@@ -5,7 +5,6 @@ namespace myuzbekistan.Shared;
 public partial class ESimPackageClientView
 {
     [property: DataMember] public long Id { get; set; }
-    [property: DataMember] public long PackageDiscountId { get; set; }
     [property: DataMember] public PackageDiscountView? PackageDiscountView { get; set; }
     [property: DataMember] public string PackageId { get; set; } = string.Empty;
     [property: DataMember] public string OperatorName { get; set; } = string.Empty;
@@ -13,6 +12,9 @@ public partial class ESimPackageClientView
     [property: DataMember] public string CountryName { get; set; } = string.Empty;
     [property: DataMember] public string DataVolume { get; set; } = string.Empty;
     [property: DataMember] public int ValidDays { get; set; }
+    [property: DataMember] public bool HasVoicePack { get; set; }
+    [property: DataMember] public int Voice { get; set; }
+    [property: DataMember] public int Text { get; set; }
     [property: DataMember] public double CustomPrice { get; set; }
     [property: DataMember] public string Network { get; set; } = string.Empty;
     [property: DataMember] public string ActivationPolicy { get; set; } = string.Empty;
@@ -22,7 +24,7 @@ public partial class ESimPackageClientView
     [property: DataMember] public List<string>? Info { get; set; } = [];
     [property: DataMember] public string? OtherInfo { get; set; }
     [property: DataMember] public List<PackageResponseCoverage>? Coverage { get; set; } = [];
-    [property: DataMember] public bool HasVoicePack { get; set; }
+    [property: DataMember] public List<ESimSlugView> Countries { get; set; } = [];
 
     public override bool Equals(object? o)
     {
@@ -46,13 +48,14 @@ public partial class ESimPackageClientView
         return new ESimPackageClientView
         {
             Id = src.Id,
-            PackageDiscountId = src.PackageDiscountId ?? 0,
             PackageDiscountView = src.PackageDiscountView,
             PackageId = src.PackageId,
             OperatorName = src.OperatorName,
             CountryCode = src.CountryCode,
             CountryName = src.CountryName,
             DataVolume = src.DataVolume,
+            Voice = src.Voice,
+            Text = src.Text,
             ValidDays = src.ValidDays,
             CustomPrice = src.CustomPrice,
             Network = src.Network,
@@ -63,7 +66,7 @@ public partial class ESimPackageClientView
             Info = src.Info,
             OtherInfo = src.OtherInfo,
             Coverage = src.Coverage,
-            HasVoicePack = false
+            HasVoicePack = false,
         };
     }
 }

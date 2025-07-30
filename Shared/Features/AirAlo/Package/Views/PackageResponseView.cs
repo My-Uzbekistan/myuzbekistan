@@ -242,10 +242,10 @@ public partial class PackageResponsePackage
     public string Data { get; set; } = string.Empty;
 
     [DataMember, JsonProperty("voice")]
-    public string? Voice { get; set; }
+    public int? Voice { get; set; }
 
     [DataMember, JsonProperty("text")]
-    public string? Text { get; set; }
+    public int? Text { get; set; }
 
     [DataMember, JsonProperty("net_price")]
     public float NetPrice { get; set; }

@@ -3,8 +3,7 @@ using System.Diagnostics;
 namespace myuzbekistan.Services;
 
 public class ESimPackageService(
-    IServiceProvider services, 
-    IAiraloCountryService airaloCountryService,
+    IServiceProvider services,
     IAiraloPackageService airaloPackageService,
     IAiraloTokenService airaloTokenService,
     IConfiguration configuration,
@@ -24,13 +23,13 @@ public class ESimPackageService(
             .Where(x => x.Status == ContentStatus.Active)
             .CountAsync(cancellationToken: cancellationToken);
 
-        var countries = await airaloCountryService.GetAllAsync(Language.en, cancellationToken);
+        var countriesCount = await dbContext.ESimSlugs.Where(x => x.SlugType == ESimSlugType.Local).CountAsync(cancellationToken);
 
         return new()
         {
             PackagesCount = packagesCount,
             UsersCount = users.TotalItems,
-            CountriesCount = countries.Count
+            CountriesCount = countriesCount
         };
     }
 
@@ -38,17 +37,19 @@ public class ESimPackageService(
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var eSimPackage = dbContext.ESimPackages
-            .AsNoTracking()
-            .Include(x => x.ESimSlug)
-            .Where(s =>
-                (string.IsNullOrEmpty(options.Search) ||
-                    s.ESimSlug!.TitleUz.Contains(options.Search) ||
-                    s.ESimSlug!.TitleEn.Contains(options.Search) ||
-                    s.ESimSlug!.TitleRu.Contains(options.Search))
-                &&
-                (string.IsNullOrEmpty(options.CountrySlug) || s.ESimSlug!.Slug == options.CountrySlug)
-            );
+
+        var eSimPackage = from s in dbContext.ESimPackages select s;
+        eSimPackage = eSimPackage.Include(x => x.ESimSlug)
+            .Where(s => (string.IsNullOrEmpty(options.CountrySlug) || s.ESimSlug!.Slug == options.CountrySlug));
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            eSimPackage = eSimPackage.Where(x =>
+                    x.PackageId.Contains(options.Search.ToLower()) ||
+                    x.ESimSlug!.TitleUz.Contains(options.Search) ||
+                    x.ESimSlug!.TitleEn.Contains(options.Search) ||
+                    x.ESimSlug!.TitleRu.Contains(options.Search));
+        }
 
         Sorting(ref eSimPackage, options);
 
@@ -90,19 +91,18 @@ public class ESimPackageService(
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var eSimPackage = dbContext.ESimPackages
-            .AsNoTracking()
-            .Include(x => x.ESimSlug)
-            .Where(s =>
-                s.ESimSlug!.SlugType == options.SlugType 
-                &&
-                (string.IsNullOrEmpty(options.Search) ||
-                    s.ESimSlug!.TitleUz.Contains(options.Search) ||
-                    s.ESimSlug!.TitleEn.Contains(options.Search) ||
-                    s.ESimSlug!.TitleRu.Contains(options.Search))
-                &&
-                (string.IsNullOrEmpty(options.CountrySlug) || s.ESimSlug!.Slug == options.CountrySlug)
-            );
+        var eSimPackage = from s in dbContext.ESimPackages select s;
+        eSimPackage = eSimPackage.Include(x => x.ESimSlug)
+            .Where(s => s.ESimSlug!.Slug == options.CountrySlug);
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            eSimPackage = eSimPackage.Where(x =>
+                    x.PackageId.Contains(options.Search.ToLower()) ||
+                    x.ESimSlug!.TitleUz.Contains(options.Search) ||
+                    x.ESimSlug!.TitleEn.Contains(options.Search) ||
+                    x.ESimSlug!.TitleRu.Contains(options.Search));
+        }
 
         Sorting(ref eSimPackage, options);
 
@@ -114,10 +114,10 @@ public class ESimPackageService(
         {
             var view = (ESimPackageClientView)entity.MapToView();
 
-            if (view.PackageDiscountId > 0)
+            if (entity.PackageDiscountId > 0)
             {
                 var packageDiscount = await dbContext.PackageDiscounts
-                    .FirstOrDefaultAsync(x => x.Id == view.PackageDiscountId, cancellationToken);
+                    .FirstOrDefaultAsync(x => x.Id == entity.PackageDiscountId, cancellationToken);
                 view.PackageDiscountView = packageDiscount?.MapToView();
             }
 
@@ -127,6 +127,8 @@ public class ESimPackageService(
                 Language.ru => entity.ESimSlug!.TitleRu,
                 _ => entity.ESimSlug!.TitleUz
             };
+            view.Countries = [];
+            views.Add(view);
         }
 
         return new TableResponse<ESimPackageClientView>() { Items = views, TotalItems = count };
@@ -143,10 +145,10 @@ public class ESimPackageService(
             ?? throw new NotFoundException("ESimPackageEntity Not Found");
 
         var view = (ESimPackageClientView)eSimPackage.MapToView();
-        if (view.PackageDiscountId > 0)
+        if (eSimPackage.PackageDiscountId > 0)
         {
             var packageDiscount = await dbContext.PackageDiscounts
-                .FirstOrDefaultAsync(x => x.Id == view.PackageDiscountId, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == eSimPackage.PackageDiscountId, cancellationToken);
             view.PackageDiscountView = packageDiscount?.MapToView();
         }
         view.CountryName = language switch
@@ -155,6 +157,15 @@ public class ESimPackageService(
             Language.ru => eSimPackage.ESimSlug!.TitleRu,
             _ => eSimPackage.ESimSlug!.TitleUz
         };
+
+        if (eSimPackage.Locals.Count > 0)
+        {
+            var slugs = await dbContext.ESimSlugs.Where(x => x.SlugType == ESimSlugType.Local).ToListAsync(cancellationToken);
+            view.Countries = [.. eSimPackage.Locals
+                .Select(localId => slugs.FirstOrDefault(x => x.Id == localId))
+                .Where(slug => slug != null)
+                .Select(s => s!.ToView(language))];
+        }
 
         return view;
     }
@@ -272,29 +283,51 @@ public class ESimPackageService(
                     var packages = await airaloPackageService.GetAllAsync(new TableOptions()
                     {
                         PageSize = pageSize,
-                        Page = page
+                        Page = page++
                     }, type, cancellationToken);
 
-                    if (packages is null || packages.Data.Count < 0)
+                    if (packages is null || packages.Data.Count == 0)
                     {
+                        hasMore = false; // No more pages
                         continue;
                     }
 
                     var slugs = packages.Data;
-                    List<ESimPackageView> packageViews = [];
+                    var databaseSlugs = await dbContext.ESimSlugs.ToListAsync(cancellationToken);
+                    List<ESimPackageEntity> packageViews = [];
                     foreach (var slug in slugs)
                     {
-                        var slugEntity = dbContext.ESimSlugs.FirstOrDefault(x => x.Slug == slug.Slug)
-                            ?? throw new NotFoundException($"ESimSlugEntity with slug {slug.Slug} not found");
+                        var slugEntity = databaseSlugs.FirstOrDefault(x => x.Slug == slug.Slug);
+                        if (slugEntity is null)
+                        {
+                            Console.WriteLine($"ESimSlugEntity with slug {slug.Slug} not found in database.");
+                            continue;
+                        }
+
                         if (slug.Operators is null || slug.Operators.Count == 0)
                         {
                             continue; // Skip if no operators
                         }
                         foreach (var operatorPackage in slug.Operators)
                         {
+                            List<long> locals = [];
+                            if (operatorPackage.Countries.Count > 1)
+                            {
+                                locals = [.. operatorPackage.Countries.Select(country =>
+                                {
+                                    var dbSlug = databaseSlugs.FirstOrDefault(x => !string.IsNullOrEmpty(x.CountryCode) &&
+                                                                                   x.CountryCode == country.CountryCode &&
+                                                                                   x.SlugType == ESimSlugType.Local);
+                                    if (dbSlug is null)
+                                    {
+                                        return 0;
+                                    }
+                                    return dbSlug.Id;
+                                }).Where(x => x != 0)];
+                            }
                             foreach (var package in operatorPackage.Packages)
                             {
-                                ESimPackageView packageView = new()
+                                ESimPackageEntity packageView = new()
                                 {
                                     PackageId = package.Id,
                                     CountryCode = slug.CountryCode,
@@ -310,31 +343,37 @@ public class ESimPackageService(
                                     Info = operatorPackage.Info,
                                     OtherInfo = operatorPackage.OtherInfo,
                                     Coverage = operatorPackage.Coverages,
-                                    SlugId = slugEntity.Id
+                                    ESimSlugId = slugEntity.Id,
+                                    Voice = package.Voice ?? 0,
+                                    Text = package.Text ?? 0,
+                                    HasVoicePack = package.Voice > 0,
+                                    Locals = locals
                                 };
                                 packageViews.Add(packageView);
                             }
                         }
                     }
-
-                    var esimPackages = ESimPackageView.FromApiResponse(packages);
-                    foreach (var package in esimPackages)
+                    foreach (var package in packageViews)
                     {
                         var existingPackage = await dbContext.ESimPackages
                             .FirstOrDefaultAsync(x => x.PackageId == package.PackageId, cancellationToken);
-                        if (existingPackage != null && existingPackage.Price != package.Price)
+                        if (existingPackage != null)
                         {
-                            long id = existingPackage.Id;
-                            var status = existingPackage.Status;
-                            Reattach(existingPackage, package, dbContext);
-                            existingPackage.Id = id;
-                            existingPackage.Status = status;
-                            var view = existingPackage.MapToView();
-                            await commander.Call(new UpdateESimPackageCommand(view), cancellationToken);
+                            if (existingPackage.Price != package.Price)
+                            {
+                                long id = existingPackage.Id;
+                                var status = existingPackage.Status;
+                                dbContext.ESimPackages.Update(existingPackage);
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
                         else
                         {
-                            await commander.Call(new CreateESimPackageCommand(package), cancellationToken);
+                            package.Status = ContentStatus.Active;
+                            dbContext.ESimPackages.Add(package);
                         }
                     }
                 }
