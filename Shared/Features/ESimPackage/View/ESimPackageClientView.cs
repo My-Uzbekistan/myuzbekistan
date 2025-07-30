@@ -1,12 +1,11 @@
 namespace myuzbekistan.Shared;
 
-
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
-public partial class ESimPackageView
+public partial class ESimPackageClientView
 {
     [property: DataMember] public long Id { get; set; }
-    [property: DataMember] public long? PackageDiscountId { get; set; }
+    [property: DataMember] public long PackageDiscountId { get; set; }
     [property: DataMember] public PackageDiscountView? PackageDiscountView { get; set; }
     [property: DataMember] public string PackageId { get; set; } = string.Empty;
     [property: DataMember] public string OperatorName { get; set; } = string.Empty;
@@ -14,7 +13,6 @@ public partial class ESimPackageView
     [property: DataMember] public string CountryName { get; set; } = string.Empty;
     [property: DataMember] public string DataVolume { get; set; } = string.Empty;
     [property: DataMember] public int ValidDays { get; set; }
-    [property: DataMember] public double Price { get; set; }
     [property: DataMember] public double CustomPrice { get; set; }
     [property: DataMember] public string Network { get; set; } = string.Empty;
     [property: DataMember] public string ActivationPolicy { get; set; } = string.Empty;
@@ -25,60 +23,47 @@ public partial class ESimPackageView
     [property: DataMember] public string? OtherInfo { get; set; }
     [property: DataMember] public List<PackageResponseCoverage>? Coverage { get; set; } = [];
     [property: DataMember] public bool HasVoicePack { get; set; }
-    [property: DataMember] public long SlugId { get; set; }
 
     public override bool Equals(object? o)
     {
-        var other = o as ESimPackageView;
-        return other?.Id == Id && 
+        var other = o as ESimPackageClientView;
+        return other?.Id == Id &&
                other?.PackageId == PackageId &&
                other?.CountryCode == CountryCode &&
                other?.CountryName == CountryName &&
                other?.DataVolume == DataVolume &&
                other?.ValidDays == ValidDays &&
-               other?.Price == Price &&
                other?.CustomPrice == CustomPrice &&
                other?.Network == Network &&
                other?.ActivationPolicy == ActivationPolicy;
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(Id, PackageId, CountryCode, CountryName, DataVolume, ValidDays, Price);
+        => HashCode.Combine(Id, PackageId, CountryCode, CountryName, DataVolume, ValidDays);
 
-    public static List<ESimPackageView> FromApiResponse(PackageResponseView src)
-    {
-        List<ESimPackageView> result = [];
-        var firstResponse = src.Data.FirstOrDefault();
-        if (firstResponse == null || firstResponse.Operators == null || firstResponse.Operators.Count == 0)
+    public static implicit operator ESimPackageClientView(ESimPackageView src)
         {
-            return result; // Return empty list if no data is available
-        }
-
-        foreach (var provider in firstResponse.Operators)
+        return new ESimPackageClientView
         {
-            foreach(var package in provider.Packages)
-            {
-                ESimPackageView packageView = new()
-                {
-                    PackageId = package.Id,
-                    CountryCode = firstResponse.CountryCode,
-                    CountryName = firstResponse.Title,
-                    DataVolume = $"{package.Amount / 1024} GB",
-                    ValidDays = package.Day,
-                    Price = package.Price,
-                    Network = provider.Title,
-                    ActivationPolicy = provider.ActivationPolicy,
-                    OperatorName = provider.Title,
-                    IsRoaming = provider.IsRoaming,
-                    ImageUrl = provider.Image.Url,
-                    Info = provider.Info,
-                    OtherInfo = provider.OtherInfo,
-                    Coverage = provider.Coverages,
-                };
-                result.Add(packageView);
-            }
-        }
-
-        return result;
+            Id = src.Id,
+            PackageDiscountId = src.PackageDiscountId ?? 0,
+            PackageDiscountView = src.PackageDiscountView,
+            PackageId = src.PackageId,
+            OperatorName = src.OperatorName,
+            CountryCode = src.CountryCode,
+            CountryName = src.CountryName,
+            DataVolume = src.DataVolume,
+            ValidDays = src.ValidDays,
+            CustomPrice = src.CustomPrice,
+            Network = src.Network,
+            ActivationPolicy = src.ActivationPolicy,
+            Status = src.Status,
+            IsRoaming = src.IsRoaming,
+            ImageUrl = src.ImageUrl,
+            Info = src.Info,
+            OtherInfo = src.OtherInfo,
+            Coverage = src.Coverage,
+            HasVoicePack = false
+        };
     }
 }

@@ -42,6 +42,22 @@ public class AiraloPackageService(IServiceProvider services,
         return packages;
     }
 
+    public virtual async Task<PackageResponseView> GetAllAsync(TableOptions options, string type, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        string url = $"{configuration["Airalo:Host"]}/v2/packages?filter[type]={type}&limit={options.PageSize}&page={options.Page}";
+        var token = await airaloTokenService.GetTokenAsync(cancellationToken);
+        using var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await httpClient.GetAsync(url, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var packages = JsonConvert.DeserializeObject<PackageResponseView>(content, jsonSerializerSettings)
+            ?? throw new BadRequestException("Failed to deserialize package response.");
+
+        return packages;
+    }
+
     public virtual async Task<OrderPackageStatusView> GetOrderPackageStatusAsync(string iccid, CancellationToken cancellationToken = default)
     {
         await Invalidate();

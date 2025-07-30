@@ -5,6 +5,9 @@ public interface IAiraloPackageService : IComputeService
     [ComputeMethod]
     Task<PackageResponseView> GetCountryPackagesAsync(string? countrySlug, CancellationToken cancellationToken = default);
 
+    [ComputeMethod]
+    Task<PackageResponseView> GetAllAsync(TableOptions options, string type, CancellationToken cancellationToken = default);
+
     [ComputeMethod(AutoInvalidationDelay = 900)]
     Task<OrderPackageStatusView> GetOrderPackageStatusAsync(string iccid, CancellationToken cancellationToken = default);
 

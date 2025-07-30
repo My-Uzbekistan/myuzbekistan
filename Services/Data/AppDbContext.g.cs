@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using ActualLab.Fusion.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using myuzbekistan.Shared;
 
 namespace myuzbekistan.Services;
 public partial class AppDbContext : DbContextBase
@@ -25,4 +26,5 @@ public partial class AppDbContext : DbContextBase
     public DbSet<ESimPackageEntity> ESimPackages { get; protected set; } = null!;
     public DbSet<ESimOrderEntity> ESimOrders { get; protected set; } = null!;
     public DbSet<PackageDiscountEntity> PackageDiscounts { get; protected set; } = null!;
+    public DbSet<ESimSlugEntity> ESimSlugs { get; protected set; } = null!;
 }
