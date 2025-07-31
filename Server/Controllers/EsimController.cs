@@ -2,7 +2,7 @@ namespace Server.Controllers;
 
 [Route("api/esim")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class EsimController(
     IESimPackageService eSimPackageService,
     IESimOrderService esimOrderService,
@@ -56,9 +56,9 @@ public class EsimController(
     }
     
     [HttpGet("plans/{id}")]
-    public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? language, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? lang, CancellationToken cancellationToken = default)
     {
-        var countries = await eSimPackageService.GetClientView(id, language.ConvertToLanguage(), cancellationToken);
+        var countries = await eSimPackageService.GetClientView(id, lang.ConvertToLanguage(), cancellationToken);
         return Ok(countries);
     }
 
@@ -82,7 +82,7 @@ public class EsimController(
         return Ok(orders);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("my/{id}")]
     public async Task<IActionResult> Get(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);
@@ -94,7 +94,7 @@ public class EsimController(
         return Ok(orders);
     }
 
-    [HttpGet("details/{id}")]
+    [HttpGet("my/details/{id}")]
     public async Task<IActionResult> GetDetails(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);

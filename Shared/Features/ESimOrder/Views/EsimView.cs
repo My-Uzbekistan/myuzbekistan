@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Shared;
+namespace myuzbekistan.Shared;
 
 [DataContract, MemoryPackable]
 [ParameterComparer(typeof(ByValueParameterComparer))]
@@ -13,6 +13,8 @@ public partial class EsimView
     [property: DataMember] public int Text { get; set; }
     [property: DataMember] public bool HasVoicePack { get; set; }
     [property: DataMember] public double RemainingData { get; set; }
+    [property: DataMember] public int RemainingVoice { get; set; }
+    [property: DataMember] public int RemainingText { get; set; }
     [property: DataMember] public string? ActivationDate { get; set; } = string.Empty;
     [property: DataMember] public int ValidDays { get; set; }
     [property: DataMember] public string ImageUrl { get; set; } = string.Empty;
