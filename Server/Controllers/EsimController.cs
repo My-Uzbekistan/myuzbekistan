@@ -2,7 +2,7 @@ namespace Server.Controllers;
 
 [Route("api/esim")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class EsimController(
     IESimPackageService eSimPackageService,
     IESimOrderService esimOrderService,
@@ -82,7 +82,7 @@ public class EsimController(
         return Ok(orders);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("my/{id}")]
     public async Task<IActionResult> Get(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);
@@ -94,7 +94,7 @@ public class EsimController(
         return Ok(orders);
     }
 
-    [HttpGet("details/{id}")]
+    [HttpGet("my/details/{id}")]
     public async Task<IActionResult> GetDetails(long id, CancellationToken cancellationToken = default)
     {
         var session = await sessionResolver.GetSession(cancellationToken);

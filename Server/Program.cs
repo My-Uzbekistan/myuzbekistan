@@ -337,5 +337,9 @@ using (var scope = app.Services.CreateScope())
 }
 var commander = app.Services.GetRequiredService<ICommander>();
 await commander.Call(new SyncESimSlugCommand());
+if (!dbContext.ESimPackages.Any())
+{
+    await commander.Call(new SyncESimPackagesCommand());
+}
 
 app.Run();

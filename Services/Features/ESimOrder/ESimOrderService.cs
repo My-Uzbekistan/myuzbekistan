@@ -144,6 +144,8 @@ public class ESimOrderService(
             ValidDays = package.ValidDays,
             ImageUrl = package.ImageUrl ?? string.Empty,
             RemainingData = dataUsage.Data.Remaining,
+            RemainingVoice = dataUsage.Data.RemainingVoice,
+            RemainingText = dataUsage.Data.RemainingText,
             Status = dataUsage.Data.Status,
             QrCode = esimOrder.QrCode,
             QrCodeUrl = esimOrder.QrCodeUrl,
