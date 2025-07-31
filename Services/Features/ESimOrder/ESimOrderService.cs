@@ -82,6 +82,7 @@ public class ESimOrderService(
                 OperatorName = package.OperatorName,
                 DataValume = package.DataVolume,
                 Voice = package.Voice,
+                ActivationDate = item.SimCreatedAt,
                 Text = package.Text,
                 HasVoicePack = package.HasVoicePack,
                 RemainingData = dataUsage.Data.Remaining,

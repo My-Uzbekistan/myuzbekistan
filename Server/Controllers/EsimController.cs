@@ -56,9 +56,9 @@ public class EsimController(
     }
     
     [HttpGet("plans/{id}")]
-    public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? language, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? lang, CancellationToken cancellationToken = default)
     {
-        var countries = await eSimPackageService.GetClientView(id, language.ConvertToLanguage(), cancellationToken);
+        var countries = await eSimPackageService.GetClientView(id, lang.ConvertToLanguage(), cancellationToken);
         return Ok(countries);
     }
 
