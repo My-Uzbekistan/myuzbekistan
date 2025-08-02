@@ -15,6 +15,9 @@ public interface IESimPackageService : IComputeService
     Task<ESimPackageView> Get(long Id, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
+    Task<List<ESimCoverageView>> GetPackageCoverages(long Id, Language language, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
     Task<ESimPackageClientView> GetClientView(long Id, Language language, CancellationToken cancellationToken = default);
 
     [ComputeMethod]

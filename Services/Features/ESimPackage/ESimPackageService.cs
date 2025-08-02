@@ -14,6 +14,49 @@ public class ESimPackageService(
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
     #region Queries
+    
+    public virtual async Task<List<ESimCoverageView>> GetPackageCoverages(long Id, Language language, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var eSimPackage = await dbContext.ESimPackages
+            .FirstOrDefaultAsync(x => x.Id == Id, cancellationToken)
+            ?? throw new NotFoundException("ESimPackageEntity Not Found");
+        if (eSimPackage.Coverage is null || eSimPackage.Coverage.Count == 0)
+        {
+            return [];
+        }
+
+        var esimSlugs = dbContext.ESimSlugs.ToList();
+        List<ESimCoverageView> result = [];
+        Parallel.ForEach(eSimPackage.Coverage, coverage =>
+        {
+            var coverageSlug = esimSlugs.FirstOrDefault(x => x.CountryCode == coverage.Code);
+            if (coverageSlug != null)
+            {
+                result.Add(new()
+                {
+                    Code = coverageSlug.CountryCode ?? string.Empty,
+                    Id = coverageSlug.Id,
+                    ImageUrl = coverageSlug.ImageUrl ?? string.Empty,
+                    Name = language switch
+                    {
+                        Language.en => coverageSlug.TitleEn,
+                        Language.ru => coverageSlug.TitleRu,
+                        _ => coverageSlug.TitleUz
+                    },
+                    Networks = [..coverage.Networks.Select(x => new ESimCoverageNetworkView()
+                    {
+                        Name = x.Name,
+                        Types = x.Types
+                    })]
+                });
+            }
+        });
+
+        return result;
+    }
+
     public async virtual Task<UserCountsView> GetCounts(CancellationToken cancellationToken)
     {
         await Invalidate();
@@ -49,6 +92,11 @@ public class ESimPackageService(
                     x.ESimSlug!.TitleUz.Contains(options.Search) ||
                     x.ESimSlug!.TitleEn.Contains(options.Search) ||
                     x.ESimSlug!.TitleRu.Contains(options.Search));
+        }
+
+        if (options.HasVoicePack == true)
+        {
+            eSimPackage = eSimPackage.Where(x => x.HasVoicePack);
         }
 
         Sorting(ref eSimPackage, options);

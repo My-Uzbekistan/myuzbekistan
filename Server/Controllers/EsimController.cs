@@ -48,10 +48,10 @@ public class EsimController(
     }
 
     [HttpGet("plans/global")]
-    public async Task<IActionResult> GetPlansGlobalAsync(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetPlansGlobalAsync([FromQuery] bool hasVoicePack, CancellationToken cancellationToken = default)
     {
         var countries = await eSimPackageService.GetAll(
-            new TableOptions() { CountrySlug = "world", SlugType = ESimSlugType.Global }, cancellationToken);
+            new TableOptions() { CountrySlug = "world", SlugType = ESimSlugType.Global, HasVoicePack = hasVoicePack, }, cancellationToken);
         return Ok(countries);
     }
     
@@ -59,6 +59,13 @@ public class EsimController(
     public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? lang, CancellationToken cancellationToken = default)
     {
         var countries = await eSimPackageService.GetClientView(id, lang.ConvertToLanguage(), cancellationToken);
+        return Ok(countries);
+    }
+    
+    [HttpGet("plans/{id}/coverages")]
+    public async Task<IActionResult> GetPlanCoveragesAsync(long id, [FromQuery] string? lang, CancellationToken cancellationToken = default)
+    {
+        var countries = await eSimPackageService.GetPackageCoverages(id, lang.ConvertToLanguage(), cancellationToken);
         return Ok(countries);
     }
 

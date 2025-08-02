@@ -18,6 +18,7 @@ public sealed partial record TableOptions
 
     [property: DataMember] public string? Search { get; set; }
     [property: DataMember] public string? CountrySlug { get; set; }
+    [property: DataMember] public bool? HasVoicePack { get; set; }
 
     [property: DataMember] public DateOnly? From { get; set; }
 
