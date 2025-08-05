@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Diagnostics;
 
 namespace myuzbekistan.Services;
@@ -238,6 +239,25 @@ public class ESimPackageService(
         UserView userView = user;
         userView.Orders = userEsims;
         return userView;
+    }
+
+    public virtual async Task<object> GetInstallationGuide(string iccid, Language language, Session session, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var esimOrder = await dbContext.ESimOrders
+            .FirstOrDefaultAsync(x => x.Iccid == iccid, cancellationToken)
+            ?? throw new NotFoundException("ESimOrderEntity Not Found");
+
+        if (session is not null)
+        {
+            var user = await userService.GetUserAsync(session, cancellationToken)
+                ?? throw new NotFoundException("User not found");
+            if (esimOrder.UserId != user.Id)
+                throw new BadRequestException("You do not have permission to view this order.");
+        }
+
+        return await airaloPackageService.GetInstallationGuide(iccid, language, cancellationToken);
     }
 
     #endregion

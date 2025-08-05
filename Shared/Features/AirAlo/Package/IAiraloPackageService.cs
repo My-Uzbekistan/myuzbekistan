@@ -8,6 +8,9 @@ public interface IAiraloPackageService : IComputeService
     [ComputeMethod]
     Task<PackageResponseView> GetAllAsync(TableOptions options, string type, CancellationToken cancellationToken = default);
 
+    [ComputeMethod]
+    Task<object> GetInstallationGuide(string iccid, Language language, CancellationToken cancellationToken = default);
+
     [ComputeMethod(AutoInvalidationDelay = 900)]
     Task<OrderPackageStatusView> GetOrderPackageStatusAsync(string iccid, CancellationToken cancellationToken = default);
 
