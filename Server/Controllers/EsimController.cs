@@ -113,6 +113,18 @@ public class EsimController(
         return Ok(order);
     }
 
+    [HttpGet("my/installation/{iccid}")]
+    public async Task<IActionResult> GetInstallation(string iccid, [FromQuery] string lang, CancellationToken cancellationToken = default)
+    {
+        var session = await sessionResolver.GetSession(cancellationToken);
+        if (session == null)
+        {
+            return Unauthorized();
+        }
+        var order = await eSimPackageService.GetInstallationGuide(iccid, lang.ConvertToLanguage(), session, cancellationToken);
+        return Ok(order);
+    }
+
     [HttpPost("order")]
     public async Task<IActionResult> MakeOrder([FromBody] CreateESimOrderView view, CancellationToken cancellationToken = default)
     {

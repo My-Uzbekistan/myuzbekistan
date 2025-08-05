@@ -12,7 +12,7 @@ public class ESimOrderEntity : BaseEntity
     public string PackageId { get; set; } = string.Empty;
     public string Data { get; set; } = string.Empty;
     public float Price { get; set; }
-    public int Validity { get; set; } 
+    public int Validity { get; set; }
     #endregion
 
     #region Sim data

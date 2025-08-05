@@ -23,6 +23,15 @@ public class ESimOrderService(
 
         Sorting(ref esimOrder, options);
 
+        if (options.EsimIsActive == true)
+        {
+            esimOrder = esimOrder.Where(x => x.ActivationDate != null && x.ActivationDate <= DateTime.UtcNow.AddDays(x.Validity));
+        }
+        else if (options.EsimIsActive == false)
+        {
+            esimOrder = esimOrder.Where(x => x.ActivationDate == null || x.ActivationDate > DateTime.UtcNow.AddDays(x.Validity));
+        }
+
         var count = await esimOrder.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await esimOrder.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<ESimOrderView>() { Items = items.MapToViewList(), TotalItems = count };
