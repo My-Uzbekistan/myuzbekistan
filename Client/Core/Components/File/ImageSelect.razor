@@ -72,6 +72,10 @@
 @code {  
     public bool IsAllSelect { get; set; } = false;  
 
+    [Parameter]
+    public string? Label { get; set; }
+
+
     [Parameter]  
     public string Accept { get; set; } = ".jpg, .jpeg, .png";  
 
