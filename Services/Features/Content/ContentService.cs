@@ -192,7 +192,7 @@ public class ContentService(IServiceProvider services, ICategoryService category
             Title = x.Title,
             Caption = x.Description,
             Photos = x.Photos?.Select(p =>  minioUrl + p.Path).ToList(),
-            Photo = minioUrl + x.Photo?.Path,
+            Photo = x.Photo?.Path != null ?  minioUrl + x.Photo?.Path : x.Photo?.Path,
             Region = x.Region?.Name,
             Facilities = x.Facilities?.Select(f => new FacilityItemDto
             {
