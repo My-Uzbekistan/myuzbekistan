@@ -6,9 +6,9 @@ public interface IInvoiceService : IComputeService
     [ComputeMethod]
     Task<InvoiceView> Get(long Id, CancellationToken cancellationToken = default);
     [ComputeMethod]
-    Task<InvoiceView> GetByPaymentId(string ExternalId, CancellationToken cancellationToken = default);
+    Task<InvoiceDetailView> GetByPaymentId(string ExternalId, CancellationToken cancellationToken = default);
 
-    Task<List<InvoiceView>> GetByPayments(long userId, CancellationToken cancellationToken = default);
+    Task<TableResponse<InvoiceSummaryView>> GetByPayments(TableOptions options, long userId, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Create(CreateInvoiceCommand command, CancellationToken cancellationToken = default);

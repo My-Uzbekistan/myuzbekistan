@@ -1,7 +1,6 @@
 ﻿using ActualLab.Fusion.Authentication;
 using Microsoft.Extensions.Localization;
 using myuzbekistan.Services;
-using System.Globalization;
 
 namespace Server.Controllers;
 
@@ -41,33 +40,14 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
 
 
     [HttpGet]
-    public async Task<IActionResult> Payments(CancellationToken cancellationToken)
+    public async Task<IActionResult> Payments([FromQuery] TableOptions tableOptions,CancellationToken cancellationToken)
     {
         var userId = User.Id();
         // Get the invoices by user ID
-        var invoices = await invoiceService.GetByPayments(userId, cancellationToken);
-        if (invoices == null || !invoices.Any())
-        {
-            return NotFound(new { Message = "Invoices not found." });
-        }
+        var invoices = await invoiceService.GetByPayments(tableOptions, userId, cancellationToken);
 
-        // Group invoices by date
-        var groupedInvoices = invoices
-            .GroupBy(invoice => invoice.CreatedAt.Date)
-            .OrderByDescending(group => group.Key)
-            .ToDictionary(
-                group => group.Key.ToString("dd MMMM", CultureInfo.CurrentCulture),
-                group => group.Select(invoice => new
-                {
-                    MerchantIcon =  invoice.MerchantView?.LogoView?.GetPreviewOrIcon(Constants.MinioPath),
-                    MerchantName = invoice.MerchantView?.Name,
-                    MerchantType = invoice.MerchantView?.MerchantCategoryView?.ServiceType.Name,
-                    Amount = $"-{invoice.Amount/100:N0}"
-                }).ToList()
-            );
-
-        // Return the response
-        return Ok(groupedInvoices);
+        // Return the response sorted by date in descending order
+        return Ok(invoices);
     }
 
 
@@ -82,19 +62,8 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
             return NotFound(new { Message = "Invoice not found." });
         }
 
-        // Get the merchant by invoice's merchant ID
-        var merchants = await merchantService.Get(invoice.MerchantView.Id, cancellationToken);
-        if (merchants == null || !merchants.Any())
-        {
-            return NotFound(new { Message = "Merchant not found." });
-        }
-
-        // Find the merchant by locale
-        var merchantByLocale = merchants.FirstOrDefault(x => x.Locale == LangHelper.currentLocale);
-        if (merchantByLocale == null)
-        {
-            return NotFound(new { Message = "Merchant for the current locale not found." });
-        }
+        
+        
 
         // Prepare the items for the response
         var Items = new List<object>()
@@ -105,18 +74,14 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
             },
             new {
                Key = @L["PaymentDate"].Value,
-               Value = invoice.CreatedAt
+               Value = invoice.Date
             }
         };
+        invoice.Items = Items;
 
-        // Return the response
-        return Ok(new {
-            MerchantIcon = merchantByLocale.LogoView.GetPreviewOrIcon(Constants.MinioPath),
-            MerchantName = merchantByLocale.Name,
-            MerchantType  = merchantByLocale.MerchantCategoryView.ServiceType.Name,
-            Amount = invoice.Amount,
-            Items = Items
-        });
+        return Ok(invoice);
+
+        
     }
 }
 

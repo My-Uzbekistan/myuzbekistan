@@ -1,4 +1,7 @@
 using myuzbekistan.Services;
+using myuzbekistan.Shared;
+using System;
+using System.Buffers.Text;
 
 public class InvoiceService(IServiceProvider services,
     IAuth auth,
@@ -45,34 +48,42 @@ public class InvoiceService(IServiceProvider services,
     }
 
     [ComputeMethod]
-    public async virtual Task<InvoiceView> GetByPaymentId(string ExternalId, CancellationToken cancellationToken = default)
+    public async virtual Task<InvoiceDetailView> GetByPaymentId(string ExternalId, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var invoice = await dbContext.Invoices
-            .Include(x => x.Merchant)
-
-            .FirstOrDefaultAsync(x => x.ExternalId == ExternalId, cancellationToken)
-            ?? throw new NotFoundException("InvoiceEntity Not Found");
-
-        return invoice.MapToView();
-    }
-    [ComputeMethod]
-    public async virtual Task<List<InvoiceView>> GetByPayments(long userId, CancellationToken cancellationToken = default)
-    {
-        await Invalidate();
-        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
-        var invoice = await dbContext.Invoices
-
             .Include(x => x.Merchant)
                 .ThenInclude(x => x.MerchantCategory).ThenInclude(x => x.ServiceType)
                 .Include(x => x.Merchant)
                     .ThenInclude(x => x.Logo)
-            .Where(x => x.UserId == userId)
-            .ToListAsync(cancellationToken)
+
+            .FirstOrDefaultAsync(x => x.ExternalId == ExternalId, cancellationToken)
             ?? throw new NotFoundException("InvoiceEntity Not Found");
 
-        return invoice.MapToViewList();
+
+        return invoice.MapToDetail();
+    }
+
+    [ComputeMethod]
+    public async virtual Task<TableResponse<InvoiceSummaryView>> GetByPayments(TableOptions options, long userId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var invoiceQuery = dbContext.Invoices
+            .Include(x => x.Merchant)
+                .ThenInclude(x => x.MerchantCategory).ThenInclude(x => x.ServiceType)
+                .Include(x => x.Merchant)
+                    .ThenInclude(x => x.Logo)
+               
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.CreatedAt)
+            ;
+
+        var count = await invoiceQuery.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
+        var items = await invoiceQuery.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+
+        return new TableResponse<InvoiceSummaryView>() { Items = items.MapToSummaryList(), TotalItems = count };
     }
 
     #endregion
@@ -180,6 +191,8 @@ public class InvoiceService(IServiceProvider services,
             _ => invoice.OrderBy(o => o.Id),
 
         };
+
+    
 
     #endregion
 }
