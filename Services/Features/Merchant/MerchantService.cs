@@ -275,7 +275,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             .First(x => x.Id == merchant.Logo.Id);
         if (merchant.MerchantCategory != null)
             merchant.MerchantCategory = dbContext.MerchantCategories
-            .First(x => x.Id == merchant.MerchantCategory.Id);
+            .First(x => x.Id == merchant.MerchantCategory.Id && x.Locale == merchant.Locale);
     }
 
     private static void Sorting(ref IQueryable<MerchantEntity> merchant, TableOptions options)

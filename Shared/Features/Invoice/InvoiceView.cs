@@ -10,6 +10,7 @@ public partial class InvoiceView
     [property: DataMember] public ApplicationUserView? User { get; set; } = null!;
     [property: DataMember] public MerchantView MerchantView { get; set; } = null!;
     [property: DataMember] public long Id { get; set; }
+    [property: DataMember] public DateTime CreatedAt { get; set; }
 
     public override bool Equals(object? o)
     {

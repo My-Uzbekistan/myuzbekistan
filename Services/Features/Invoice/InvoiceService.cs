@@ -1,8 +1,8 @@
 using myuzbekistan.Services;
 
-public class InvoiceService(IServiceProvider services, 
-    IAuth auth, 
-    IDbContextFactory<ApplicationDbContext> dbContextFactory, 
+public class InvoiceService(IServiceProvider services,
+    IAuth auth,
+    IDbContextFactory<ApplicationDbContext> dbContextFactory,
     MerchantNotifierService merchantNotifier,
     IUserService userService) : DbServiceBase<AppDbContext>(services), IInvoiceService
 {
@@ -44,6 +44,37 @@ public class InvoiceService(IServiceProvider services,
         return invoice.MapToView();
     }
 
+    [ComputeMethod]
+    public async virtual Task<InvoiceView> GetByPaymentId(string ExternalId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var invoice = await dbContext.Invoices
+            .Include(x => x.Merchant)
+
+            .FirstOrDefaultAsync(x => x.ExternalId == ExternalId, cancellationToken)
+            ?? throw new NotFoundException("InvoiceEntity Not Found");
+
+        return invoice.MapToView();
+    }
+    [ComputeMethod]
+    public async virtual Task<List<InvoiceView>> GetByPayments(long userId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var invoice = await dbContext.Invoices
+
+            .Include(x => x.Merchant)
+                .ThenInclude(x => x.MerchantCategory).ThenInclude(x => x.ServiceType)
+                .Include(x => x.Merchant)
+                    .ThenInclude(x => x.Logo)
+            .Where(x => x.UserId == userId)
+            .ToListAsync(cancellationToken)
+            ?? throw new NotFoundException("InvoiceEntity Not Found");
+
+        return invoice.MapToViewList();
+    }
+
     #endregion
 
     #region Mutations
@@ -73,6 +104,7 @@ public class InvoiceService(IServiceProvider services,
         invoice.Amount = command.InvoiceRequest.Amount;
         invoice.Description = command.InvoiceRequest.Description;
         user.Balance -= command.InvoiceRequest.Amount;
+        invoice.ExternalId = command.InvoiceRequest.PaymentId;
         dbContext.Update(invoice);
         await userContext.SaveChangesAsync();
         await dbContext.SaveChangesAsync(cancellationToken);

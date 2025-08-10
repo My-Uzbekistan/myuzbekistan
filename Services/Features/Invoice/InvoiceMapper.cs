@@ -10,6 +10,10 @@ public static partial class InvoiceMapper
     #region Internal
     [UserMapping(Default = true)]
     [MapProperty("Merchant", "MerchantView")]
+    [MapProperty("Merchant.MerchantCategory", "MerchantView.MerchantCategoryView")]
+    [MapProperty("Merchant.MerchantCategory.Logo", "MerchantView.MerchantCategoryView.LogoView")]
+    [MapProperty("Merchant.Logo", "MerchantView.LogoView")]
+    [MapProperty("Merchant.MerchantCategory.ServiceType", "MerchantView.MerchantCategoryView.ServiceType")]
     private static partial InvoiceView To(this InvoiceEntity src);
     private static partial List<InvoiceView> ToList(this List<InvoiceEntity> src);
     [MapProperty("MerchantView", "Merchant")]

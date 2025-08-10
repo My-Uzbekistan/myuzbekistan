@@ -85,11 +85,11 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
             .Where(c => c.Status == ContentStatus.Active &&
                         c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
             .Include(c => c.Icon)
-            .Include(c => c.Contents!.Take(5))
+            .Include(c => c.Contents)
                 .ThenInclude(content => content.Photos)
-                .Include(c => c.Contents!)
+            .Include(c => c.Contents)
                 .ThenInclude(content => content.Photo)
-            .Include(c => c.Contents!)
+            .Include(c => c.Contents)
                 .ThenInclude(content => content.Region)
             .AsQueryable();
 
@@ -105,19 +105,36 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         var catQuery = query
             .AsAsyncEnumerable()
             .OrderBy(x => x.Order)
-            .Select(c => new MainPageApiV2(
-                c.Name,
-                c.Id,
-                c.Contents!
+            .Select(c =>
+            {
+                // Get the recommended content
+                var recommendedContent = c.Contents!
                     .Where(x =>
                         (options.RegionId == null || options.RegionId == 1)
                             ? x.GlobalRecommended
                             : x.Recommended && x.RegionId == options.RegionId)
-                    .FirstOrDefault()
-                    ?.MapToApiV2(isNewApi),
-                c.ViewType,
-                [.. ContentQuery(c.Contents!,options).OrderBy(_ => Guid.NewGuid())
-                .Select(x => x.MapToApiV2(isNewApi))]))
+                    .FirstOrDefault();
+
+                // Get up to 5 additional contents excluding the recommended one
+                var additionalContents = c.Contents!
+                    .Where(x => x != recommendedContent)
+                    .OrderBy(_ => Guid.NewGuid())
+                    .Take(5)
+                    .Select(x => x.MapToApiV2(isNewApi));
+
+                // Combine recommended content with additional contents
+                var combinedContents = recommendedContent != null
+                    ? new[] { recommendedContent.MapToApiV2(isNewApi) }.Concat(additionalContents)
+                    : additionalContents;
+
+                return new MainPageApiV2(
+                    c.Name,
+                    c.Id,
+                    recommendedContent?.MapToApiV2(isNewApi),
+                    c.ViewType,
+                    combinedContents.ToList()
+                );
+            })
             .Where(s =>
                 string.IsNullOrEmpty(options.Search) ||
                 s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||

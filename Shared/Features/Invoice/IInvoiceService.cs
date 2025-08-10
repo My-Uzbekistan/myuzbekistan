@@ -5,6 +5,10 @@ public interface IInvoiceService : IComputeService
 
     [ComputeMethod]
     Task<InvoiceView> Get(long Id, CancellationToken cancellationToken = default);
+    [ComputeMethod]
+    Task<InvoiceView> GetByPaymentId(string ExternalId, CancellationToken cancellationToken = default);
+
+    Task<List<InvoiceView>> GetByPayments(long userId, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Create(CreateInvoiceCommand command, CancellationToken cancellationToken = default);
@@ -16,4 +20,6 @@ public interface IInvoiceService : IComputeService
     Task Delete(DeleteInvoiceCommand command, CancellationToken cancellationToken = default);
 
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
+
+    
 }

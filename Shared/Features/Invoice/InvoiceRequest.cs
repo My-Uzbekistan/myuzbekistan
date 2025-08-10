@@ -7,5 +7,6 @@ public partial class InvoiceRequest
     [property: DataMember] public Decimal Amount { get; set; }
     [property: DataMember] public string? Description { get; set; }
     [property: DataMember] public long MerchantId { get; set; }
-    
+    [property: DataMember] public string PaymentId { get; set; } = null!;
+
 }

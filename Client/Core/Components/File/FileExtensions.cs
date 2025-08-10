@@ -168,7 +168,7 @@ public static class FileExtensions
         }
         else if (IsImage(fileView.Name))
         {
-            url = $"{baseUrl}{fileView.Path}";
+            url = ($"{baseUrl}{fileView.Path}").Replace("//","/");
         }
         else
         {

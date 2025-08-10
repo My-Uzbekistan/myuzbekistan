@@ -219,11 +219,11 @@ public class MerchantCategoryService(IServiceProvider services) : DbServiceBase<
 
         if (merchantcategory.ServiceType != null)
             merchantcategory.ServiceType = dbContext.ServiceTypes
-            .First(x => x.Id == merchantcategoryView.ServiceType.Id);
+            .First(x => x.Id == merchantcategoryView.ServiceType.Id && x.Locale == merchantcategory.Locale);
 
         if (merchantcategory.Merchants != null)
             merchantcategory.Merchants = dbContext.Merchants
-            .Where(x => merchantcategory.Merchants.Select(tt => tt.Id).ToList().Contains(x.Id)).ToList();
+            .Where(x => merchantcategory.Merchants.Select(tt => tt.Id).ToList().Contains(x.Id) && x.Locale == merchantcategory.Locale).ToList();
     }
 
     private static void Sorting(ref IQueryable<MerchantCategoryEntity> merchantcategory, TableOptions options)

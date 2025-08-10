@@ -213,6 +213,8 @@ public class GPConfirmPaymentResponse
 
     [JsonPropertyName("service")]
     public GPConfirmPaymentService Service { get; set; } = null!;
+    [JsonPropertyName("securityCheckUrl")]
+    public string SecurityCheckUrl { get; set; } = null!;
 }
 
 public class GPConfirmPaymentCard
