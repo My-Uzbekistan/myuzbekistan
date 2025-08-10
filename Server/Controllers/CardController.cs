@@ -32,9 +32,9 @@ namespace Server.Controllers
 
             var userId = User.Id();
             var session = await sessionResolver.GetSession(cancellationToken);
-            var token = request.Token.Contains("*") ? request.Token! : MaskCardNumber(request.Token);
+            string token = request.Token.Contains("*") ? request.Token! : MaskCardNumber(request.Token);
             var card = await cardService.CheckCard(userId, request.Token!, cancellationToken);
-            if (card)
+            if (card && card)
             {
                 throw new MyUzException("CardAlreadyExists");
             }
