@@ -14,7 +14,6 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
 {
     #region Queries
     [ComputeMethod]
-
     public virtual async Task<List<MainPageApi>> GetMainPageApi(TableOptions options, CancellationToken cancellationToken = default,bool isNewApi = false)
     {
         await Invalidate();
@@ -65,6 +64,62 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                 c.ViewType,
                 [.. ContentQuery(c.Contents!,options).OrderBy(_ => Guid.NewGuid())
                 .Select(x => x.MapToApi(isNewApi))]))
+            .Where(s =>
+                string.IsNullOrEmpty(options.Search) ||
+                s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||
+                s.Contents.Any(t => t.Region.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase))
+            );
+
+        var categories = await catQuery.ToListAsync(cancellationToken);
+
+        return [.. categories];
+    }
+
+
+    [ComputeMethod]
+    public virtual async Task<List<MainPageApiV2>> GetMainPageApiV2(TableOptions options, CancellationToken cancellationToken = default, bool isNewApi = false)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var query = dbContext.Categories
+            .Where(c => c.Status == ContentStatus.Active &&
+                        c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
+
+            .Include(c => c.Icon)
+            
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Photos)
+                .Include(c => c.Contents!)
+                .ThenInclude(content => content.Photo)
+            .Include(c => c.Contents!)
+                .ThenInclude(content => content.Region)
+            .AsQueryable();
+
+        if (options.IsMore.HasValue && options.IsMore.Value)
+        {
+            query = query.Where(x => x.ViewType == ViewType.More);
+        }
+        else
+        {
+            query = query.Where(x => x.ViewType != ViewType.More);
+        }
+
+        var catQuery = query
+            .AsAsyncEnumerable()
+            .OrderBy(x => x.Order)
+            .Select(c => new MainPageApiV2(
+                c.Name,
+                c.Id,
+                c.Contents!
+                    .Where(x =>
+                        (options.RegionId == null || options.RegionId == 1)
+                            ? x.GlobalRecommended
+                            : x.Recommended && x.RegionId == options.RegionId)
+                    .FirstOrDefault()
+                    ?.MapToApiV2(isNewApi),
+                c.ViewType,
+                [.. ContentQuery(c.Contents!,options).OrderBy(_ => Guid.NewGuid())
+                .Select(x => x.MapToApiV2(isNewApi))]))
             .Where(s =>
                 string.IsNullOrEmpty(options.Search) ||
                 s.CategoryName.ToLower().Contains(options.Search.ToLower(), StringComparison.OrdinalIgnoreCase) ||

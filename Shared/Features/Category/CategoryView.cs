@@ -7,6 +7,38 @@ using Shared.Localization;
 namespace myuzbekistan.Shared;
 [DataContract, MemoryPackable]
 public partial record CategoryApi([property: DataMember] string Name, [property: DataMember] string Icon, [property: DataMember] long Id);
+
+
+public partial record MainPageApiV2(
+    [property: DataMember] string CategoryName,
+    [property: DataMember] long CategoryId,
+    [property: DataMember] MainPageContentV2? Recommended,
+    [property: DataMember] ViewType ViewType,
+    [property: DataMember] List<MainPageContentV2> Contents
+    );
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class MainPageContentV2
+{
+    [property: DataMember] public long ContentId { get; set; }
+    [property: DataMember] public string Title { get; set; } = string.Empty;
+    [property: DataMember] public string? Caption { get; set; } = string.Empty;
+    [property: DataMember] public List<string> Photos { get; set; } = [];
+    [property: DataMember] public string Photo { get; set; } = string.Empty;
+    [property: DataMember] public string Region { get; set; } = string.Empty;
+    [property: DataMember] public double RatingAverage { get; set; }
+    [property: DataMember] public int AverageCheck { get; set; }
+    [property: DataMember] public decimal Price { get; set; }
+    [property: DataMember] public decimal PriceInDollar { get; set; }
+    [property: DataMember] public ViewType ViewType { get; set; }
+    [property: DataMember] public bool IsFavorite { get; set; }
+    [property: DataMember] public int Distanse { get; set; }
+    [property: DataMember] public int ReviewCount { get; set; }
+
+}
+
+
 public partial record MainPageApi(
     [property: DataMember] string CategoryName,
     [property: DataMember] long CategoryId,

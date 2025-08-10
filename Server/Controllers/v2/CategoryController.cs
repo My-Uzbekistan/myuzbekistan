@@ -22,9 +22,9 @@ public class V2CategoryController(ICategoryService categoryService, IContentServ
     }
 
     [HttpGet("main-page")]
-    public async Task<List<MainPageApi>> GetMainPage([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
+    public async Task<List<MainPageApiV2>> GetMainPage([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
     {
-        return await _categoryService.GetMainPageApi(tableOptions, cancellationToken,true);
+        return await _categoryService.GetMainPageApiV2(tableOptions, cancellationToken,true);
     }
 
     [HttpGet("{id}/contents")]

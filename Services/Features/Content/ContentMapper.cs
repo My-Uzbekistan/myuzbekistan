@@ -53,6 +53,31 @@ public static partial class ContentMapper
 
         return source;
     }
+
+    public static MainPageContentV2 MapToApiV2(this ContentEntity src, bool newApi = false)
+    {
+        var source = src.ToApiV2();
+        if (src.Category != null)
+        {
+            source.Caption = src.Category.Caption;
+            source.ViewType = src.Category.ViewType;
+        }
+
+        if (newApi)
+        {
+            if (!string.IsNullOrEmpty(source.Photo))
+            {
+                source.Photo = Constants.MinioPath + source.Photo;
+            }
+
+            if (source.Photos != null)
+            {
+                source.Photos = [.. source.Photos.Where(x => !string.IsNullOrEmpty(x)).Select(x => Constants.MinioPath + x)];
+            }
+        }
+
+        return source;
+    }
     public static ContentView MapToView(this ContentEntity src) => src.To();
     public static List<ContentView> MapToViewList(this List<ContentEntity> src) => src.ToList();
     public static ContentEntity MapFromView(this ContentView src) => src.From();
@@ -109,6 +134,9 @@ public static partial class ContentMapper
 
     private static partial ContentRequestEntity MapToRequestEntity(this ContentRequestView src);
     private static partial ContentRequestView MapToRequestView(this ContentRequestEntity src);
+
+    [MapProperty("Id", "ContentId")]
+    private static partial MainPageContentV2 ToApiV2(this ContentEntity src);
 
     [MapProperty("Id", "ContentId")]
     private static partial MainPageContent ToApi(this ContentEntity src);

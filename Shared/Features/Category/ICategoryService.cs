@@ -21,5 +21,6 @@ public interface ICategoryService:IComputeService
     Task<List<CategoryApi>> GetCategories(CancellationToken cancellationToken = default, bool isNewApi = false);
 
     Task<List<MainPageApi>> GetMainPageApi(TableOptions options,CancellationToken cancellationToken = default,bool isNewApi = false);
+    Task<List<MainPageApiV2>> GetMainPageApiV2(TableOptions options,CancellationToken cancellationToken = default,bool isNewApi = false);
 }
     
