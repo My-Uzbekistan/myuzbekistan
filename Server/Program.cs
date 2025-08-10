@@ -52,6 +52,30 @@ services.AddSingleton<IMinioUpload>(s =>
 services.AddControllersWithViews().AddApplicationPart(typeof(MinioController).Assembly).AddControllersAsServices();
 services.AddScoped<IUFileService, MinioUploadHelper>();
 
+builder.Services.PostConfigure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var errorResponse = new
+        {
+            status = 400,
+            code = 400,
+            Message = errors.FirstOrDefault().Value.First()
+        };
+
+        return new BadRequestObjectResult(errorResponse);
+    };
+
+    options.SuppressModelStateInvalidFilter = false;
+});
+
 #endregion
 #region AUTH
 services.AddAuth(env, cfg);

@@ -43,11 +43,11 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         return card.ToList().MapToListInfo();
     }
 
-    public async virtual Task<bool> CheckCard(long userId, string pan, CancellationToken cancellationToken = default)
+    public async virtual Task<CardView?> GetByPan(long userId, string pan, CancellationToken cancellationToken = default)
     {
         // ── 1. Валидация --------------------------------------------------------
         if (string.IsNullOrWhiteSpace(pan) || !pan.All(char.IsDigit) || pan.Length < 13)
-            return false;                                      // невалидный номер
+            return null; // невалидный номер
 
         // ── 2. Маскируем: 6 + * + 4 -------------------------------------------
         string masked = MaskPan(pan);                          // 561468******5173
@@ -55,12 +55,14 @@ public class CardService(IServiceProvider services) : DbServiceBase<AppDbContext
         // ── 3. Проверяем в БД --------------------------------------------------
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
 
-        return await dbContext.Cards
+        var card = await dbContext.Cards
             .AsNoTracking()
-            .AnyAsync(c =>
+            .FirstOrDefaultAsync(c =>
                 c.UserId == userId &&
                 c.CardPan == masked,                               // точное совпадение
                 cancellationToken);
+
+        return card?.MapToView(); // Возвращаем ID карты или null, если карта не найдена
     }
 
     /// <summary>

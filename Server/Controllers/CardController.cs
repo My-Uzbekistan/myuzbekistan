@@ -1,8 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Localization;
-using myuzbekistan.Services;
-using Shared.Localization;
+﻿using myuzbekistan.Services;
 
 namespace Server.Controllers
 {
@@ -33,11 +29,13 @@ namespace Server.Controllers
             var userId = User.Id();
             var session = await sessionResolver.GetSession(cancellationToken);
             string token = request.Token.Contains("*") ? request.Token! : MaskCardNumber(request.Token);
-            var card = await cardService.CheckCard(userId, request.Token!, cancellationToken);
-            if (card )
+            var card = await cardService.GetByPan(userId, request.Token, cancellationToken);
+
+            if (card != null && card.Status == "active")
             {
                 throw new MyUzException("CardAlreadyExists");
             }
+
             if (extCardTypes.Contains(cardPrefix.CardType) && string.IsNullOrEmpty(request.CardHolderName))
             {
                 throw new MyUzException("CardHolderNameRequired");
@@ -67,19 +65,43 @@ namespace Server.Controllers
                 ExpiryDate = request.Expiry,
             });
 
-            
-            var res = await commander.Call(new CreateCardCommand(session, new CardView { 
-                UserId = userId, 
-                CardToken = cardInfo.CardToken, 
-                ExpirationDate = request.Expiry,
-                CardPan = MaskCardNumber(request.Token),
-                Cvv = request.Cvv,
-                Ps = cardInfo.ProcessingType,
-                HolderName = request.CardHolderName,
-                Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
-            }), cancellationToken: cancellationToken);
+            var res = card?.Id;
+            if (card != null)
+            {
+                await commander.Call(new UpdateCardCommand(session, new CardView
+                {
+                    Id = card.Id,
+                    UserId = userId,
+                    CardToken = cardInfo.CardToken,
+                    ExpirationDate = request.Expiry,
+                    CardPan = MaskCardNumber(request.Token),
+                    Cvv = request.Cvv,
+                    Ps = cardInfo.ProcessingType,
+                    HolderName = request.CardHolderName,
+                    Phone = request.SmsNotificationNumber,
+                    Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
+                }), cancellationToken: cancellationToken);
+            }
+            else
+            {
+                res = await commander.Call(new CreateCardCommand(session, new CardView
+                {
+                    UserId = userId,
+                    CardToken = cardInfo.CardToken,
+                    ExpirationDate = request.Expiry,
+                    CardPan = MaskCardNumber(request.Token),
+                    Cvv = request.Cvv,
+                    Ps = cardInfo.ProcessingType,
+                    Phone = request.SmsNotificationNumber,
+                    HolderName = request.CardHolderName,
+                    Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
+                }), cancellationToken: cancellationToken);
 
-            return Ok(new { cardId = res });
+            }
+
+
+
+                return Ok(new { cardId = res });
         }
 
 
@@ -111,6 +133,7 @@ namespace Server.Controllers
             confirmedCard.Ps = cardInfo.Ps;
             confirmedCard.HolderName = cardInfo.HolderName;
             confirmedCard.Status = "active";
+            confirmedCard.Phone = cardInfo.Phone;
             await commander.Call(new UpdateCardCommand(session, confirmedCard), cancellationToken: cancellationToken);
 
             return Ok();

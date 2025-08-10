@@ -9,8 +9,8 @@ public interface ICardService : IComputeService
     [ComputeMethod]
     Task<TableResponse<CardView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
 
-    Task<bool> CheckCard(long userId, string pan, CancellationToken cancellationToken = default);
-    [ComputeMethod]
+    Task<CardView?> GetByPan(long userId, string pan, CancellationToken cancellationToken = default);
+    [ComputeMethod] 
     Task<List<CardInfo>> GetCardByUserId(long userId, CancellationToken cancellationToken = default);
     [ComputeMethod]
     /// Get card by userId and Id
