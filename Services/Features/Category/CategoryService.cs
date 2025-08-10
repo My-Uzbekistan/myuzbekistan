@@ -23,7 +23,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                         c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
 
             .Include(c => c.Icon)
-            .Include(c => c.Contents!)
+            .Include(c => c.Contents!.Take(5))
                 .ThenInclude(content => content.Reviews)
             .Include(c => c.Contents!)
                 .ThenInclude(content => content.Photos)
@@ -84,10 +84,8 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
         var query = dbContext.Categories
             .Where(c => c.Status == ContentStatus.Active &&
                         c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
-
             .Include(c => c.Icon)
-            
-            .Include(c => c.Contents!)
+            .Include(c => c.Contents!.Take(5))
                 .ThenInclude(content => content.Photos)
                 .Include(c => c.Contents!)
                 .ThenInclude(content => content.Photo)
