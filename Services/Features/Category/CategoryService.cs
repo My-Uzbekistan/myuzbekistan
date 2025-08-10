@@ -23,7 +23,7 @@ public class CategoryService(IServiceProvider services) : DbServiceBase<AppDbCon
                         c.Locale == CultureInfo.CurrentCulture.TwoLetterISOLanguageName)
 
             .Include(c => c.Icon)
-            .Include(c => c.Contents!.Take(5))
+            .Include(c => c.Contents!)
                 .ThenInclude(content => content.Reviews)
             .Include(c => c.Contents!)
                 .ThenInclude(content => content.Photos)
