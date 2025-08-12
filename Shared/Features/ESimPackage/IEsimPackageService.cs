@@ -24,7 +24,7 @@ public interface IESimPackageService : IComputeService
     Task<UserView> GetUserAsync(long Id, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
-    Task<object> GetInstallationGuide(string iccid, Language language, Session session, CancellationToken cancellationToken = default);
+    Task<string> GetInstallationGuide(string iccid, Language language, Session session, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Create(CreateESimPackageCommand command, CancellationToken cancellationToken = default);

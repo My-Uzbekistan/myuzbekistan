@@ -58,7 +58,7 @@ public class AiraloPackageService(IServiceProvider services,
         return packages;
     }
 
-    public virtual async Task<object> GetInstallationGuide(string iccid, Language language, CancellationToken cancellationToken = default)
+    public virtual async Task<string> GetInstallationGuide(string iccid, Language language, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         string url = $"{configuration["Airalo:Host"]}/v2/sims/{iccid}/instructions";
@@ -68,11 +68,7 @@ public class AiraloPackageService(IServiceProvider services,
         httpClient.DefaultRequestHeaders.Add("Accept-Language", language.ToString().ToLowerInvariant());
         var response = await httpClient.GetAsync(url, cancellationToken);
         response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var packages = JsonConvert.DeserializeObject<object>(content, jsonSerializerSettings)
-            ?? throw new BadRequestException("Failed to deserialize package response.");
-
-        return packages;
+        return await response.Content.ReadAsStringAsync(cancellationToken);
     }
 
     public virtual async Task<OrderPackageStatusView> GetOrderPackageStatusAsync(string iccid, CancellationToken cancellationToken = default)
