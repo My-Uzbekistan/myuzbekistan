@@ -81,4 +81,30 @@ public partial class ESimPackageList : MixedStateComponent<TableResponse<ESimPac
 
         Injector.Snackbar.Add(L["SyncPackagesStarted"], Severity.Info);
     }
+
+    private async Task SetProfit()
+    {
+        var anyPackage = Items?.Items.FirstOrDefault();
+        double percent = 0;
+        if (anyPackage is not null)
+        {
+            percent = anyPackage.ProfitPercentage;
+        }
+
+        await Injector.DialogService.ShowAsync<SetProfitDialog>(
+            L["SetProfit"],
+            new DialogParameters
+            {
+                { nameof(SetProfitDialog.percent), percent }
+            },
+            new DialogOptions
+            {
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true,
+                BackdropClick = false,
+                NoHeader = true
+            }
+        );
+    }
 }

@@ -44,5 +44,8 @@ public interface IESimPackageService : IComputeService
     [CommandHandler]
     Task<ESimOrderView> MakeOrder(MakeESimOrderCommand command, CancellationToken cancellationToken = default);
 
+    [CommandHandler]
+    Task<int> SetProfit(SetProfitESimPackageCommand command, CancellationToken cancellationToken = default);
+
     Task<Unit> Invalidate() { return TaskExt.UnitTask; }
 }

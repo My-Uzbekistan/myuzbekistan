@@ -564,6 +564,35 @@ public class ESimPackageService(
 
         return await commander.Call(new CreateESimOrderCommand(command.Session, order), cancellationToken);
     }
+
+    public virtual async Task<int> SetProfit(SetProfitESimPackageCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return 0;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var eSimPackages = await dbContext.ESimPackages
+            .Where(x => x.Status == ContentStatus.Active)
+            .ToListAsync(cancellationToken);
+        double profitPercent = command.Percent / 100.0;
+
+        IAiraloBalanceService airaloBalanceService = new AiraloBalanceService(airaloTokenService, configuration);
+        var balanceCheck = await airaloBalanceService.Get(cancellationToken);
+        var currency = await currencyService.GetUsdCourse(cancellationToken);
+        double rate = double.Parse(currency.Rate.Replace(",", "."), CultureInfo.InvariantCulture);
+        foreach (var package in eSimPackages)
+        {
+            double price = package.Price * rate;
+            package.CustomPrice = price + (price * profitPercent);
+            // Round to the nearest 1000
+            package.CustomPrice = Math.Ceiling(package.CustomPrice / 1000) * 1000;
+            package.ProfitPercentage = command.Percent;
+            dbContext.Update(package);
+        }
+        return await dbContext.SaveChangesAsync(cancellationToken);
+    }
     #endregion
 
     #region Helpers

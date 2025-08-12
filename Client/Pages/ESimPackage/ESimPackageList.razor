@@ -10,6 +10,9 @@
         <MudButton OnClick="SyncPackages" Variant="Variant.Filled" Color="Color.Primary">
             @L["SyncPackages"]
         </MudButton>
+        <MudButton OnClick="SetProfit" Variant="Variant.Filled" Color="Color.Success" Class="ms-3">
+            @L["SetProfit"]
+        </MudButton>
     </Actions>
     <ChildContent>
         <UTCTable Values=@Items SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">

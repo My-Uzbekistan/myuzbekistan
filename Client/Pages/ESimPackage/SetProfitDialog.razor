@@ -1,0 +1,29 @@
+<MudDialog>
+    <DialogContent>
+        <div class="pa-4">
+            <MudText Typo="Typo.h6">Set profit percentage for all packages</MudText>
+            <MudDivider />
+            <MudNumericField @bind-Value="@percent"
+                             Label="@L["ProfitPercentage"]"
+                             AutoFocus="true"
+                             T="double"
+                             Class="mt-3"
+                             Variant="Variant.Text"
+                             Required="true" />
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@Cancel">@L["Cancel"]</MudButton>
+        <MudButton OnClick="@Submit">
+            @if (isLoading)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">@L["Wait"]...</MudText>
+            }
+            else
+            {
+                <MudText>@L["Save"]</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>

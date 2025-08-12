@@ -12,6 +12,7 @@ public class ESimPackageEntity : BaseEntity
     public int ValidDays { get; set; }
     public double Price { get; set; }
     public double CustomPrice { get; set; }
+    public double ProfitPercentage { get; set; }
     public string Network { get; set; } = string.Empty;
     public string ActivationPolicy { get; set; } = string.Empty;
     public ContentStatus Status { get; set; } = ContentStatus.Active;

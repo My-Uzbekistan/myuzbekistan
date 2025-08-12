@@ -29,6 +29,7 @@ public partial class ESimPackageView
     [property: DataMember] public bool HasVoicePack { get; set; }
     [property: DataMember] public long SlugId { get; set; }
     [property: DataMember] public List<long> Locals { get; set; } = [];
+    [property: DataMember] public double ProfitPercentage { get; set; }
 
     public override bool Equals(object? o)
     {
