@@ -27,14 +27,18 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
 
         var merchant = await merchantService.Get(topUp.ServiceId, cancellationToken);
 
-        var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
+        if (card.Ps != "VISA" || card.Ps != "MasterCard")
         {
-            Amount = topUp.Amount,
-            Description = $"payed for {merchant.First().Name}",
-            MerchantId = topUp.ServiceId,
-            PaymentId = res.Id
-        });
-        await _commander.Call(command, cancellationToken);
+            var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
+            {
+                Amount = topUp.Amount,
+                Description = $"payed for {merchant.First().Name}",
+                MerchantId = topUp.ServiceId,
+                PaymentId = res.ExternalId
+            });
+            await _commander.Call(command, cancellationToken);
+        }
+        
         return Ok(new { PaymentId = res.ExternalId, CheckUrl = confirm.SecurityCheckUrl });
     }
 

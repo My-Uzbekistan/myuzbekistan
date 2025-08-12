@@ -75,10 +75,9 @@ public class InvoiceService(IServiceProvider services,
                 .ThenInclude(x => x.MerchantCategory).ThenInclude(x => x.ServiceType)
                 .Include(x => x.Merchant)
                     .ThenInclude(x => x.Logo)
-               
+
             .Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.CreatedAt)
-            ;
+            .OrderByDescending(x => x.CreatedAt);
 
         var count = await invoiceQuery.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await invoiceQuery.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
@@ -192,7 +191,7 @@ public class InvoiceService(IServiceProvider services,
 
         };
 
-    
+
 
     #endregion
 }
