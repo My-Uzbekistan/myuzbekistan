@@ -241,7 +241,7 @@ public class ESimPackageService(
         return userView;
     }
 
-    public virtual async Task<object> GetInstallationGuide(string iccid, Language language, Session session, CancellationToken cancellationToken = default)
+    public virtual async Task<string> GetInstallationGuide(string iccid, Language language, Session session, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);

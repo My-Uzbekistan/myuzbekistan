@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Server.Controllers;
 
 [Route("api/esim")]
@@ -122,7 +124,13 @@ public class EsimController(
             return Unauthorized();
         }
         var order = await eSimPackageService.GetInstallationGuide(iccid, lang.ConvertToLanguage(), session, cancellationToken);
-        return Ok(order);
+        //return string as json
+        return new ContentResult
+        {
+            Content = order,
+            ContentType = "application/json",
+            StatusCode = 200
+        };
     }
 
     [HttpPost("order")]
