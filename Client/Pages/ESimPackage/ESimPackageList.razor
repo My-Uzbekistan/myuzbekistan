@@ -40,7 +40,7 @@
                 @if (context.PackageDiscountId > 0)
                 {
                     <MudText>
-                        @context.PackageDiscountView.DiscountPercentage %
+                        @context.PackageDiscountView?.DiscountPercentage %
                     </MudText>
                 }
                 else
