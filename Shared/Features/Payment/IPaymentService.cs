@@ -18,6 +18,7 @@ public interface IPaymentService:IComputeService
     Task Create(CreatePaymentCommand command, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Update(UpdatePaymentCommand command, CancellationToken cancellationToken = default);
+    Task ChangePaymentState(ChangePaymentStateCommand command, CancellationToken cancellationToken = default);
     [CommandHandler]
     Task Delete(DeletePaymentCommand command, CancellationToken cancellationToken = default);
     Task<Unit> Invalidate(){ return TaskExt.UnitTask; }

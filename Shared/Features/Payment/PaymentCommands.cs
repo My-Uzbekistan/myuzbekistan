@@ -12,7 +12,13 @@ public partial record CreatePaymentCommand([property: DataMember] Session Sessio
 
 [DataContract, MemoryPackable]
 public partial record UpdatePaymentCommand([property: DataMember] Session Session,[property: DataMember] PaymentView Entity):ISessionCommand<PaymentView>; 
+[DataContract, MemoryPackable]
+public partial record ChangePaymentStateCommand([property: DataMember] Session Session,[property: DataMember] string ExternalId, [property: DataMember] PaymentStatus 
+    PaymentStatus):ISessionCommand<PaymentView>; 
 
 [DataContract, MemoryPackable]
-public partial record DeletePaymentCommand([property: DataMember] Session Session,[property: DataMember] long Id):ISessionCommand<PaymentView>; 
+public partial record DeletePaymentCommand([property: DataMember] Session Session,[property: DataMember] long Id):ISessionCommand<PaymentView>;
+
+[DataContract, MemoryPackable]
+public partial record DeletePaymentByExternalIdCommand([property: DataMember] Session Session, [property: DataMember] string ExternalId) : ISessionCommand<PaymentView>;
 

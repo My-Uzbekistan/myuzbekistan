@@ -6,7 +6,7 @@ namespace Server.Controllers;
 [Route("api/payments")]
 [Authorize]
 [ApiController]
-public class PaymentController(GlobalPayService globalPayService, ICardService cardService,ICommander _commander, IMerchantService merchantService,IInvoiceService invoiceService, IStringLocalizer<PaymentController> @L) : ControllerBase
+public class PaymentController(GlobalPayService globalPayService, ICardService cardService, ICommander _commander, IMerchantService merchantService, IInvoiceService invoiceService, IStringLocalizer<PaymentController> @L) : ControllerBase
 {
 
     [HttpPost("top-up")]
@@ -22,33 +22,32 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         {
             throw new MyUzException("MerchantNotFound");
         }
-        topUp.Amount *=100;
+        topUp.Amount *= 100;
         var sessionId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("session"))?.Value;
         var sessionInfo = new Session(sessionId!);
         var userId = User.Id();
         var card = await cardService.Get(topUp.CardId, userId, cancellationToken);
         var res = await globalPayService.CreatePayment(userId, topUp.Amount, card);
-        var  confirm = await globalPayService.ConfirmPayment(res.ExternalId,card.Cvv?.ToString(),HttpContext.GetRemoteIPAddress()?.ToString());
+        var confirm = await globalPayService.ConfirmPayment(res.ExternalId, card.Cvv?.ToString(), HttpContext.GetRemoteIPAddress()?.ToString());
 
-
-        if (card.Ps != "VISA" && card.Ps != "MasterCard")
+        var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
         {
-            var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
-            {
-                Amount = topUp.Amount,
-                Description = $"payed for {merchant.First().Name}",
-                MerchantId = topUp.ServiceId,
-                PaymentId = res.ExternalId
-            });
-            await _commander.Call(command, cancellationToken);
-        }
-        
+            Amount = topUp.Amount,
+            Description = $"payed for {merchant.First().Name}",
+            MerchantId = topUp.ServiceId,
+            PaymentId = res.ExternalId,
+            Status = (card.Ps != "VISA" && card.Ps != "MasterCard") ? "Success" : "Pending"
+
+        });
+        await _commander.Call(command, cancellationToken);
         return Ok(new { PaymentId = res.ExternalId, CheckUrl = confirm.SecurityCheckUrl });
     }
 
+    [HttpGet("globalpay")]
+
 
     [HttpGet]
-    public async Task<IActionResult> Payments([FromQuery] TableOptions tableOptions,CancellationToken cancellationToken)
+    public async Task<IActionResult> Payments([FromQuery] TableOptions tableOptions, CancellationToken cancellationToken)
     {
         var userId = User.Id();
         // Get the invoices by user ID
@@ -69,7 +68,7 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         {
             return NotFound(new { Message = "Invoice not found." });
         }
-        
+
 
         // Prepare the items for the response
         var Items = new List<object>()
@@ -87,7 +86,7 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
 
         return Ok(invoice);
 
-        
+
     }
 }
 

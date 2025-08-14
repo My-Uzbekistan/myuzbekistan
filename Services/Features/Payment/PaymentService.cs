@@ -100,6 +100,36 @@ public class PaymentService(IServiceProvider services) : DbServiceBase<AppDbCont
         dbContext.Remove(payment);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+    public async virtual Task DeletePaymentByExternalId(DeletePaymentByExternalIdCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var payment = await dbContext.Payments
+        .FirstOrDefaultAsync(x => x.ExternalId == command.ExternalId);
+        if (payment == null) throw  new ValidationException("PaymentEntity Not Found");
+        dbContext.Remove(payment);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+
+    public async virtual Task ChangePaymentState(ChangePaymentStateCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var payment = await dbContext.Payments
+        .FirstAsync(x => x.ExternalId == command.ExternalId, cancellationToken: cancellationToken);
+        payment.PaymentStatus = command.PaymentStatus;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
 
 
     public async virtual Task Update(UpdatePaymentCommand command, CancellationToken cancellationToken = default)

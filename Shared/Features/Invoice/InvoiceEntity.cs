@@ -15,4 +15,7 @@ public class InvoiceEntity : BaseEntity
     public MerchantEntity Merchant { get; set; } = null!;
     
     public string? ExternalId { get; set; }
+    [Comment("  Pending = 0, Completed = 1, Failed = 2, Refunded = 3 ")]
+    public PaymentStatus? Status { get; set; } = null!;
+
 }

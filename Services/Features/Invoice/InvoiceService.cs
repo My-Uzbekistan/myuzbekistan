@@ -76,7 +76,7 @@ public class InvoiceService(IServiceProvider services,
                 .Include(x => x.Merchant)
                     .ThenInclude(x => x.Logo)
 
-            .Where(x => x.UserId == userId)
+            .Where(x => x.UserId == userId )
             .OrderByDescending(x => x.CreatedAt);
 
         var count = await invoiceQuery.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
