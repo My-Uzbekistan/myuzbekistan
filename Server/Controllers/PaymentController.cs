@@ -1,5 +1,4 @@
-﻿using ActualLab.Fusion.Authentication;
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using myuzbekistan.Services;
 
 namespace Server.Controllers;
@@ -17,17 +16,22 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         {
             throw new MyUzException("AmountMustBeGreaterThanZero");
         }
+        var merchant = await merchantService.Get(topUp.ServiceId, cancellationToken);
+
+        if (merchant == null || !merchant.Any())
+        {
+            throw new MyUzException("MerchantNotFound");
+        }
         topUp.Amount *=100;
         var sessionId = HttpContext.User.Claims.FirstOrDefault(x => x.Type.Equals("session"))?.Value;
-        var sessionInfo = new ActualLab.Fusion.Session(sessionId);
+        var sessionInfo = new Session(sessionId!);
         var userId = User.Id();
         var card = await cardService.Get(topUp.CardId, userId, cancellationToken);
         var res = await globalPayService.CreatePayment(userId, topUp.Amount, card);
-        var  confirm = await globalPayService.ConfirmPayment(res.ExternalId);
+        var  confirm = await globalPayService.ConfirmPayment(res.ExternalId,card.Cvv?.ToString(),HttpContext.GetRemoteIPAddress()?.ToString());
 
-        var merchant = await merchantService.Get(topUp.ServiceId, cancellationToken);
 
-        if (card.Ps != "VISA" || card.Ps != "MasterCard")
+        if (card.Ps != "VISA" && card.Ps != "MasterCard")
         {
             var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
             {
@@ -65,8 +69,6 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         {
             return NotFound(new { Message = "Invoice not found." });
         }
-
-        
         
 
         // Prepare the items for the response
