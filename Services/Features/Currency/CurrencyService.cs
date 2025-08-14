@@ -16,8 +16,8 @@ public class CurrencyService(IServiceProvider services) : DbServiceBase<AppDbCon
         var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Accept", "application/json");
         var date = DateTime.Now.ToString("YYYY-MM-DD");
-        var response = await client.GetFromJsonAsync<List<Currency>>($"https://cbu.uz/ru/arkhiv-kursov-valyut/json/all/{date}/", cancellationToken: cancellationToken);
-        return response ?? [];
+        var response = await client.GetFromJsonAsync<List<CurrencyRaw>>($"https://cbu.uz/ru/arkhiv-kursov-valyut/json/all/{date}/", cancellationToken: cancellationToken);
+        return response.MapToViewList() ?? [];
     }
 
     [ComputeMethod]
