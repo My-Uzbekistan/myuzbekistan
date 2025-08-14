@@ -35,7 +35,7 @@ public class MoreController : ControllerBase
     [HttpGet("currency")]
     public async Task<List<Currency>> GetCurrency(CancellationToken cancellationToken)
     {
-        return await _currencyService.GetCurrencies(cancellationToken);
+        return await _currencyService.GetCurrencies(LangHelper.currentLocale ,cancellationToken);
     }
 }
 

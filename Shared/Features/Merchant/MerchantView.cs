@@ -45,3 +45,11 @@ public partial class MerchantResponse
     [property: DataMember] public int Distance { get; set; }
 
 }
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class MerchantsByServiceTypeResponse
+{
+    [property: DataMember] public string Name { get; set; } = string.Empty; // service type
+    [property: DataMember] public List<MerchantResponse> Merchants { get; set; } = new();
+}

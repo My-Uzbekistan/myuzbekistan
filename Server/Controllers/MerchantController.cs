@@ -18,7 +18,15 @@ namespace Server.Controllers
         [HttpGet]
         public Task<TableResponse<MerchantResponse>> GetAllByApi([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
         {
+            options.Lang = LangHelper.currentLocale;
             return _merchantService.GetAllByApi( options, cancellationToken);
+        }
+
+        [HttpGet("grouped-by-service-type")]
+        public Task<List<MerchantsByServiceTypeResponse>> GetGroupedByServiceType([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
+        {
+            options.Lang = options.Lang ?? LangHelper.currentLocale;
+            return _merchantService.GetAllGroupedByServiceType(options, cancellationToken);
         }
     }
 }

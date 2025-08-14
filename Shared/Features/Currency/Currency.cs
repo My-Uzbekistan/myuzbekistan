@@ -28,9 +28,9 @@ public partial class CurrencyRaw
 
     public string Title => LangHelper.currentLocale switch
     {
-        "ru-RU" => CcyNm_RU,
-        "uz-UZ" => CcyNm_UZ,
-        "en-US" => CcyNm_EN,
+        "ru" => CcyNm_RU,
+        "uz" => CcyNm_UZ,
+        "en" => CcyNm_EN,
         _ => CcyNm_RU
     };
 

@@ -80,7 +80,7 @@
                         </MudItem>
                         <MudItem md="4" xs="12" Class="order-md-1 order-0">
                             <MudPaper class="pa-4 mb-2">
-                                <MudSwitch @bind-Checked="current.Status" @bind-Checked:after="() => { Model.ForEach(x => x.Status = current.Status); }" Label="@L["Status"]" For="@(() => current.Status)" Color="Color.Primary" />
+                                <MudSwitch @bind-Value="current.Status" @bind-Value:after="() => { Model.ForEach(x => x.Status = current.Status); }" Label="@L["Status"]" For="@(() => current.Status)" Color="Color.Primary" />
                             </MudPaper>
                             <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
                         </MudItem>

@@ -6,7 +6,7 @@ namespace myuzbekistan.Shared;
 public interface ICurrencyService : IComputeService
 {
     [ComputeMethod]
-    Task<List<Currency>> GetCurrencies(CancellationToken cancellationToken = default);
+    Task<List<Currency>> GetCurrencies(string lang, CancellationToken cancellationToken = default);
     [ComputeMethod]
     Task<Currency> GetUsdCourse(CancellationToken cancellationToken = default);
 

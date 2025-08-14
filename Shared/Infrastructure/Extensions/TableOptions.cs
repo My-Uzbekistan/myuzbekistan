@@ -21,6 +21,8 @@ public sealed partial record TableOptions
     [property: DataMember] public bool? HasVoicePack { get; set; }
     [property: DataMember] public bool? EsimIsActive { get; set; }
 
+    [property: DataMember] public string? ServiceType { get; set; }
+
     [property: DataMember] public DateOnly? From { get; set; }
 
     [property: DataMember] public DateOnly? To { get; set; }

@@ -10,20 +10,21 @@ public class CurrencyService(IServiceProvider services) : DbServiceBase<AppDbCon
 {
     #region Queries
     [ComputeMethod]
-    public async virtual Task<List<Currency>> GetCurrencies(CancellationToken cancellationToken = default)
+    public async virtual Task<List<Currency>> GetCurrencies(string lang,CancellationToken cancellationToken = default)
     {
         await Invalidate();
         var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Accept", "application/json");
         var date = DateTime.Now.ToString("YYYY-MM-DD");
         var response = await client.GetFromJsonAsync<List<CurrencyRaw>>($"https://cbu.uz/ru/arkhiv-kursov-valyut/json/all/{date}/", cancellationToken: cancellationToken);
+        Console.WriteLine(lang);
         return response.MapToViewList() ?? [];
     }
 
     [ComputeMethod]
     public async virtual Task<Currency> GetUsdCourse(CancellationToken cancellationToken = default)
     {
-        var currencies = await GetCurrencies(cancellationToken);
+        var currencies = await GetCurrencies(LangHelper.currentLocale, cancellationToken);
 
         return currencies.FirstOrDefault(x => x.Ccy == "USD") ?? new Currency();   
     }

@@ -9,6 +9,9 @@ public interface IMerchantService : IComputeService
     Task<MerchantResponse> GetByApi(long Id, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
+    Task<List<MerchantsByServiceTypeResponse>> GetAllGroupedByServiceType(TableOptions options, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
     Task<List<MerchantView>> Get(long Id, CancellationToken cancellationToken = default);
 
     [CommandHandler]

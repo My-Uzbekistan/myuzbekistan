@@ -67,6 +67,12 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             );
         }
 
+        if (!string.IsNullOrEmpty(options.ServiceType)){
+
+            merchant = merchant.Where(x => x.MerchantCategory.ServiceType.Name.Equals(options.ServiceType));
+
+        }
+
         #region Search by Language
 
             merchant = merchant.Where(x => x.Locale.Equals(LangHelper.currentLocale));
@@ -84,6 +90,34 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
         var count = await merchant.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
         var items = await merchant.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
         return new TableResponse<MerchantResponse>() { Items = items.MapToResponseList(), TotalItems = count };
+    }
+
+    [ComputeMethod]
+    public async virtual Task<List<MerchantsByServiceTypeResponse>> GetAllGroupedByServiceType(TableOptions options, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var q = dbContext.Merchants
+            .Include(x => x.Logo)
+            .Include(x => x.MerchantCategory).ThenInclude(x => x.ServiceType)
+            .AsNoTracking()
+            .Where(x => x.Locale == (options.Lang ?? LangHelper.currentLocale));
+
+        if (!string.IsNullOrEmpty(options.Search))
+        {
+            q = q.Where(s => (s.Name ?? "").Contains(options.Search) || (s.Description ?? "").Contains(options.Search));
+        }
+
+        var grouped = await q
+            .GroupBy(x => x.MerchantCategory.ServiceType.Name)
+            .Select(g => new MerchantsByServiceTypeResponse
+            {
+                Name = g.Key,
+                Merchants = g.OrderBy(m => m.Id).Select(m => m.MapToResponse()).ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        return grouped;
     }
 
     [ComputeMethod]
@@ -123,7 +157,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             .ThenInclude(x => x.Logo)
             .Where(x => x.Id == Id)
             .ToListAsync(cancellationToken)
-            ?? throw new NotFoundException("MerchantEntity Not Found");
+            ?? throw new ValidationException("MerchantEntity Not Found");
 
         return merchant.MapToViewList();
     }
