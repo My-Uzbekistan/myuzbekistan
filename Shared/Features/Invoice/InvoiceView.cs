@@ -12,6 +12,7 @@ public partial class InvoiceView
     [property: DataMember] public long Id { get; set; }
     [property: DataMember] public DateTime CreatedAt { get; set; }
     [property: DataMember] public string ExternalId { get; set; }
+    [property: DataMember] public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
 
     public override bool Equals(object? o)
     {

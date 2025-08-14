@@ -115,6 +115,7 @@ public class InvoiceService(IServiceProvider services,
         invoice.Description = command.InvoiceRequest.Description;
         user.Balance -= command.InvoiceRequest.Amount;
         invoice.ExternalId = command.InvoiceRequest.PaymentId;
+        invoice.Status = command.InvoiceRequest.PaymentStatus;
         dbContext.Update(invoice);
         await userContext.SaveChangesAsync();
         await dbContext.SaveChangesAsync(cancellationToken);

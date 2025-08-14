@@ -8,7 +8,5 @@ public partial class InvoiceRequest
     [property: DataMember] public string? Description { get; set; }
     [property: DataMember] public long MerchantId { get; set; }
     [property: DataMember] public string PaymentId { get; set; } = null!;
-
-    [property: DataMember] public string Status { get; set; } = null!;
-
+    [property: DataMember] public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
 }

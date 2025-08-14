@@ -18,7 +18,7 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         }
         var merchant = await merchantService.Get(topUp.ServiceId, cancellationToken);
 
-        if (merchant == null || !merchant.Any())
+        if (merchant == null || merchant.Count == 0)
         {
             throw new MyUzException("MerchantNotFound");
         }
@@ -36,7 +36,7 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
             Description = $"payed for {merchant.First().Name}",
             MerchantId = topUp.ServiceId,
             PaymentId = res.ExternalId,
-            Status = (card.Ps != "VISA" && card.Ps != "MasterCard") ? "Success" : "Pending"
+            PaymentStatus = PaymentStatus.Completed,
 
         });
         await _commander.Call(command, cancellationToken);
