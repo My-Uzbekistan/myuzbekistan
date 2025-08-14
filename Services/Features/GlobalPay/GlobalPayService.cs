@@ -99,8 +99,14 @@ public class GPCreatePaymentRequest
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
+    [JsonPropertyName("merchantVMRedirectFailUrl")]
+    public string? MerchantVMRedirectFailUrl { get; set; }
+
+    [JsonPropertyName("merchantVMRedirectSuccessUrl")]
+    public string? MerchantVMRedirectSuccessUrl { get; set; }
+
     [JsonPropertyName("items")]
-    public List<GPCreatePaymentItem?> Items { get; set; } = new();
+    public List<GPCreatePaymentItem?> Items { get; set; } = [];
 }
 
 public class GPCreatePaymentItem
@@ -341,6 +347,8 @@ public class GlobalPayService(
             Amount = amount,
             Account = userId.ToString(),
             Description = "Payment",
+            merchantVMRedirectSuccessUrl
+            merchantVMRedirectFailUrl
             Items =
             [
                 new GPCreatePaymentItem
@@ -386,6 +394,11 @@ public class GlobalPayService(
             //CardSecurityCode = cardSecurityCode,
             //ClientIpAddress = clientIpAddress
         };
+        if(cardSecurityCode != null)
+        {
+            paymentRequest.CardSecurityCode = cardSecurityCode;
+            paymentRequest.ClientIpAddress = "87.192.224.2"; //clientIpAddress;
+        }
 
         var resultString = await SendRequestAsync("payments/v2/payment/perform", paymentRequest, HttpMethod.Post);
         var content = JsonSerializer.Deserialize<GPConfirmPaymentResponse>(resultString)!;
