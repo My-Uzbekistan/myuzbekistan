@@ -394,7 +394,7 @@ public class GlobalPayService(
             //CardSecurityCode = cardSecurityCode,
             //ClientIpAddress = clientIpAddress
         };
-        if(cardSecurityCode != null)
+        if (cardSecurityCode != null)
         {
             paymentRequest.CardSecurityCode = cardSecurityCode;
             paymentRequest.ClientIpAddress = "87.192.224.2"; //clientIpAddress;
@@ -406,7 +406,7 @@ public class GlobalPayService(
         // Обновление статуса платежа в базе данных
         var session = await sessionResolver.GetSession();
 
-        if(card.Ps == "VISA" || card.Ps == "MASTERCARD")
+        if (cardSecurityCode != null)
         {
             payment.PaymentStatus = PaymentStatus.Pending;
         }
@@ -414,7 +414,7 @@ public class GlobalPayService(
         {
             payment.PaymentStatus = content.Status == "APPROVED" ? PaymentStatus.Completed : PaymentStatus.Failed;
         }
-            
+
         payment.CallbackData = resultString;
         await commander.Call(new UpdatePaymentCommand(session, payment));
 
