@@ -406,7 +406,15 @@ public class GlobalPayService(
         // Обновление статуса платежа в базе данных
         var session = await sessionResolver.GetSession();
 
-        payment.PaymentStatus = content.Status == "APPROVED" ? PaymentStatus.Completed : PaymentStatus.Failed;
+        if(card.Ps == "VISA" || card.Ps == "MASTERCARD")
+        {
+            payment.PaymentStatus = PaymentStatus.Pending;
+        }
+        else
+        {
+            payment.PaymentStatus = content.Status == "APPROVED" ? PaymentStatus.Completed : PaymentStatus.Failed;
+        }
+            
         payment.CallbackData = resultString;
         await commander.Call(new UpdatePaymentCommand(session, payment));
 
