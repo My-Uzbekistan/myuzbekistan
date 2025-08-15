@@ -15,6 +15,8 @@ public interface IInvoiceService : IComputeService
 
     [CommandHandler]
     Task Update(UpdateInvoiceCommand command, CancellationToken cancellationToken = default);
+    [CommandHandler]
+    Task UpdateInvoiceStatus(UpdateInvoiceStatusCommand command, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Delete(DeleteInvoiceCommand command, CancellationToken cancellationToken = default);

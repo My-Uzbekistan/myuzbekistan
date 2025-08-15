@@ -150,6 +150,24 @@ public class InvoiceService(IServiceProvider services,
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async virtual Task UpdateInvoiceStatus(UpdateInvoiceStatusCommand command, CancellationToken cancellationToken = default)
+    {
+        if (Invalidation.IsActive)
+        {
+            _ = await Invalidate();
+            return;
+        }
+        await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
+        var invoice = await dbContext.Invoices
+            .Include(x => x.Merchant)
+            .FirstOrDefaultAsync(x => x.ExternalId == command.ExternalId, cancellationToken)
+            ?? throw new NotFoundException("InvoiceEntity Not Found");
+
+        invoice.Status = command.Status;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public async virtual Task Delete(DeleteInvoiceCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)

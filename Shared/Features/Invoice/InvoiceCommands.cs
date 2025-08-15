@@ -5,7 +5,7 @@ public partial record CreateInvoiceCommand([property: DataMember] Session Sessio
 public partial record UpdateInvoiceCommand([property: DataMember] Session Session, [property: DataMember] InvoiceView Entity) : ISessionCommand<InvoiceView>;
 
 [DataContract, MemoryPackable]
-public partial record UpdateInvoiceStatusCommand([property: DataMember] Session Session, [property: DataMember] PaymentStatus status, string ExternalId) : ISessionCommand<InvoiceView>;
+public partial record UpdateInvoiceStatusCommand([property: DataMember] Session Session, [property: DataMember] PaymentStatus Status, string ExternalId) : ISessionCommand<InvoiceView>;
 
 
 [DataContract, MemoryPackable]
