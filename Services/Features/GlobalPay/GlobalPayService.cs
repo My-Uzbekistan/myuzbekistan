@@ -397,7 +397,7 @@ public class GlobalPayService(
         if (cardSecurityCode != null)
         {
             paymentRequest.CardSecurityCode = cardSecurityCode;
-            paymentRequest.ClientIpAddress = "87.192.224.2"; //clientIpAddress;
+            paymentRequest.ClientIpAddress = clientIpAddress;
         }
 
         var resultString = await SendRequestAsync("payments/v2/payment/perform", paymentRequest, HttpMethod.Post);
