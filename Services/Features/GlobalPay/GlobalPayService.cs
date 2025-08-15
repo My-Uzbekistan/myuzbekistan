@@ -347,8 +347,8 @@ public class GlobalPayService(
             Amount = amount,
             Account = userId.ToString(),
             Description = "Payment",
-            MerchantVMRedirectFailUrl = $"{configuration["GlobalPay:RedirectUrl"]}/fail?externalId={externalId}",
-            MerchantVMRedirectSuccessUrl = $"{configuration["GlobalPay:RedirectUrl"]}/success?externalId={externalId}",
+            MerchantVMRedirectFailUrl = $"{configuration["GlobalPay:RedirectUrl"]}/fail",
+            MerchantVMRedirectSuccessUrl = $"{configuration["GlobalPay:RedirectUrl"]}/success",
             Items =
             [
                 new GPCreatePaymentItem
