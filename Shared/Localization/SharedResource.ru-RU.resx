@@ -480,4 +480,112 @@
   <data name="SmsNotificationNumberRequired" xml:space="preserve">
     <value>Требуется номер уведомления SMS</value>
   </data>
+  <data name="ESimPackages" xml:space="preserve">
+  <value>Пакеты eSIM</value>
+</data>
+  <data name="AppUsers" xml:space="preserve">
+  <value>Пользователи приложения</value>
+</data>
+  <data name="PackageId" xml:space="preserve">
+  <value>ID пакета</value>
+</data>
+  <data name="CountryCode" xml:space="preserve">
+  <value>Код страны</value>
+</data>
+  <data name="CountryName" xml:space="preserve">
+  <value>Название страны</value>
+</data>
+  <data name="DataVolume" xml:space="preserve">
+  <value>Объем данных</value>
+</data>
+  <data name="ValidDays" xml:space="preserve">
+  <value>Срок действия (дни)</value>
+</data>
+  <data name="Network" xml:space="preserve">
+  <value>Сеть</value>
+</data>
+  <data name="ActivationPolicy" xml:space="preserve">
+  <value>Политика активации</value>
+</data>
+  <data name="CustomPrice" xml:space="preserve">
+  <value>Своя цена</value>
+</data>
+  <data name="DiscountPrice" xml:space="preserve">
+  <value>Цена со скидкой</value>
+</data>
+  <data name="PackagePrice" xml:space="preserve">
+  <value>Цена пакета</value>
+</data>
+  <data name="DiscountPercentage" xml:space="preserve">
+  <value>Процент скидки</value>
+</data>
+  <data name="StartDate" xml:space="preserve">
+  <value>Дата начала</value>
+</data>
+  <data name="EndDate" xml:space="preserve">
+  <value>Дата окончания</value>
+</data>
+  <data name="ProfitPercentage" xml:space="preserve">
+  <value>Процент прибыли</value>
+</data>
+  <data name="UserDetails" xml:space="preserve">
+  <value>Данные пользователя</value>
+</data>
+  <data name="Balance" xml:space="preserve">
+  <value>Баланс</value>
+</data>
+  <data name="SyncPackages" xml:space="preserve">
+  <value>Синхронизировать пакеты</value>
+</data>
+  <data name="SetProfit" xml:space="preserve">
+  <value>Установить прибыль</value>
+</data>
+  <data name="TotalUsers" xml:space="preserve">
+  <value>Всего пользователей</value>
+</data>
+  <data name="TotalPackages" xml:space="preserve">
+  <value>Всего пакетов</value>
+</data>
+  <data name="TotalCountries" xml:space="preserve">
+  <value>Всего стран</value>
+</data>
+  <data name="FullName" xml:space="preserve">
+  <value>Полное имя</value>
+</data>
+	<data name="SetProfitTitle" xml:space="preserve">
+  <value>Установить процент прибыли для всех пакетов</value>
+</data>
+	<data name="SetDiscountTitle" xml:space="preserve">
+  <value>Скидка для</value>
+</data>
+	<data name="DiscountUpdated" xml:space="preserve">
+  <value>Скидка успешно обновлена</value>
+</data>
+	<data name="FailedDiscountUpdate" xml:space="preserve">
+  <value>Не удалось обновить скидку</value>
+</data>
+	<data name="DiscountError1" xml:space="preserve">
+  <value>Процент скидки должен быть от 0 до 100</value>
+</data>
+	<data name="DiscountError2" xml:space="preserve">
+  <value>Цена со скидкой должна быть от 0 до исходной цены</value>
+</data>
+	<data name="ProfitEror1" xml:space="preserve">
+  <value>Процент прибыли должен быть от 0 до 100</value>
+</data>
+	<data name="ProfitEror2" xml:space="preserve">
+  <value>Не удалось обновить прибыль</value>
+</data>
+	<data name="SuccessSetProfit" xml:space="preserve">
+  <value>Прибыль успешно обновлена</value>
+</data>
+	<data name="SyncPackagesFailed" xml:space="preserve">
+  <value>Не удалось синхронизировать пакеты</value>
+</data>
+	<data name="SyncPackagesStarted" xml:space="preserve">
+  <value>Синхронизация пакетов запущена в фоновом режиме</value>
+</data>
+	<data name="UserOrders" xml:space="preserve">
+  <value>Заказы пользователя</value>
+</data>
 </root>

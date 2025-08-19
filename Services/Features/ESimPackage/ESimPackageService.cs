@@ -131,7 +131,7 @@ public class ESimPackageService(
 
         var view = eSimPackage.MapToView();
         var currency = await currencyService.GetUsdCourse(cancellationToken);
-        double rate = double.Parse(currency.Rate);
+        double rate = double.Parse(currency.Rate.Split('.')[0]);
         view.Price = view.Price * rate;
         return view;
     }

@@ -18,7 +18,7 @@ public partial class SetProfitDialog
     {
         if (percent < 0 || percent > 100)
         {
-            Injector.Snackbar.Add("Profit percentage must be between 0 and 100", Severity.Error);
+            Injector.Snackbar.Add(L["ProfitEror1"], Severity.Error);
             return;
         }
         isLoading = true;
@@ -31,7 +31,7 @@ public partial class SetProfitDialog
         }
         else
         {
-            Injector.Snackbar.Add("Failed to update discount: " + countResult.Error?.Message, Severity.Error);
+            Injector.Snackbar.Add($"{L["ProfitError2"]}: " + countResult.Error?.Message, Severity.Error);
         }
 
         isLoading = false;

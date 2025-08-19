@@ -1,7 +1,7 @@
 <MudDialog>
     <DialogContent>
         <div class="pa-4">
-            <MudText Typo="Typo.h6">Discount for @ESimPackageView.PackageId</MudText>
+            <MudText Typo="Typo.h6">@L["SetDiscountTitle"] @ESimPackageView.PackageId</MudText>
             <MudDivider />
             <MudNumericField @bind-Value="@ESimPackageView.CustomPrice"
                              Label="@L["PackagePrice"]"
