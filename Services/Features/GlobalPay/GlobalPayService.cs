@@ -347,8 +347,8 @@ public class GlobalPayService(
             Amount = amount,
             Account = userId.ToString(),
             Description = "Payment",
-            MerchantVMRedirectFailUrl = $"{configuration["GlobalPay:RedirectUrl"]}/fail?externalId={externalId}",
-            MerchantVMRedirectSuccessUrl = $"{configuration["GlobalPay:RedirectUrl"]}/success?externalId={externalId}",
+            MerchantVMRedirectFailUrl = $"{configuration["GlobalPay:RedirectUrl"]}/fail",
+            MerchantVMRedirectSuccessUrl = $"{configuration["GlobalPay:RedirectUrl"]}/success",
             Items =
             [
                 new GPCreatePaymentItem
@@ -394,10 +394,10 @@ public class GlobalPayService(
             //CardSecurityCode = cardSecurityCode,
             //ClientIpAddress = clientIpAddress
         };
-        if(cardSecurityCode != null)
+        if (cardSecurityCode != null)
         {
             paymentRequest.CardSecurityCode = cardSecurityCode;
-            paymentRequest.ClientIpAddress = "87.192.224.2"; //clientIpAddress;
+            paymentRequest.ClientIpAddress = clientIpAddress;
         }
 
         var resultString = await SendRequestAsync("payments/v2/payment/perform", paymentRequest, HttpMethod.Post);
@@ -406,7 +406,15 @@ public class GlobalPayService(
         // Обновление статуса платежа в базе данных
         var session = await sessionResolver.GetSession();
 
-        payment.PaymentStatus = content.Status == "APPROVED" ? PaymentStatus.Completed : PaymentStatus.Failed;
+        if (cardSecurityCode != null)
+        {
+            payment.PaymentStatus = PaymentStatus.Pending;
+        }
+        else
+        {
+            payment.PaymentStatus = content.Status == "APPROVED" ? PaymentStatus.Completed : PaymentStatus.Failed;
+        }
+
         payment.CallbackData = resultString;
         await commander.Call(new UpdatePaymentCommand(session, payment));
 

@@ -36,7 +36,7 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
             Description = $"payed for {merchant.First().Name}",
             MerchantId = topUp.ServiceId,
             PaymentId = res.ExternalId,
-            PaymentStatus = PaymentStatus.Completed,
+            PaymentStatus = (card.Ps == "VISA" && card.Ps == "MASTERCARD") ? PaymentStatus.Pending : PaymentStatus.Completed,
 
         });
         await _commander.Call(command, cancellationToken);
