@@ -2,8 +2,7 @@
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public partial class CardColorView
 {
-    [property: DataMember] public string Name { get; set; } = null!;
-    [property: DataMember] public string ColorCode { get; set; } = null!;
+    [property: DataMember] public FileView? ImageView { get; set; } 
     [property: DataMember] public long Id { get; set; }
 
     public override bool Equals(object? o)
@@ -13,4 +12,12 @@ public partial class CardColorView
     }
 
     public override int GetHashCode() => Id.GetHashCode();
+}
+
+
+[DataContract, MemoryPackable]
+[ParameterComparer(typeof(ByValueParameterComparer))]
+public partial class CardColorViewApi
+{
+    [property: DataMember] public string? Image { get; set; }
 }

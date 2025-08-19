@@ -4,6 +4,9 @@ public interface ICardColorService : IComputeService
     Task<TableResponse<CardColorView>> GetAll(TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
+    Task<TableResponse<CardColorViewApi>> GetAllApi(TableOptions options, CancellationToken cancellationToken = default);
+
+    [ComputeMethod]
     Task<CardColorView> Get(long Id, CancellationToken cancellationToken = default);
 
     [CommandHandler]

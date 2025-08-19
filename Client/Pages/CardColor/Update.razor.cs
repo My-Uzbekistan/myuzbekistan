@@ -22,7 +22,7 @@ public partial class Update : ComputedStateComponent<CardColorView>
         else
         {
             Injector.Snackbar.Add(L["SuccessUpdate"], Severity.Success);
-            Injector.NavigationManager.NavigateTo("/cardcolors");
+            Injector.NavigationManager.NavigateTo("/card-colors");
         }
 
         Processing = false;

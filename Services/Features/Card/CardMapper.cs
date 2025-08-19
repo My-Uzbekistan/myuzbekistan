@@ -20,6 +20,7 @@ public static partial class CardMapper
     private static partial List<CardView> ToList(this List<CardEntity> src);
 
     [MapProperty("CardPan", "CardNumber")]
+    [MapProperty("Icon", "Image")]
     private static partial CardInfo ToInfo(this CardEntity src);
     private static partial List<CardInfo> ToListInfo(this List<CardEntity> src);
     private static partial CardEntity From(this CardView CardView);

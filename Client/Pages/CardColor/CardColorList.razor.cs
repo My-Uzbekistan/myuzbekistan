@@ -6,7 +6,7 @@ public partial class CardColorList : MixedStateComponent<TableResponse<CardColor
     [Inject] private ICardColorService CardColorService { get; set; } = null!;
 
     private TableResponse<CardColorView>? Items ;    
-    private readonly string[] SortColumns = ["Name","ColorCode","Id",];
+    private readonly string[] SortColumns = ["Image","Id",];
 
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
