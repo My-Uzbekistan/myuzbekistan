@@ -480,4 +480,7 @@
   <data name="SmsNotificationNumberRequired" xml:space="preserve">
     <value>Требуется номер уведомления SMS</value>
   </data>
+  <data name="CardColors" xml:space="preserve">
+    <value>Цвета карт</value>
+  </data>
 </root>

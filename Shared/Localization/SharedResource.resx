@@ -480,4 +480,7 @@
   <data name="NumberFormatForGlobalPay" xml:space="preserve">
     <value>The phone number must be in the format 998XXXXXXXXX (e.g. 998997961883)</value>
   </data>
+  <data name="CardColors" xml:space="preserve">
+    <value>Card Colors</value>
+  </data>
 </root>

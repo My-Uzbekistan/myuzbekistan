@@ -480,4 +480,7 @@
   <data name="NumberFormatForGlobalPay" xml:space="preserve">
     <value>Telefon raqami 998xxxxxxxxxx formatida bo'lishi kerak (masalan 998997961838)</value>
   </data>
+  <data name="CardColors" xml:space="preserve">
+    <value>Karta ranglari</value>
+  </data>
 </root>
