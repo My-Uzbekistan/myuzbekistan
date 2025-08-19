@@ -588,4 +588,7 @@
 	<data name="UserOrders" xml:space="preserve">
   <value>Foydalanuvchi buyurtmalari</value>
 </data>
+  <data name="CardColors" xml:space="preserve">
+    <value>Karta ranglari</value>
+  </data>
 </root>

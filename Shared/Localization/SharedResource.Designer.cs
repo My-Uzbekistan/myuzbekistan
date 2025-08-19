@@ -187,6 +187,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Card Colors.
+        /// </summary>
+        public static string CardColors {
+            get {
+                return ResourceManager.GetString("CardColors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Card Holder Name Required.
         /// </summary>
         public static string CardHolderNameRequired {

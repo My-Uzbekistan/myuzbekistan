@@ -60,7 +60,9 @@ public partial class CardInfo
         get => Ps == "VISA" || Ps == "MASTERCARD";
         set { /* Needed for serialization, but can be left empty or throw if you want to make it read-only */ }
     }
-    [property: DataMember, JsonPropertyName("icon")] public string? Icon { get => CardHelper.GetCardBrandImage(Ps); set { } } 
+    [property: DataMember, JsonPropertyName("icon")] public string? Icon { get => CardHelper.GetCardBrandImage(Ps); set { } }
+
+    [property: DataMember, JsonPropertyName("image")] public string? Image { get; set; }
 
     public override bool Equals(object? o)
     {

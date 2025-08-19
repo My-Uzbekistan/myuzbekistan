@@ -40,7 +40,7 @@ namespace Server.Controllers
             {
                 throw new MyUzException("CardHolderNameRequired");
             }
-            else if (extCardTypes.Contains(cardPrefix.CardType) && (request.Cvv == null  || request.Cvv == 0))
+            else if (extCardTypes.Contains(cardPrefix.CardType) && (request.Cvv == null || request.Cvv == 0))
             {
                 throw new MyUzException("CvvRequired");
 
@@ -51,7 +51,7 @@ namespace Server.Controllers
 
             }
 
-            else if(!extCardTypes.Contains(cardPrefix.CardType) &&  string.IsNullOrEmpty(request.SmsNotificationNumber))
+            else if (!extCardTypes.Contains(cardPrefix.CardType) && string.IsNullOrEmpty(request.SmsNotificationNumber))
             {
                 throw new MyUzException("SmsNotificationNumberRequired");
 
@@ -66,42 +66,33 @@ namespace Server.Controllers
             });
 
             var res = card?.Id;
+            var createCard = new CardView
+            {
+                UserId = userId,
+                CardToken = cardInfo.CardToken,
+                Icon = request.Image,
+                ExpirationDate = request.Expiry,
+                CardPan = MaskCardNumber(request.Token),
+                Cvv = request.Cvv,
+                Ps = cardInfo.ProcessingType,
+                Phone = request.SmsNotificationNumber,
+                HolderName = request.CardHolderName,
+                Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
+            };
             if (card != null)
             {
-                await commander.Call(new UpdateCardCommand(session, new CardView
-                {
-                    Id = card.Id,
-                    UserId = userId,
-                    CardToken = cardInfo.CardToken,
-                    ExpirationDate = request.Expiry,
-                    CardPan = MaskCardNumber(request.Token),
-                    Cvv = request.Cvv,
-                    Ps = cardInfo.ProcessingType,
-                    HolderName = request.CardHolderName,
-                    Phone = request.SmsNotificationNumber,
-                    Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
-                }), cancellationToken: cancellationToken);
+                createCard.Id = card.Id;
+                await commander.Call(new UpdateCardCommand(session, createCard), cancellationToken: cancellationToken);
             }
             else
             {
-                res = await commander.Call(new CreateCardCommand(session, new CardView
-                {
-                    UserId = userId,
-                    CardToken = cardInfo.CardToken,
-                    ExpirationDate = request.Expiry,
-                    CardPan = MaskCardNumber(request.Token),
-                    Cvv = request.Cvv,
-                    Ps = cardInfo.ProcessingType,
-                    Phone = request.SmsNotificationNumber,
-                    HolderName = request.CardHolderName,
-                    Status = extCardTypes.Contains(cardPrefix.CardType) ? "active" : null
-                }), cancellationToken: cancellationToken);
+                res = await commander.Call(new CreateCardCommand(session, createCard), cancellationToken: cancellationToken);
 
             }
 
 
 
-                return Ok(new { cardId = res });
+            return Ok(new { cardId = res });
         }
 
 
@@ -114,10 +105,10 @@ namespace Server.Controllers
         [HttpGet("card-colors")]
         public async Task<IActionResult> CardColor(CancellationToken cancellationToken = default)
         {
-            return Ok(await cardColorService.GetAll(new TableOptions { Page = 1, PageSize = 200 }));
+            return Ok(await cardColorService.GetAllApi(new TableOptions { Page = 1, PageSize = 200 }));
         }
 
-        [HttpPost("confirm-card/{id:long}")]
+        [HttpPost("confirm-card/{id:long}")]    
         public async Task<IActionResult> ConfirmCard([FromRoute] long Id, [FromBody] MultiConfirmCardRequest request, CancellationToken cancellationToken)
         {
             var userId = User.Id();
@@ -134,6 +125,7 @@ namespace Server.Controllers
             confirmedCard.HolderName = cardInfo.HolderName;
             confirmedCard.Status = "active";
             confirmedCard.Phone = cardInfo.Phone;
+            confirmedCard.Icon = cardInfo.Icon;
             await commander.Call(new UpdateCardCommand(session, confirmedCard), cancellationToken: cancellationToken);
 
             return Ok();
@@ -152,8 +144,8 @@ namespace Server.Controllers
         {
             var userId = User.Id();
             var session = await sessionResolver.GetSession(cancellationToken);
-            await commander.Call(new DeleteCardCommand(session, id,userId), cancellationToken: cancellationToken);
-            return NoContent();  
+            await commander.Call(new DeleteCardCommand(session, id, userId), cancellationToken: cancellationToken);
+            return NoContent();
         }
 
     }

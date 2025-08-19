@@ -1,4 +1,4 @@
-@page  "/cardcolors"
+@page  "/card-colors"
 @inherits MixedStateComponent<TableResponse<CardColorView>, TableOptions>
 @{
     Items = State.GetValue(Injector);
@@ -6,7 +6,7 @@
 
 <ListContainer Title="CardColor">
     <Actions>
-        <MudLink Href="/cardcolors/create">
+        <MudLink Href="/card-colors/create">
             <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
             @L["Create"]
             </MudButton>
@@ -14,13 +14,14 @@
     </Actions>
     <ChildContent>
         <UTCTable Values="@Items"  SortColumns="@SortColumns" MutableState="@MutableState" Tclass="CardColorView">
-                <MudTd DataLabel="Name">@context.Name</MudTd>
-                <MudTd DataLabel="ColorCode">@context.ColorCode</MudTd>
+                <MudTd DataLabel="Image">
+                <ImageView fileEntity="@context.ImageView"/>
+                </MudTd>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
                        
                 <MudTd Class="d-flex justify-end">
                     <div style="display:flex; gap:7px;">
-                        <MudLink Href=@($"/cardcolors/{context.Id }")>
+                        <MudLink Href=@($"/card-colors/{context.Id }")>
                             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
                         </MudLink>
                         <MudFab @onclick=@(()=>Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />

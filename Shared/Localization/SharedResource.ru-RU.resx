@@ -588,4 +588,7 @@
 	<data name="UserOrders" xml:space="preserve">
   <value>Заказы пользователя</value>
 </data>
+  <data name="CardColors" xml:space="preserve">
+    <value>Цвета карт</value>
+  </data>
 </root>

@@ -19,7 +19,7 @@ public partial class Create
         else
         {
             Injector.Snackbar.Add(L["SuccessCreate"], Severity.Success);
-            Injector.NavigationManager.NavigateTo("/cardcolors");
+            Injector.NavigationManager.NavigateTo("/card-colors");
         }
         Processing = false;
     }

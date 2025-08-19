@@ -589,4 +589,7 @@
 	<data name="UserOrders" xml:space="preserve">
   <value>User orders</value>
 </data>
+  <data name="CardColors" xml:space="preserve">
+    <value>Card Colors</value>
+  </data>
 </root>

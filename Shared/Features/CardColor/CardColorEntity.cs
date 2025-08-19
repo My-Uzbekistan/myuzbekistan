@@ -8,6 +8,5 @@ namespace myuzbekistan.Shared;
 
 public class CardColorEntity : BaseEntity
 {
-    public string Name { get; set; } = null!;
-    public string ColorCode { get; set; } = null!;
+    public FileEntity? Image { get; set; }
 }
