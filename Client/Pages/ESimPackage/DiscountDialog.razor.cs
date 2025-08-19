@@ -27,12 +27,12 @@ public partial class DiscountDialog
         var result = await Injector.Commander.Run(new UpdatePackageDiscountCommand(Injector.Session, ESimPackageView));
         if (!result.HasError)
         {
-            Injector.Snackbar.Add("Discount updated successfully", Severity.Success);
+            Injector.Snackbar.Add(L["DiscountUpdated"], Severity.Success);
             MudDialog!.Close(DialogResult.Ok(true));
         }
         else
         {
-            Injector.Snackbar.Add("Failed to update discount: " + result.Error?.Message, Severity.Error);
+            Injector.Snackbar.Add($"{L["FailedDiscountUpdate"]}: " + result.Error?.Message, Severity.Error);
         }
     }
 
@@ -42,7 +42,7 @@ public partial class DiscountDialog
     {
         if (discountPercentage < 0 || discountPercentage > 100)
         {
-            Injector.Snackbar.Add("Discount percentage must be between 0 and 100", Severity.Error);
+            Injector.Snackbar.Add(L["DiscountError1"], Severity.Error);
             return;
         }
 
@@ -54,7 +54,7 @@ public partial class DiscountDialog
     {
         if (discountPrice < 0 || discountPrice > ESimPackageView.CustomPrice)
         {
-            Injector.Snackbar.Add("Discount price must be between 0 and the original price", Severity.Error);
+            Injector.Snackbar.Add(L["DiscountError2"], Severity.Error);
             return;
         }
         PackageDiscountView.DiscountPrice = discountPrice;

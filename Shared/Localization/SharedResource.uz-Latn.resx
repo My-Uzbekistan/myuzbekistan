@@ -480,4 +480,112 @@
   <data name="NumberFormatForGlobalPay" xml:space="preserve">
     <value>Telefon raqami 998xxxxxxxxxx formatida bo'lishi kerak (masalan 998997961838)</value>
   </data>
+  <data name="ESimPackages" xml:space="preserve">
+  <value>eSIM paketlari</value>
+</data>
+  <data name="AppUsers" xml:space="preserve">
+  <value>Ilova foydalanuvchilari</value>
+</data>
+  <data name="PackageId" xml:space="preserve">
+  <value>Paket ID</value>
+</data>
+  <data name="CountryCode" xml:space="preserve">
+  <value>Mamlakat kodi</value>
+</data>
+  <data name="CountryName" xml:space="preserve">
+  <value>Mamlakat nomi</value>
+</data>
+  <data name="DataVolume" xml:space="preserve">
+  <value>Ma’lumot hajmi</value>
+</data>
+  <data name="ValidDays" xml:space="preserve">
+  <value>Amal qilish muddati (kun)</value>
+</data>
+  <data name="Network" xml:space="preserve">
+  <value>Tarmoq</value>
+</data>
+  <data name="ActivationPolicy" xml:space="preserve">
+  <value>Faollashtirish siyosati</value>
+</data>
+  <data name="CustomPrice" xml:space="preserve">
+  <value>Maxsus narx</value>
+</data>
+  <data name="DiscountPrice" xml:space="preserve">
+  <value>Chegirmali narx</value>
+</data>
+  <data name="PackagePrice" xml:space="preserve">
+  <value>Paket narxi</value>
+</data>
+  <data name="DiscountPercentage" xml:space="preserve">
+  <value>Chegirma foizi</value>
+</data>
+  <data name="StartDate" xml:space="preserve">
+  <value>Boshlanish sanasi</value>
+</data>
+  <data name="EndDate" xml:space="preserve">
+  <value>Tugash sanasi</value>
+</data>
+  <data name="ProfitPercentage" xml:space="preserve">
+  <value>Foyda foizi</value>
+</data>
+  <data name="UserDetails" xml:space="preserve">
+  <value>Foydalanuvchi ma’lumotlari</value>
+</data>
+  <data name="Balance" xml:space="preserve">
+  <value>Balans</value>
+</data>
+  <data name="SyncPackages" xml:space="preserve">
+  <value>Paketlarni sinxronlash</value>
+</data>
+  <data name="SetProfit" xml:space="preserve">
+  <value>Foyda belgilash</value>
+</data>
+  <data name="TotalUsers" xml:space="preserve">
+  <value>Jami foydalanuvchilar</value>
+</data>
+  <data name="TotalPackages" xml:space="preserve">
+  <value>Jami paketlar</value>
+</data>
+  <data name="TotalCountries" xml:space="preserve">
+  <value>Jami mamlakatlar</value>
+</data>
+  <data name="FullName" xml:space="preserve">
+  <value>To‘liq ism</value>
+</data>
+	<data name="SetProfitTitle" xml:space="preserve">
+  <value>Barcha paketlar uchun foyda foizini belgilash</value>
+</data>
+	<data name="SetDiscountTitle" xml:space="preserve">
+  <value>Chegirma uchun</value>
+</data>
+	<data name="DiscountUpdated" xml:space="preserve">
+  <value>Chegirma muvaffaqiyatli yangilandi</value>
+</data>
+	<data name="FailedDiscountUpdate" xml:space="preserve">
+  <value>Chegirma yangilanishida xatolik yuz berdi</value>
+</data>
+	<data name="DiscountError1" xml:space="preserve">
+  <value>Chegirma foizi 0 va 100 oralig‘ida bo‘lishi kerak</value>
+</data>
+	<data name="DiscountError2" xml:space="preserve">
+  <value>Chegirma narxi 0 va asl narx oralig‘ida bo‘lishi kerak</value>
+</data>
+	<data name="ProfitEror1" xml:space="preserve">
+  <value>Foyda foizi 0 va 100 oralig‘ida bo‘lishi kerak</value>
+</data>
+	<data name="ProfitEror2" xml:space="preserve">
+  <value>Foyda yangilanishida xatolik yuz berdi</value>
+</data>
+	<data name="SuccessSetProfit" xml:space="preserve">
+  <value>Foyda muvaffaqiyatli yangilandi</value>
+</data>
+	<data name="SyncPackagesFailed" xml:space="preserve">
+  <value>Paketlarni sinxronlashda xatolik yuz berdi</value>
+</data>
+	<data name="SyncPackagesStarted" xml:space="preserve">
+  <value>Paketlarni sinxronlash orqa rejimda boshlandi</value>
+</data>
+	<data name="UserOrders" xml:space="preserve">
+  <value>Foydalanuvchi buyurtmalari</value>
+</data>
 </root>

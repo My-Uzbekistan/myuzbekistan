@@ -480,4 +480,113 @@
   <data name="NumberFormatForGlobalPay" xml:space="preserve">
     <value>The phone number must be in the format 998XXXXXXXXX (e.g. 998997961883)</value>
   </data>
+  <data name="ESimPackages" xml:space="preserve">
+    <value>eSIM packages</value>
+  </data>
+  <data name="AppUsers" xml:space="preserve">
+    <value>App users</value>
+  </data>
+  <data name="PackageId" xml:space="preserve">
+    <value>Package ID</value>
+  </data>
+  <data name="CountryCode" xml:space="preserve">
+    <value>Country Code</value>
+  </data>
+  <data name="CountryName" xml:space="preserve">
+    <value>Country Name</value>
+  </data>
+  <data name="DataVolume" xml:space="preserve">
+    <value>Data Volume</value>
+  </data>
+  <data name="ValidDays" xml:space="preserve">
+    <value>Valid days</value>
+  </data>
+  <data name="Network" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="ActivationPolicy" xml:space="preserve">
+    <value>Activation policy</value>
+  </data>
+  <data name="CustomPrice" xml:space="preserve">
+    <value>Custom price</value>
+  </data>
+  <data name="DiscountPrice" xml:space="preserve">
+    <value>Discount price</value>
+  </data>
+  <data name="PackagePrice" xml:space="preserve">
+    <value>Package price</value>
+  </data>
+  <data name="DiscountPercentage" xml:space="preserve">
+    <value>Discount percentage</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start date</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End date</value>
+  </data>
+  <data name="ProfitPercentage" xml:space="preserve">
+    <value>Profit percentage</value>
+  </data>
+  <data name="UserDetails" xml:space="preserve">
+    <value>User details</value>
+  </data>
+  <data name="Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="SyncPackages" xml:space="preserve">
+    <value>Sync packages</value>
+  </data>
+  <data name="SetProfit" xml:space="preserve">
+    <value>Set profit</value>
+  </data>
+  <data name="TotalUsers" xml:space="preserve">
+    <value>Total users</value>
+  </data>
+  <data name="TotalPackages" xml:space="preserve">
+    <value>Total packages</value>
+  </data>
+  <data name="TotalCountries" xml:space="preserve">
+    <value>Total countries</value>
+  </data>
+  <data name="FullName" xml:space="preserve">
+    <value>Full Name</value>
+  </data>
+  <data name="SetProfitTitle" xml:space="preserve">
+    <value>Set profit percentage for all packages</value>
+  </data>
+  <data name="SetDiscountTitle" xml:space="preserve">
+    <value>Discount for</value>
+  </data>
+	
+  <data name="DiscountUpdated" xml:space="preserve">
+    <value>Discount updated successfully</value>
+  </data>
+  <data name="FailedDiscountUpdate" xml:space="preserve">
+    <value>Failed to update discount</value>
+  </data>
+  <data name="DiscountError1" xml:space="preserve">
+    <value>Discount percentage must be between 0 and 100</value>
+  </data>
+  <data name="DiscountError2" xml:space="preserve">
+    <value>Discount price must be between 0 and the original price</value>
+  </data>
+  <data name="ProfitEror1" xml:space="preserve">
+    <value>Profit percentage must be between 0 and 100</value>
+  </data>
+  <data name="ProfitEror2" xml:space="preserve">
+    <value>Failed to update profit</value>
+  </data>
+  <data name="SuccessSetProfit" xml:space="preserve">
+    <value>Profit updated successfully</value>
+  </data>
+  <data name="SyncPackagesFailed" xml:space="preserve">
+    <value>Sync packages failed</value>
+  </data>
+  <data name="SyncPackagesStarted" xml:space="preserve">
+    <value>Sync packages started in background</value>
+  </data>
+	<data name="UserOrders" xml:space="preserve">
+  <value>User orders</value>
+</data>
 </root>

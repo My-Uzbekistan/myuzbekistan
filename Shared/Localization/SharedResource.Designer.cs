@@ -88,6 +88,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activation policy.
+        /// </summary>
+        public static string ActivationPolicy {
+            get {
+                return ResourceManager.GetString("ActivationPolicy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Active.
         /// </summary>
         public static string Active {
@@ -115,11 +124,29 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to App users.
+        /// </summary>
+        public static string AppUsers {
+            get {
+                return ResourceManager.GetString("AppUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Average Check.
         /// </summary>
         public static string AverageCheck {
             get {
                 return ResourceManager.GetString("AverageCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balance.
+        /// </summary>
+        public static string Balance {
+            get {
+                return ResourceManager.GetString("Balance", resourceCulture);
             }
         }
         
@@ -304,6 +331,24 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Country Code.
+        /// </summary>
+        public static string CountryCode {
+            get {
+                return ResourceManager.GetString("CountryCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Country Name.
+        /// </summary>
+        public static string CountryName {
+            get {
+                return ResourceManager.GetString("CountryName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create.
         /// </summary>
         public static string Create {
@@ -327,6 +372,24 @@ namespace Shared.Localization {
         public static string CurrentVersion {
             get {
                 return ResourceManager.GetString("CurrentVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom price.
+        /// </summary>
+        public static string CustomPrice {
+            get {
+                return ResourceManager.GetString("CustomPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data Volume.
+        /// </summary>
+        public static string DataVolume {
+            get {
+                return ResourceManager.GetString("DataVolume", resourceCulture);
             }
         }
         
@@ -376,6 +439,51 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discount percentage must be between 0 and 100.
+        /// </summary>
+        public static string DiscountError1 {
+            get {
+                return ResourceManager.GetString("DiscountError1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discount price must be between 0 and the original price.
+        /// </summary>
+        public static string DiscountError2 {
+            get {
+                return ResourceManager.GetString("DiscountError2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discount percentage.
+        /// </summary>
+        public static string DiscountPercentage {
+            get {
+                return ResourceManager.GetString("DiscountPercentage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discount price.
+        /// </summary>
+        public static string DiscountPrice {
+            get {
+                return ResourceManager.GetString("DiscountPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discount updated successfully.
+        /// </summary>
+        public static string DiscountUpdated {
+            get {
+                return ResourceManager.GetString("DiscountUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string Edit {
@@ -403,6 +511,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to End date.
+        /// </summary>
+        public static string EndDate {
+            get {
+                return ResourceManager.GetString("EndDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to EnterPrice.
         /// </summary>
         public static string EnterPrice {
@@ -421,6 +538,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to eSIM packages.
+        /// </summary>
+        public static string ESimPackages {
+            get {
+                return ResourceManager.GetString("ESimPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Facilities.
         /// </summary>
         public static string Facilities {
@@ -435,6 +561,15 @@ namespace Shared.Localization {
         public static string Facility {
             get {
                 return ResourceManager.GetString("Facility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update discount.
+        /// </summary>
+        public static string FailedDiscountUpdate {
+            get {
+                return ResourceManager.GetString("FailedDiscountUpdate", resourceCulture);
             }
         }
         
@@ -471,6 +606,15 @@ namespace Shared.Localization {
         public static string files {
             get {
                 return ResourceManager.GetString("files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full Name.
+        /// </summary>
+        public static string FullName {
+            get {
+                return ResourceManager.GetString("FullName", resourceCulture);
             }
         }
         
@@ -700,6 +844,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Network.
+        /// </summary>
+        public static string Network {
+            get {
+                return ResourceManager.GetString("Network", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Images Found! Upload Your First Image.
         /// </summary>
         public static string NoImagesFound_UploadYourFirstImage {
@@ -732,6 +885,24 @@ namespace Shared.Localization {
         public static string OrganizationName {
             get {
                 return ResourceManager.GetString("OrganizationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package ID.
+        /// </summary>
+        public static string PackageId {
+            get {
+                return ResourceManager.GetString("PackageId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package price.
+        /// </summary>
+        public static string PackagePrice {
+            get {
+                return ResourceManager.GetString("PackagePrice", resourceCulture);
             }
         }
         
@@ -862,6 +1033,33 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profit percentage must be between 0 and 100.
+        /// </summary>
+        public static string ProfitEror1 {
+            get {
+                return ResourceManager.GetString("ProfitEror1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to update profit.
+        /// </summary>
+        public static string ProfitEror2 {
+            get {
+                return ResourceManager.GetString("ProfitEror2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profit percentage.
+        /// </summary>
+        public static string ProfitPercentage {
+            get {
+                return ResourceManager.GetString("ProfitPercentage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rating Average.
         /// </summary>
         public static string RatingAverage {
@@ -988,6 +1186,33 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Discount for.
+        /// </summary>
+        public static string SetDiscountTitle {
+            get {
+                return ResourceManager.GetString("SetDiscountTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set profit.
+        /// </summary>
+        public static string SetProfit {
+            get {
+                return ResourceManager.GetString("SetProfit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set profit percentage for all packages.
+        /// </summary>
+        public static string SetProfitTitle {
+            get {
+                return ResourceManager.GetString("SetProfitTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string Settings {
@@ -1011,6 +1236,15 @@ namespace Shared.Localization {
         public static string SmsNotificationNumberRequired {
             get {
                 return ResourceManager.GetString("SmsNotificationNumberRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start date.
+        /// </summary>
+        public static string StartDate {
+            get {
+                return ResourceManager.GetString("StartDate", resourceCulture);
             }
         }
         
@@ -1042,11 +1276,47 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Profit updated successfully.
+        /// </summary>
+        public static string SuccessSetProfit {
+            get {
+                return ResourceManager.GetString("SuccessSetProfit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Successfully updated.
         /// </summary>
         public static string SuccessUpdate {
             get {
                 return ResourceManager.GetString("SuccessUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync packages.
+        /// </summary>
+        public static string SyncPackages {
+            get {
+                return ResourceManager.GetString("SyncPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync packages failed.
+        /// </summary>
+        public static string SyncPackagesFailed {
+            get {
+                return ResourceManager.GetString("SyncPackagesFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sync packages started in background.
+        /// </summary>
+        public static string SyncPackagesStarted {
+            get {
+                return ResourceManager.GetString("SyncPackagesStarted", resourceCulture);
             }
         }
         
@@ -1069,6 +1339,33 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Total countries.
+        /// </summary>
+        public static string TotalCountries {
+            get {
+                return ResourceManager.GetString("TotalCountries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total packages.
+        /// </summary>
+        public static string TotalPackages {
+            get {
+                return ResourceManager.GetString("TotalPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total users.
+        /// </summary>
+        public static string TotalUsers {
+            get {
+                return ResourceManager.GetString("TotalUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Deleting can not be undone!.
         /// </summary>
         public static string UnDoneDelete {
@@ -1087,6 +1384,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User details.
+        /// </summary>
+        public static string UserDetails {
+            get {
+                return ResourceManager.GetString("UserDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UserName.
         /// </summary>
         public static string UserName {
@@ -1096,11 +1402,29 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User orders.
+        /// </summary>
+        public static string UserOrders {
+            get {
+                return ResourceManager.GetString("UserOrders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to users.
         /// </summary>
         public static string users {
             get {
                 return ResourceManager.GetString("users", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Valid days.
+        /// </summary>
+        public static string ValidDays {
+            get {
+                return ResourceManager.GetString("ValidDays", resourceCulture);
             }
         }
         
