@@ -40,6 +40,7 @@ public class WeatherService(IConfiguration configuration, IRegionService regionS
         {
             regionName = "Tashkent";
         }
+        regionName = "Uzbekistan";
         var response = await client.GetFromJsonAsync<WeatherResponse>($"{url}?q={regionName}&key={key}&lang=ru"
             , cancellationToken: cancellationToken);
         return response == null ? throw new Exception("Weather data not found") : response.MapToView();
