@@ -75,14 +75,14 @@
                         }
                         <SectionLanguage @bind-Language="Language" Errors=Errors></SectionLanguage>
                         
-                        @if (RoutePath == "categories")
-                        {
+                        @* @if (RoutePath == "categories")
+                        { *@
                             <MudExpansionPanels Class="mt-3">
                                 <MudExpansionPanel Text="@L["Icon"]" Gutters="true" Expanded="true">
                                     <ImageSelectView @bind-Value="current.IconView" @bind-Value:after="() => { Model.ForEach(x => x.IconView = current.IconView); }" />
                                 </MudExpansionPanel>
                             </MudExpansionPanels>
-                        }
+                        @* } *@
                     </MudItem>
                 </MudGrid>
             </ChildContent>
