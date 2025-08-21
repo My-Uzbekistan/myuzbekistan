@@ -1,0 +1,47 @@
+﻿<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+    <FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+        <Actions>
+            <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("esim-promo-codes")' Processing="@Processing" />
+        </Actions>
+        <ChildContent>
+            <MudGrid>
+                <MudItem xs="8">
+                    <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                        <MudTextField Adornment="Adornment.End" AdornmentColor="Color.Primary" AdornmentIcon="@Icons.Material.Filled.AutoMode" OnAdornmentClick="GeneratePromoCode" @bind-Value="Model.Code" Label="Code" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.Code)" Required="true" />
+                        <MudSwitch @bind-Value="Model.IsCompatibleWithDiscount" For="@(() => Model.IsCompatibleWithDiscount)" Label="IsCompatibleWithDiscount" Color="Color.Info" />
+                        <MudSelect Margin="Margin.Dense" For="@(() => Model.PromoCodeType)" Class="mt-3" @bind-Value="Model.PromoCodeType" Label="@L["PromoCodeType"]" T="PromoCodeType" Required="true" Variant="Variant.Text">
+                            <MudSelectItem T="PromoCodeType" Value="(PromoCodeType)PromoCodeType.OneTime">@L["OneTime"]</MudSelectItem>
+                            <MudSelectItem T="PromoCodeType" Value="(PromoCodeType)PromoCodeType.MultipleUse">@L["MultipleUse"]</MudSelectItem>
+                        </MudSelect>
+                        <MudNumericField @bind-Value="Model.UsageLimit" Label="UsageLimit" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.UsageLimit)" Required="true" />
+                        <MudDatePicker @bind-Date="Model.StartDate"
+                                       Label="@L["StartDate"]"
+                                       Class="mt-3"
+                                       Editable="true"
+                                       Variant="Variant.Text"
+                                       Required="true" />
+                        <MudDatePicker @bind-Date="Model.EndDate"
+                                       Label="@L["EndDate"]"
+                                       Class="mt-3"
+                                       Editable="true"
+                                       Variant="Variant.Text"
+                                       Required="true" />
+                            <MudSelect Margin="Margin.Dense" For="@(() => Model.IsActive)" Class="mt-3" @bind-Value="Model.IsActive" Label="@L["Status"]" T="bool" Required="true" Variant="Variant.Text">
+                            <MudSelectItem T="bool" Value="true">@L["Active"]</MudSelectItem>
+                            <MudSelectItem T="bool" Value="false">@L["Inactive"]</MudSelectItem>
+                        </MudSelect>
+                        <MudSelect Margin="Margin.Dense" For="@(() => Model.DiscountType)" Class="mt-3" @bind-Value="Model.DiscountType" Label="@L["DiscountType"]" T="DiscountType" Required="true" Variant="Variant.Text">
+                            <MudSelectItem T="DiscountType" Value="(DiscountType)DiscountType.Percentage">@L["Percentage"]</MudSelectItem>
+                            <MudSelectItem T="DiscountType" Value="(DiscountType)DiscountType.FixedAmount">@L["FixedAmount"]</MudSelectItem>
+                        </MudSelect>
+                        <MudNumericField T="double" @bind-Value="Model.DiscountValue" Label="DiscountValue" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.DiscountValue)" Required="true" />
+                        <MudNumericField @bind-Value="Model.MaxUsagePerUser" Label="MaxUsagePerUser" AutoFocus="true" Variant="Variant.Text" For="@(() => Model.MaxUsagePerUser)" Required="true" />
+                        <input type="hidden" @bind-value="Model.Id">
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </ChildContent>
+    </FormContainer>
+</EditForm>
