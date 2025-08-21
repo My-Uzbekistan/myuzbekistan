@@ -1,12 +1,15 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using ActualLab.Serialization;
+using Microsoft.Extensions.Localization;
 using myuzbekistan.Services;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Server.Controllers;
 
 [Route("api/payments")]
 [Authorize]
 [ApiController]
-public class PaymentController(GlobalPayService globalPayService, ICardService cardService, ICommander _commander, IMerchantService merchantService, IInvoiceService invoiceService, IStringLocalizer<PaymentController> @L) : ControllerBase
+public class PaymentController(GlobalPayService globalPayService, ICardService cardService, ICommander _commander, IMerchantService merchantService, IInvoiceService invoiceService, IPaymentService paymentService, IStringLocalizer<PaymentController> @L) : ControllerBase
 {
 
     [HttpPost("top-up")]
@@ -30,20 +33,24 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         var res = await globalPayService.CreatePayment(userId, topUp.Amount, card);
         var confirm = await globalPayService.ConfirmPayment(res.ExternalId, card.Cvv?.ToString(), HttpContext.GetRemoteIPAddress()?.ToString());
 
-        var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
+        if(topUp.ServiceId != -777)
         {
-            Amount = topUp.Amount,
-            Description = $"payed for {merchant.First().Name}",
-            MerchantId = topUp.ServiceId,
-            PaymentId = res.ExternalId,
-            PaymentStatus = (card.Ps == "VISA" && card.Ps == "MASTERCARD") ? PaymentStatus.Pending : PaymentStatus.Completed,
+            var command = new CreateInvoiceCommand(sessionInfo, new InvoiceRequest
+            {
+                Amount = topUp.Amount,
+                Description = $"payed for {merchant.First().Name}",
+                MerchantId = topUp.ServiceId,
+                PaymentId = res.ExternalId,
+                PaymentStatus = (card.Ps == "VISA" && card.Ps == "MASTERCARD") ? PaymentStatus.Pending : PaymentStatus.Completed,
 
-        });
-        await _commander.Call(command, cancellationToken);
+            });
+            await _commander.Call(command, cancellationToken);
+
+        }
+
         return Ok(new { PaymentId = res.ExternalId, CheckUrl = confirm.SecurityCheckUrl });
     }
 
-    [HttpGet("globalpay")]
 
 
     [HttpGet]
@@ -64,11 +71,12 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
     {
         // Get the invoice by payment ID
         var invoice = await invoiceService.GetByPaymentId(PaymentId, cancellationToken);
+        var payment = await paymentService.GetByExternalId(invoice.PaymentId, cancellationToken);
+        JsonNode callback = JsonNode.Parse(payment.CallbackData!)!;
         if (invoice == null)
         {
             return NotFound(new { Message = "Invoice not found." });
         }
-
 
         // Prepare the items for the response
         var Items = new List<object>()
@@ -79,9 +87,19 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
             },
             new {
                Key = @L["PaymentDate"].Value,
-               Value = invoice.Date
+               Value = invoice.Date.ToString("dd MMMM yyyy")
+            },
+            new {
+               Key = @L["PayedCard"].Value,
+               Value = callback["card"]!["cardNumber"]!
             }
         };
+
+        if (callback["gnkFields"] != null && callback["gnkFields"]!["qrcodeUrl"] != null)
+        {
+            invoice.TaxQr = callback["gnkFields"]!["qrcodeUrl"]!.ToString();
+        }
+            
         invoice.Items = Items;
 
         return Ok(invoice);

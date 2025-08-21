@@ -33,6 +33,7 @@ public class InvoiceSummaryView
 
 public class InvoiceDetailView : InvoiceSummaryView
 {
+    public string? TaxQr { get; set; }
     public List<object> Items { get; set; } = new List<object>();
 }
 
