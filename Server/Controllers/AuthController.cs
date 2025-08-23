@@ -57,7 +57,8 @@ public class AuthController : ControllerBase
                     {
                         access_token = accessToken,
                         refresh_token = refreshToken,
-                        expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
+                        expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
+                        hasPin = !string.IsNullOrEmpty(user.Code)
                     });
                 }
                 finally
@@ -160,7 +161,8 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
+                hasPin = !string.IsNullOrEmpty(user.Code)
             });
         }
         finally
@@ -263,7 +265,8 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
+                hasPin = !string.IsNullOrEmpty(user.Code)
             });
         }
         finally
@@ -330,7 +333,8 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
+                hasPin = !string.IsNullOrEmpty(user.Code)
             });
         }
         finally
@@ -365,7 +369,8 @@ public class AuthController : ControllerBase
         {
             access_token = newAccessToken,
             refresh_token = newRefreshToken,
-            expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp()
+            expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
+            hasPin = !string.IsNullOrEmpty(user.Code)
         });
     }
 
