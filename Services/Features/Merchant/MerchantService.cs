@@ -157,7 +157,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             .ThenInclude(x => x.Logo)
             .Where(x => x.Id == Id)
             .ToListAsync(cancellationToken)
-            ?? throw new ValidationException("MerchantEntity Not Found");
+            ?? throw new ValidationException("MerchantEntity Not Found " + Id);
 
         return merchant.MapToViewList();
     }
