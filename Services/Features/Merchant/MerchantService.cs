@@ -139,7 +139,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
             merchant = merchant.Where(x => x.Locale.Equals(LangHelper.currentLocale));
         #endregion
         var merchantC = await merchant.FirstOrDefaultAsync(cancellationToken: cancellationToken)
-        ?? throw new NotFoundException("MerchantEntity Not Found");
+        ?? throw new NotFoundException("MerchantEntity Not Found " + Id );
 
         return merchantC.MapToResponse();
     }
