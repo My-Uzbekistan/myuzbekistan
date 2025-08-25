@@ -31,7 +31,8 @@ public class PaymentController(GlobalPayService globalPayService, ICardService c
         var userId = User.Id();
         var card = await cardService.Get(topUp.CardId, userId, cancellationToken);
         var res = await globalPayService.CreatePayment(userId, topUp.Amount, card);
-        var confirm = await globalPayService.ConfirmPayment(res.ExternalId, card.Cvv?.ToString(), HttpContext.GetRemoteIPAddress()?.ToString());
+        //var confirm = await globalPayService.ConfirmPayment(res.ExternalId, card.Cvv?.ToString(), HttpContext.GetRemoteIPAddress()?.ToString());
+        var confirm = await globalPayService.ConfirmPaymentMock(res.ExternalId);
 
         if(topUp.ServiceId != -777)
         {

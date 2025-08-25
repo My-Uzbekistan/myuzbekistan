@@ -426,6 +426,54 @@ public class GlobalPayService(
         return content;
     }
 
+    public async Task<GPConfirmPaymentResponse> ConfirmPaymentMock(string paymentId)
+    {
+        // Получаем платеж и карту
+        var payment = await paymentService.GetByExternalId(paymentId);
+        var card = await cardService.Get(payment.CardId, payment.UserId);
+        var session = await sessionResolver.GetSession();
+
+        // Формируем моковый ответ
+        var mockResponse = new GPConfirmPaymentResponse
+        {
+            Id = payment.TransactionId ?? Guid.NewGuid().ToString(),
+            ExternalId = payment.ExternalId!,
+            ProcessingId = Guid.NewGuid().ToString(),
+            Amount = payment.Amount,
+            Currency = "UZS",
+            Type = "MOCK",
+            Status = "APPROVED",
+            ProcessingType = card.Ps ?? "MOCK",
+            CreatedAt = DateTime.UtcNow,
+            ApprovedAt = DateTime.UtcNow,
+            GnkPerformedAt = null,
+            Account = payment.UserId.ToString(),
+            Card = new GPConfirmPaymentCard
+            {
+                Token = card.CardToken,
+                CardNumber = card.CardPan,
+                ExpiryDate = card.ExpirationDate ?? "0000",
+                SmsNotificationNumber = card.Phone ?? string.Empty,
+                ProcessingType = card.Ps ?? "MOCK",
+                CardOrigin = "LOCAL"
+            },
+            GnkFields = null,
+            PaymentItems = new List<GPCreatePaymentItem>(),
+            Service = new GPConfirmPaymentService { Id = serviceId },
+            SecurityCheckUrl = string.Empty
+        };
+
+        // Обновляем платеж как успешный
+        payment.PaymentStatus = PaymentStatus.Completed;
+        payment.CallbackData = JsonSerializer.Serialize(mockResponse);
+        await commander.Call(new UpdatePaymentCommand(session, payment));
+
+        // Начисляем баланс пользователю
+        await commander.Call(new IncrementUserBalanceCommand(session, payment.UserId, mockResponse.Amount));
+
+        return mockResponse;
+    }
+
 
     public async Task GetToken()
     {
