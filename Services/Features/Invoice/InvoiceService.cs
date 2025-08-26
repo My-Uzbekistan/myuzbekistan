@@ -59,7 +59,7 @@ public class InvoiceService(IServiceProvider services,
                     .ThenInclude(x => x.Logo)
 
             .FirstOrDefaultAsync(x => x.ExternalId == ExternalId, cancellationToken)
-            ?? throw new NotFoundException("InvoiceEntity Not Found");
+            ?? throw new NotFoundException("InvoiceEntity Not Found " + ExternalId);
 
 
         return invoice.MapToDetail();
