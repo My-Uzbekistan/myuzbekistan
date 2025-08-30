@@ -28,6 +28,65 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
         return promoCode.MapToView();
     }
 
+    public async Task<(bool IsApplyable, string ErrorMessage)> Verify(string code, long userId, long packageId, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+        var promoCode = await dbContext.ESimPromoCodes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Code == code, cancellationToken);
+        if (promoCode == null)
+        {
+            return (false, "PromoCode Not Found");
+        }
+
+        var package = await dbContext.ESimPackages
+            .AsNoTracking()
+            .Include(x => x.PackageDiscountEntity)
+            .FirstOrDefaultAsync(x => x.Id == packageId, cancellationToken);
+
+        if (package == null)
+        {
+            return (false, "Package Not Found");
+        }
+
+        if (!promoCode.IsActive)
+        {
+            return (false, "PromoCode is not active");
+        }
+
+        if (promoCode.StartDate.HasValue && promoCode.StartDate.Value > DateTime.UtcNow)
+        {
+            return (false, "PromoCode is not started yet");
+        }
+
+        if (promoCode.EndDate.HasValue && promoCode.EndDate.Value < DateTime.UtcNow)
+        {
+            return (false, "PromoCode is expired");
+        }
+
+        if (promoCode.UsageLimit > 0 && promoCode.AppliedCount >= promoCode.UsageLimit)
+        {
+            return (false, "PromoCode usage limit exceeded");
+        }
+
+        var userAppliedCount = await dbContext.ESimPromoCodeUsages
+            .AsNoTracking()
+            .CountAsync(x => x.PromoCodeId == promoCode.Id && x.ApplicationUserId == userId, cancellationToken);
+
+        if (promoCode.MaxUsagePerUser > 0 && userAppliedCount >= promoCode.MaxUsagePerUser)
+        {
+            return (false, "You have already used this PromoCode the maximum number of times allowed");
+        }
+
+        if (package.PackageDiscountId.HasValue && package.PackageDiscountEntity != null && package.PackageDiscountEntity.Status != ContentStatus.Active && !promoCode.IsCompatibleWithDiscount)
+        {
+            return (false, "PromoCode is not compatible with existing package discount");
+        }
+
+        return (true, string.Empty);
+    }
+
     #endregion
 
     #region Mutations
@@ -83,6 +142,7 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
         dbContext.Remove(promoCode);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
     #endregion
 
     #region Helpers

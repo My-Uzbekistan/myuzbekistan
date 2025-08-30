@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Server.Controllers;
 
 [Route("api/esim")]
@@ -10,8 +8,11 @@ public class EsimController(
     IESimOrderService esimOrderService,
     ISessionResolver sessionResolver,
     IESimSlugService esimSlugService,
+    IESimPromoCodeService eSimPromoCodeService,
     ICommander commander) : ControllerBase
 {
+    #region ESimPackages
+
     [HttpGet("countries")]
     public async Task<IActionResult> GetAllAsync([FromQuery] TableOptions options, CancellationToken cancellationToken = default)
     {
@@ -56,21 +57,22 @@ public class EsimController(
             new TableOptions() { CountrySlug = "world", SlugType = ESimSlugType.Global, HasVoicePack = hasVoicePack, }, cancellationToken);
         return Ok(countries);
     }
-    
+
     [HttpGet("plans/{id}")]
     public async Task<IActionResult> GetPlansAsync(long id, [FromQuery] string? lang, CancellationToken cancellationToken = default)
     {
         var countries = await eSimPackageService.GetClientView(id, lang.ConvertToLanguage(), cancellationToken);
         return Ok(countries);
     }
-    
+
     [HttpGet("plans/{id}/coverages")]
     public async Task<IActionResult> GetPlanCoveragesAsync(long id, [FromQuery] string? lang, CancellationToken cancellationToken = default)
     {
         var countries = await eSimPackageService.GetPackageCoverages(id, lang.ConvertToLanguage(), cancellationToken);
         return Ok(countries);
-    }
+    } 
 
+    #endregion
 
     #region MyEsims
 
@@ -144,6 +146,26 @@ public class EsimController(
         var orderView = await commander.Call(new MakeESimOrderCommand(session, view.PackageId), cancellationToken);
         var esimView = await esimOrderService.GetEsim(orderView.Id, session, cancellationToken);
         return Ok(esimView);
+    }
+
+    #endregion
+
+    #region PromoCode
+
+    [HttpGet("promocode/verify")]
+    public async Task<IActionResult> VerifyPromoCode(
+        [FromQuery] string code, 
+        [FromQuery] long userId,
+        [FromQuery] long packageId,
+        CancellationToken cancellationToken = default)
+    {
+        var (IsApplyable, ErrorMessage) = await eSimPromoCodeService.Verify(code, userId, packageId, cancellationToken);
+        if (IsApplyable)
+        {
+            return Ok();
+        }
+
+        return BadRequest(ErrorMessage);
     }
 
     #endregion

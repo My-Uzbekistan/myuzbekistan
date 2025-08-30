@@ -23,7 +23,7 @@
             <MudTd>@context.StartDate?.ToLocalTime().ToString("dd.MM.yyyy")</MudTd>
             <MudTd>@context.EndDate?.ToLocalTime().ToString("dd.MM.yyyy")</MudTd>
             <MudTd>@context.IsActive</MudTd>
-            <MudTd>@context.DiscountType</MudTd>
+            <MudTd>@L[context.DiscountType.ToString()!]</MudTd>
             <MudTd>@context.DiscountValue</MudTd>
             <MudTd>@context.AppliedCount</MudTd>
             <MudTd>@context.MaxUsagePerUser</MudTd>

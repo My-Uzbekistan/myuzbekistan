@@ -1,0 +1,23 @@
+﻿@* @page "/esim-orders"
+
+@inherits MixedStateComponent<TableResponse<ESimPackageView>,TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="ESimPackage">
+    <ChildContent>
+        <UTCTable Values=@Items ColumnGroups="ColumnWidths" SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">
+            <MudTd>@context.PackageId</MudTd>
+            <MudTd>@context.User.FullName</MudTd>
+            <MudTd>@context.CountryName</MudTd>
+            <MudTd>@context.DataVolume</MudTd>
+            <MudTd>@context.ValidDays</MudTd>
+            <MudTd>@context.Price.ToString("N2") so'm</MudTd>
+            <MudTd>@context.CustomPrice.ToString("N2") so'm</MudTd>
+            <MudTd>@context.PackageDiscountView?.DiscountPrice.ToString("N2") so'm</MudTd>
+            <MudTd>@context.PromoCode.ToString("N2") so'm</MudTd>
+            <MudTd>@context.CreatedAt</MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer> *@
