@@ -1,5 +1,6 @@
 namespace myuzbekistan.Shared;
 
+[SkipGeneration]
 public class ESimSlugEntity : BaseEntity
 {
     public string Slug { get; set; } = string.Empty;

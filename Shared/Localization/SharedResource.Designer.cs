@@ -1249,6 +1249,15 @@ namespace Shared.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sms Templates.
+        /// </summary>
+        public static string SmsTemplates {
+            get {
+                return ResourceManager.GetString("SmsTemplates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start date.
         /// </summary>
         public static string StartDate {

@@ -22,8 +22,8 @@ public class JsonbValueConverter<T> : ValueConverter<T, string>
 {
     public JsonbValueConverter()
         : base(
-            v => JsonConvert.SerializeObject(v),   // �������������� �� ������� � ������ (����������)
-            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  // �������������� �� ������ � ������ (������)
+            v => JsonConvert.SerializeObject(v),   
+            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  
     { }
 }
 public partial class AppDbContext : DbContextBase
@@ -64,7 +64,7 @@ public partial class AppDbContext : DbContextBase
 
 
         modelBuilder.Entity<ContentEntity>()
-            .HasIndex(c => c.PhotoId) // ������ ��� ������������
+            .HasIndex(c => c.PhotoId) 
             .IsUnique(false);
 
         modelBuilder.Entity<MerchantEntity>()

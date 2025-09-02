@@ -1,0 +1,10 @@
+@page "/devices/{Id:long}"
+@inherits ComputedStateComponent<DeviceView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.Device._Form OnSubmit="OnSubmit" 
+                                    Model="Model" 
+                                    Processing="@Processing" 
+                                    IsNew="false"/>

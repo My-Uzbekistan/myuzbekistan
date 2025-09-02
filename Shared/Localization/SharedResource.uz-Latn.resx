@@ -552,43 +552,46 @@
   <data name="FullName" xml:space="preserve">
   <value>To‘liq ism</value>
 </data>
-	<data name="SetProfitTitle" xml:space="preserve">
+  <data name="SetProfitTitle" xml:space="preserve">
   <value>Barcha paketlar uchun foyda foizini belgilash</value>
 </data>
-	<data name="SetDiscountTitle" xml:space="preserve">
+  <data name="SetDiscountTitle" xml:space="preserve">
   <value>Chegirma uchun</value>
 </data>
-	<data name="DiscountUpdated" xml:space="preserve">
+  <data name="DiscountUpdated" xml:space="preserve">
   <value>Chegirma muvaffaqiyatli yangilandi</value>
 </data>
-	<data name="FailedDiscountUpdate" xml:space="preserve">
+  <data name="FailedDiscountUpdate" xml:space="preserve">
   <value>Chegirma yangilanishida xatolik yuz berdi</value>
 </data>
-	<data name="DiscountError1" xml:space="preserve">
+  <data name="DiscountError1" xml:space="preserve">
   <value>Chegirma foizi 0 va 100 oralig‘ida bo‘lishi kerak</value>
 </data>
-	<data name="DiscountError2" xml:space="preserve">
+  <data name="DiscountError2" xml:space="preserve">
   <value>Chegirma narxi 0 va asl narx oralig‘ida bo‘lishi kerak</value>
 </data>
-	<data name="ProfitEror1" xml:space="preserve">
+  <data name="ProfitEror1" xml:space="preserve">
   <value>Foyda foizi 0 va 100 oralig‘ida bo‘lishi kerak</value>
 </data>
-	<data name="ProfitEror2" xml:space="preserve">
+  <data name="ProfitEror2" xml:space="preserve">
   <value>Foyda yangilanishida xatolik yuz berdi</value>
 </data>
-	<data name="SuccessSetProfit" xml:space="preserve">
+  <data name="SuccessSetProfit" xml:space="preserve">
   <value>Foyda muvaffaqiyatli yangilandi</value>
 </data>
-	<data name="SyncPackagesFailed" xml:space="preserve">
+  <data name="SyncPackagesFailed" xml:space="preserve">
   <value>Paketlarni sinxronlashda xatolik yuz berdi</value>
 </data>
-	<data name="SyncPackagesStarted" xml:space="preserve">
+  <data name="SyncPackagesStarted" xml:space="preserve">
   <value>Paketlarni sinxronlash orqa rejimda boshlandi</value>
 </data>
-	<data name="UserOrders" xml:space="preserve">
+  <data name="UserOrders" xml:space="preserve">
   <value>Foydalanuvchi buyurtmalari</value>
 </data>
   <data name="CardColors" xml:space="preserve">
     <value>Karta ranglari</value>
+  </data>
+  <data name="SmsTemplates" xml:space="preserve">
+    <value>SMS - andozalari</value>
   </data>
 </root>

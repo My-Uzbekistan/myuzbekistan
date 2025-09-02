@@ -1,0 +1,35 @@
+@page  "/devices"
+@inherits MixedStateComponent<TableResponse<DeviceView>, TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="Device">
+    <Actions>
+        <MudLink Href="/devices/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values="@Items"  SortColumns="@SortColumns" MutableState="@MutableState" Tclass="DeviceView">
+                <MudTd DataLabel="UserId">@context.UserId</MudTd>
+                <MudTd DataLabel="FirebaseToken">@context.FirebaseToken</MudTd>
+                <MudTd DataLabel="OsVersion">@context.OsVersion</MudTd>
+                <MudTd DataLabel="Model">@context.Model</MudTd>
+                <MudTd DataLabel="AppVersion">@context.AppVersion</MudTd>
+                <MudTd DataLabel="Session">@context.Session</MudTd>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                       
+                <MudTd Class="d-flex justify-end">
+                    <div style="display:flex; gap:7px;">
+                        <MudLink Href=@($"/devices/{context.Id }")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small"/>
+                        </MudLink>
+                        <MudFab @onclick=@(()=>Delete(@context.Id)) Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+                    </div>
+                </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>

@@ -558,7 +558,6 @@
   <data name="SetDiscountTitle" xml:space="preserve">
     <value>Discount for</value>
   </data>
-	
   <data name="DiscountUpdated" xml:space="preserve">
     <value>Discount updated successfully</value>
   </data>
@@ -586,10 +585,13 @@
   <data name="SyncPackagesStarted" xml:space="preserve">
     <value>Sync packages started in background</value>
   </data>
-	<data name="UserOrders" xml:space="preserve">
+  <data name="UserOrders" xml:space="preserve">
   <value>User orders</value>
 </data>
   <data name="CardColors" xml:space="preserve">
     <value>Card Colors</value>
+  </data>
+  <data name="SmsTemplates" xml:space="preserve">
+    <value>Sms Templates</value>
   </data>
 </root>

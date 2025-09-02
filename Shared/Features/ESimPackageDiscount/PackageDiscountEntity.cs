@@ -1,5 +1,6 @@
 namespace myuzbekistan.Shared;
 
+[SkipGeneration]
 public class PackageDiscountEntity : BaseEntity
 {
     public long ESimPackageId { get; set; }

@@ -1,0 +1,10 @@
+@page "/smstemplates/{Id:long}"
+@inherits ComputedStateComponent<List<SmsTemplateView>>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.SmsTemplate._Form OnSubmit="OnSubmit" 
+                                    Model="Model" 
+                                    Processing="@Processing" 
+                                    IsNew="false"/>

@@ -27,4 +27,6 @@ public partial class AppDbContext : DbContextBase
     public DbSet<ESimOrderEntity> ESimOrders { get; protected set; } = null!;
     public DbSet<PackageDiscountEntity> PackageDiscounts { get; protected set; } = null!;
     public DbSet<ESimSlugEntity> ESimSlugs { get; protected set; } = null!;
+    public DbSet<DeviceEntity> Devices { get; protected set; } = null!;
+    public DbSet<SmsTemplateEntity> SmsTemplates { get; protected set; } = null!;
 }

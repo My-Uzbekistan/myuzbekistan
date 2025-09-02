@@ -1,4 +1,7 @@
+
 namespace myuzbekistan.Shared;
+
+[SkipGeneration]
 
 public class ESimOrderEntity : BaseEntity
 {

@@ -1,0 +1,24 @@
+<EditForm Model="@Model" OnValidSubmit="@OnValidSubmit">
+<FormContainer Title="@GetTitle()" MaxWidth="MaxWidth.ExtraLarge">
+    <Actions>
+        <SaveCancelButton OnCancel='() => Injector.PageHistoryState.Back("devices")' Processing="@Processing" />
+    </Actions>
+    <ChildContent>
+        <MudGrid>
+            <MudItem xs="8">
+                <MudPaper Class="pa-4">
+                        <ObjectGraphDataAnnotationsValidator />
+                        <ValidationSummary />
+                            <MudNumericField  @bind-Value="Model.UserId" AutoFocus="true" Label="UserId" Variant="Variant.Text" For="@(() => Model.UserId)"Required="true"/>                                
+                            <MudTextField  @bind-Value="Model.FirebaseToken" Label="FirebaseToken" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.FirebaseToken)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.OsVersion" Label="OsVersion" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.OsVersion)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Model" Label="Model" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Model)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.AppVersion" Label="AppVersion" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.AppVersion)"Required="true"/>
+                            <MudTextField  @bind-Value="Model.Session" Label="Session" AutoFocus="false" Variant="Variant.Text" For="@(() => Model.Session)"Required="true"/>
+                            <input type="hidden" @bind-value="Model.Id"> 
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </ChildContent>
+</FormContainer>
+</EditForm>
