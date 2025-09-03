@@ -143,7 +143,7 @@ public class EsimController(
         {
             return Unauthorized();
         }
-        var orderView = await commander.Call(new MakeESimOrderCommand(session, view.PackageId), cancellationToken);
+        var orderView = await commander.Call(new MakeESimOrderCommand(session, view.PackageId, view.PromoCode), cancellationToken);
         var esimView = await esimOrderService.GetEsim(orderView.Id, session, cancellationToken);
         return Ok(esimView);
     }

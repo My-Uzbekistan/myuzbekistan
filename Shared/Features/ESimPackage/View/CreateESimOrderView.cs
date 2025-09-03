@@ -5,6 +5,7 @@ namespace myuzbekistan.Shared;
 public partial class CreateESimOrderView
 {
     [property: DataMember] public string PackageId { get; set; } = string.Empty;
+    [property: DataMember] public string? PromoCode { get; set; }
 
     public override bool Equals(object? o)
     {

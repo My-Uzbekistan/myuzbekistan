@@ -1,4 +1,4 @@
-﻿namespace myuzbekistan.Services;
+namespace myuzbekistan.Services;
 
 public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IESimPromoCodeService
 {
@@ -28,13 +28,13 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
         return promoCode.MapToView();
     }
 
-    public async Task<(bool IsApplyable, string ErrorMessage)> Verify(string code, long userId, long packageId, CancellationToken cancellationToken = default)
+    public async Task<(bool IsApplyable, string ErrorMessage)> Verify(string? code, long userId, long packageId, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
         var promoCode = await dbContext.ESimPromoCodes
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Code == code, cancellationToken);
+            .FirstOrDefaultAsync(x => !string.IsNullOrEmpty(code) && x.Code == code.ToUpper(), cancellationToken);
         if (promoCode == null)
         {
             return (false, "PromoCode Not Found");
@@ -104,6 +104,7 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
         Reattach(promoCode, command.Entity, dbContext);
         promoCode.StartDate = command.Entity.StartDate!.Value.ToUtc();
         promoCode.EndDate = command.Entity.EndDate!.Value.ToUtc();
+        promoCode.Code = command.Entity.Code!.ToUpper();
         dbContext.Update(promoCode);
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -125,6 +126,7 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
 
         promoCode.StartDate = command.Entity.StartDate!.Value.ToUtc();
         promoCode.EndDate = command.Entity.EndDate!.Value.ToUtc();
+        promoCode.Code = command.Entity.Code!.ToUpper();
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
