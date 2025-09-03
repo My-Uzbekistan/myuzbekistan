@@ -28,7 +28,7 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
         return promoCode.MapToView();
     }
 
-    public async Task<(bool IsApplyable, string ErrorMessage)> Verify(string? code, long userId, long packageId, CancellationToken cancellationToken = default)
+    public async virtual Task<(bool IsApplyable, string ErrorMessage)> Verify(string? code, long userId, long packageId, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);

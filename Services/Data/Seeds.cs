@@ -82,7 +82,7 @@ public static class Seeds
     // ✅ Метод для создания ролей
     public static void SeedAboutContent(AppDbContext context)
     {
-        if (!context.Categories.Any(x => x.Name == "About Uzbekistan" || x.Name == "Useful tips"))
+        if (!context.Categories.Any(x => x.Name == "About Uzbekistan" || x.Name == "Useful tips") && context.Contents.Any())
         {
             long aboutCategoryId = context.Contents.Max(x => x.Id) + 1;
 

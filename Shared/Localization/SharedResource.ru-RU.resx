@@ -552,43 +552,88 @@
   <data name="FullName" xml:space="preserve">
   <value>Полное имя</value>
 </data>
-	<data name="SetProfitTitle" xml:space="preserve">
+  <data name="SetProfitTitle" xml:space="preserve">
   <value>Установить процент прибыли для всех пакетов</value>
 </data>
-	<data name="SetDiscountTitle" xml:space="preserve">
+  <data name="SetDiscountTitle" xml:space="preserve">
   <value>Скидка для</value>
 </data>
-	<data name="DiscountUpdated" xml:space="preserve">
+  <data name="DiscountUpdated" xml:space="preserve">
   <value>Скидка успешно обновлена</value>
 </data>
-	<data name="FailedDiscountUpdate" xml:space="preserve">
+  <data name="FailedDiscountUpdate" xml:space="preserve">
   <value>Не удалось обновить скидку</value>
 </data>
-	<data name="DiscountError1" xml:space="preserve">
+  <data name="DiscountError1" xml:space="preserve">
   <value>Процент скидки должен быть от 0 до 100</value>
 </data>
-	<data name="DiscountError2" xml:space="preserve">
+  <data name="DiscountError2" xml:space="preserve">
   <value>Цена со скидкой должна быть от 0 до исходной цены</value>
 </data>
-	<data name="ProfitEror1" xml:space="preserve">
+  <data name="ProfitEror1" xml:space="preserve">
   <value>Процент прибыли должен быть от 0 до 100</value>
 </data>
-	<data name="ProfitEror2" xml:space="preserve">
+  <data name="ProfitEror2" xml:space="preserve">
   <value>Не удалось обновить прибыль</value>
 </data>
-	<data name="SuccessSetProfit" xml:space="preserve">
+  <data name="SuccessSetProfit" xml:space="preserve">
   <value>Прибыль успешно обновлена</value>
 </data>
-	<data name="SyncPackagesFailed" xml:space="preserve">
+  <data name="SyncPackagesFailed" xml:space="preserve">
   <value>Не удалось синхронизировать пакеты</value>
 </data>
-	<data name="SyncPackagesStarted" xml:space="preserve">
+  <data name="SyncPackagesStarted" xml:space="preserve">
   <value>Синхронизация пакетов запущена в фоновом режиме</value>
 </data>
-	<data name="UserOrders" xml:space="preserve">
+  <data name="UserOrders" xml:space="preserve">
   <value>Заказы пользователя</value>
 </data>
   <data name="CardColors" xml:space="preserve">
     <value>Цвета карт</value>
   </data>
+  <data name="PromoCode" xml:space="preserve">
+  <value>Промокод</value>
+</data>
+  <data name="Code" xml:space="preserve">
+  <value>Код</value>
+</data>
+  <data name="IsCompatibleWithDiscount" xml:space="preserve">
+  <value>Совместим со скидкой</value>
+</data>
+  <data name="PromoCodeType" xml:space="preserve">
+  <value>Тип промокода</value>
+</data>
+  <data name="OneTime" xml:space="preserve">
+  <value>Одноразовый</value>
+</data>
+  <data name="MultipleUse" xml:space="preserve">
+  <value>Многократный</value>
+</data>
+  <data name="UsageLimit" xml:space="preserve">
+  <value>Лимит использования</value>
+</data>
+  <data name="DiscountType" xml:space="preserve">
+  <value>Тип скидки</value>
+</data>
+  <data name="Percentage" xml:space="preserve">
+  <value>Процент</value>
+</data>
+  <data name="FixedAmount" xml:space="preserve">
+  <value>Фиксированная сумма</value>
+</data>
+  <data name="DiscountValue" xml:space="preserve">
+  <value>Размер скидки</value>
+</data>
+  <data name="MaxUsagePerUser" xml:space="preserve">
+  <value>Макс. использование на пользователя</value>
+</data>
+  <data name="AppliedCount" xml:space="preserve">
+  <value>Количество применений</value>
+</data>
+  <data name="ESimOrders" xml:space="preserve">
+  <value>Заказы eSIM</value>
+</data>
+  <data name="ESimPromoCodes" xml:space="preserve">
+  <value>Промокоды eSIM</value>
+</data>
 </root>

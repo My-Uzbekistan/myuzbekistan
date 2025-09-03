@@ -13,4 +13,6 @@ public class ESimPromoCodeEntity : BaseEntity
     public double DiscountValue { get; set; }
     public int AppliedCount { get; set; } = 0;
     public int MaxUsagePerUser { get; set; } = 1;
+
+    public virtual ICollection<ESimOrderEntity> ESimOrderEntities { get; set; } = [];
 }

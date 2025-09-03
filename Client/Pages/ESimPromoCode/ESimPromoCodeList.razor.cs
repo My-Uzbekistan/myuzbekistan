@@ -9,7 +9,7 @@ public partial class ESimPromoCodeList : MixedStateComponent<TableResponse<ESimP
     private readonly string[] SortColumns = 
     [
         "Id", "Code", "IsCompatibleWithDiscount", "PromoCodeType", "UsageLimit",
-        "StartDate", "EndDate", "IsActive", "DiscountType", "DiscountValue",
+        "StartDate", "EndDate", "Status", "DiscountType", "DiscountValue",
         "AppliedCount", "MaxUsagePerUser"
     ];
 

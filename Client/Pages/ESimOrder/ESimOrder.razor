@@ -1,23 +1,23 @@
-﻿@* @page "/esim-orders"
+﻿@page "/esim-orders"
 
-@inherits MixedStateComponent<TableResponse<ESimPackageView>,TableOptions>
+@inherits MixedStateComponent<TableResponse<ESimOrderListView>, TableOptions>
 @{
     Items = State.GetValue(Injector);
 }
 
 <ListContainer Title="ESimPackage">
     <ChildContent>
-        <UTCTable Values=@Items ColumnGroups="ColumnWidths" SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">
-            <MudTd>@context.PackageId</MudTd>
+        <UTCTable Values=@Items ColumnGroups="ColumnWidths" SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimOrderListView">
+            <MudTd>@context.ESimPackageView.PackageId</MudTd>
             <MudTd>@context.User.FullName</MudTd>
-            <MudTd>@context.CountryName</MudTd>
-            <MudTd>@context.DataVolume</MudTd>
-            <MudTd>@context.ValidDays</MudTd>
-            <MudTd>@context.Price.ToString("N2") so'm</MudTd>
-            <MudTd>@context.CustomPrice.ToString("N2") so'm</MudTd>
-            <MudTd>@context.PackageDiscountView?.DiscountPrice.ToString("N2") so'm</MudTd>
-            <MudTd>@context.PromoCode.ToString("N2") so'm</MudTd>
+            <MudTd>@context.ESimPackageView.CountryName</MudTd>
+            <MudTd>@context.ESimPackageView.DataVolume</MudTd>
+            <MudTd>@context.ESimPackageView.ValidDays</MudTd>
+            <MudTd>@context.ESimPackageView.Price.ToString("N2") so'm</MudTd>
+            <MudTd>@context.ESimPackageView.CustomPrice.ToString("N2") so'm</MudTd>
+            <MudTd>@context.ESimPackageView.PackageDiscountView?.DiscountPrice.ToString("N2") so'm</MudTd>
+            <MudTd>@context.ESimPromoCodeView?.Code</MudTd>
             <MudTd>@context.CreatedAt</MudTd>
         </UTCTable>
     </ChildContent>
-</ListContainer> *@
+</ListContainer>
