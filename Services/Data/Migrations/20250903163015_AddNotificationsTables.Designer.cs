@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,12 +12,14 @@ using myuzbekistan.Shared;
 
 #nullable disable
 
-namespace Services.Migrations
+namespace Services.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250903163015_AddNotificationsTables")]
+    partial class AddNotificationsTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -711,9 +714,6 @@ namespace Services.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<long?>("PromoCodeId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("QrCode")
                         .IsRequired()
                         .HasColumnType("text");
@@ -746,8 +746,6 @@ namespace Services.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PromoCodeId");
 
                     b.ToTable("ESimOrders");
                 });
@@ -848,87 +846,6 @@ namespace Services.Migrations
                     b.HasIndex("ESimSlugId");
 
                     b.ToTable("ESimPackages");
-                });
-
-            modelBuilder.Entity("myuzbekistan.Shared.ESimPromoCodeEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("AppliedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DiscountType")
-                        .HasColumnType("integer");
-
-                    b.Property<double>("DiscountValue")
-                        .HasColumnType("double precision");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCompatibleWithDiscount")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("MaxUsagePerUser")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PromoCodeType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UsageLimit")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ESimPromoCodes");
-                });
-
-            modelBuilder.Entity("myuzbekistan.Shared.ESimPromoCodeUsageEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("ApplicationUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("ESimOrderId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PromoCodeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ESimPromoCodeUsages");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimSlugEntity", b =>
@@ -1749,16 +1666,6 @@ namespace Services.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("myuzbekistan.Shared.ESimOrderEntity", b =>
-                {
-                    b.HasOne("myuzbekistan.Shared.ESimPromoCodeEntity", "ESimPromoCodeEntity")
-                        .WithMany("ESimOrderEntities")
-                        .HasForeignKey("PromoCodeId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("ESimPromoCodeEntity");
-                });
-
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
                 {
                     b.HasOne("myuzbekistan.Shared.ESimSlugEntity", "ESimSlug")
@@ -1883,11 +1790,6 @@ namespace Services.Migrations
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
                 {
                     b.Navigation("PackageDiscountEntity");
-                });
-
-            modelBuilder.Entity("myuzbekistan.Shared.ESimPromoCodeEntity", b =>
-                {
-                    b.Navigation("ESimOrderEntities");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimSlugEntity", b =>
