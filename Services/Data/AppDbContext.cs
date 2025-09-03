@@ -47,6 +47,8 @@ public partial class AppDbContext : DbContextBase
     public DbSet<DbKeyValue> KeyValues { get; protected set; } = null!;
     public DbSet<DbOperation> Operations { get; protected set; } = null!;
     public DbSet<DbEvent> Events { get; protected set; } = null!;
+    public DbSet<NotificationEntity> Notifications { get; set; } = null!;
+    public DbSet<NotificationReadEntity> NotificationReads { get; set; } = null!;
 
     public override int SaveChanges()
     {
