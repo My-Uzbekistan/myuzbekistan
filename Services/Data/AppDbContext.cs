@@ -98,6 +98,12 @@ public partial class AppDbContext : DbContextBase
             .WithMany(x => x.ESimPackages)
             .HasForeignKey(x => x.ESimSlugId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ESimOrderEntity>()
+            .HasOne(x => x.ESimPromoCodeEntity)
+            .WithMany(x => x.ESimOrderEntities)
+            .HasForeignKey(x => x.PromoCodeId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

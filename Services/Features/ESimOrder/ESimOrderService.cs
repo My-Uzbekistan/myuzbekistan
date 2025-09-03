@@ -28,6 +28,54 @@ public class ESimOrderService(
         return new TableResponse<ESimOrderView>() { Items = items.MapToViewList(), TotalItems = count };
     }
 
+    public virtual async Task<TableResponse<ESimOrderListView>> GetAllList(TableOptions options, CancellationToken cancellationToken = default)
+    {
+        await Invalidate();
+        await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+
+        var esimOrder = from s in dbContext.ESimOrders select s;
+
+        Sorting(ref esimOrder, options);
+
+        var count = await esimOrder.AsNoTracking().CountAsync(cancellationToken: cancellationToken);
+        var items = await esimOrder.AsNoTracking().Paginate(options).ToListAsync(cancellationToken: cancellationToken);
+        List<ESimOrderListView> result = [];
+        foreach (var item in items)
+        {
+            ESimOrderListView view = new()
+            {
+                Id = item.Id,
+                CreatedAt = item.CreatedAt,
+            };
+
+            if (item.PromoCodeId > 0)
+            {
+                var promoCode = await dbContext.ESimPromoCodes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == item.PromoCodeId, cancellationToken)
+                    ?? throw new NotFoundException("ESimPromoCode not found");
+                view.ESimPromoCodeView = promoCode.MapToView();
+            }
+
+            var package = await dbContext.ESimPackages
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.PackageId == item.PackageId, cancellationToken)
+                ?? throw new NotFoundException("ESimPackage not found");
+            view.ESimPackageView = package.MapToView();
+
+            var user = await userService.GetAsync(item.UserId, cancellationToken)
+                ?? throw new NotFoundException("User not found");
+            view.User = new UserView()
+            {
+                Id = user.Id,
+                UserName = user.FullName ?? string.Empty
+            };
+            result.Add(view);
+        }
+
+        return new TableResponse<ESimOrderListView>() { Items = result, TotalItems = count };
+    }
+
     public async virtual Task<ESimOrderView> Get(long Id, Session? session, CancellationToken cancellationToken = default)
     {
         await Invalidate();

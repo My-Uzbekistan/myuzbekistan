@@ -15,7 +15,7 @@
         </MudButton>
     </Actions>
     <ChildContent>
-        <UTCTable Values=@Items SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">
+        <UTCTable Values=@Items ColumnGroups="ColumnWidths" SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPackageView">
             <MudTd>@context.PackageId</MudTd>
             <MudTd>@context.CountryCode</MudTd>
             <MudTd>@context.CountryName</MudTd>

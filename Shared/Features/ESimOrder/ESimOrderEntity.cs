@@ -36,4 +36,6 @@ public class ESimOrderEntity : BaseEntity
     public double CustomPrice { get; set; }
     public double? DiscountPercentage { get; set; }
     public long UserId { get; set; }
+    public long? PromoCodeId { get; set; }
+    public ESimPromoCodeEntity? ESimPromoCodeEntity { get; set; }
 }

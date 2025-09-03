@@ -25,6 +25,13 @@ else
             </MudGrid>
         </MudPaper>
         <MudTable Items="Values.Items" T="Tclass" RowsPerPage=MutableState.Value.PageSize  Hover="true" SortLabel="Sort By" Elevation="0" FixedHeader="true" FixedFooter="true" Height="60vh" Dense="true" Striped="true">
+            <ColGroup>
+                @foreach (var col in ColumnGroups)
+                {
+                    <col style="@($"min-width:{col}; max-width:{col};")" />
+                }
+            </ColGroup>
+            
             <HeaderContent>
                 <TableSorter Columns="SortColumns" MutableState="MutableState" T="Tclass" />
                 <MudTh>@L["Action"]</MudTh>
@@ -52,6 +59,9 @@ else
 
     [Parameter]
     public TableResponse<Tclass> Values { get; set; } = null!;
+
+    [Parameter]
+    public List<string> ColumnGroups { get; set; } = [];
 
     [Parameter]
     public string[] SortColumns { get; set; } = null!;
