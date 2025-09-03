@@ -594,4 +594,49 @@
   <data name="SmsTemplates" xml:space="preserve">
     <value>Sms Templates</value>
   </data>
+  <data name="PromoCode" xml:space="preserve">
+  <value>Promo Code</value>
+</data>
+  <data name="Code" xml:space="preserve">
+  <value>Code</value>
+</data>
+  <data name="IsCompatibleWithDiscount" xml:space="preserve">
+  <value>Is Compatible With Discount</value>
+</data>
+  <data name="PromoCodeType" xml:space="preserve">
+  <value>Promo Code Type</value>
+</data>
+  <data name="OneTime" xml:space="preserve">
+  <value>One Time</value>
+</data>
+  <data name="MultipleUse" xml:space="preserve">
+  <value>Multiple Use</value>
+</data>
+  <data name="UsageLimit" xml:space="preserve">
+  <value>Usage Limit</value>
+</data>
+  <data name="DiscountType" xml:space="preserve">
+  <value>Discount Type</value>
+</data>
+  <data name="Percentage" xml:space="preserve">
+  <value>Percentage</value>
+</data>
+  <data name="FixedAmount" xml:space="preserve">
+  <value>Fixed Amount</value>
+</data>
+  <data name="DiscountValue" xml:space="preserve">
+  <value>Discount Value</value>
+</data>
+  <data name="MaxUsagePerUser" xml:space="preserve">
+  <value>Max Usage Per User</value>
+</data>
+  <data name="AppliedCount" xml:space="preserve">
+  <value>Applied Count</value>
+</data>
+  <data name="ESimOrders" xml:space="preserve">
+  <value>eSIM Orders</value>
+</data>
+  <data name="ESimPromoCodes" xml:space="preserve">
+  <value>eSIM Promo Codes</value>
+</data>
 </root>

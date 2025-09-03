@@ -12,6 +12,13 @@ public partial class ESimPackageList : MixedStateComponent<TableResponse<ESimPac
         "Network", "ActivationPolicy", "Status", "Price", "CustomPrice", "Discount", "DiscountPrice"
     ];
 
+    private List<string> ColumnWidths = 
+    [
+        "250px", "180px", "180px", "150px", "250px", 
+        "150px", "250px", "100px", "150px", "150px", 
+        "150px", "150px"
+    ];
+
     protected override MutableState<TableOptions>.Options GetMutableStateOptions()
     {
         var uri = Injector.NavigationManager.ToAbsoluteUri(Injector.NavigationManager.Uri);

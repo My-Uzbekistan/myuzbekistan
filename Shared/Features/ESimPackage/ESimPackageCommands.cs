@@ -16,7 +16,9 @@ public partial record UpdatePackageDiscountCommand([property: DataMember] Sessio
 public partial record SyncESimPackagesCommand() : ICommand<Unit>;
 
 [DataContract, MemoryPackable]
-public partial record MakeESimOrderCommand([property: DataMember] Session Session, [property: DataMember] string PackageId) : ISessionCommand<ESimOrderView>;
+public partial record MakeESimOrderCommand([property: DataMember] Session Session, 
+                                           [property: DataMember] string PackageId, 
+                                           [property: DataMember] string? PromoCode) : ISessionCommand<ESimOrderView>;
 
 [DataContract, MemoryPackable]
 public partial record SetProfitESimPackageCommand([property: DataMember] Session Session, [property: DataMember] double Percent) : ISessionCommand<int>;
