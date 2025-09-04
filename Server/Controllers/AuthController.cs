@@ -20,10 +20,6 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly ICommander _commander;
 
-    // Centralized lifetimes for tokens
-    private static readonly TimeSpan AccessTokenLifetime = TimeSpan.FromMinutes(1);
-    private static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(7);
-
     public AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration, ILogger<AuthController> logger, ISessionResolver sessionResolver, IUserService userService, ICommander commander)
     {
 
@@ -53,7 +49,7 @@ public class AuthController : ControllerBase
                 var refreshToken = GenerateRefreshToken();
                 // Сохраняем refresh-токен в БД
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.UtcNow.Add(RefreshTokenLifetime);
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
                 try
                 {
@@ -61,7 +57,7 @@ public class AuthController : ControllerBase
                     {
                         access_token = accessToken,
                         refresh_token = refreshToken,
-                        expires = DateTime.UtcNow.Add(AccessTokenLifetime).ToUnixTimeStamp(),
+                        expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
                         hasPin = !string.IsNullOrEmpty(user.Code)
                     });
                 }
@@ -157,7 +153,7 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken();
         // Сохраняем refresh-токен в БД
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.Add(RefreshTokenLifetime);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         try
         {
@@ -165,7 +161,7 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.UtcNow.Add(AccessTokenLifetime).ToUnixTimeStamp(),
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
                 hasPin = !string.IsNullOrEmpty(user.Code)
             });
         }
@@ -261,7 +257,7 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken();
         // Сохраняем refresh-токен в БД
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.Add(RefreshTokenLifetime);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         try
         {
@@ -269,7 +265,7 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.UtcNow.Add(AccessTokenLifetime).ToUnixTimeStamp(),
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
                 hasPin = !string.IsNullOrEmpty(user.Code)
             });
         }
@@ -329,7 +325,7 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken();
         // Сохраняем refresh-токен в БД
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.Add(RefreshTokenLifetime);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         try
         {
@@ -337,7 +333,7 @@ public class AuthController : ControllerBase
             {
                 access_token = accessToken,
                 refresh_token = refreshToken,
-                expires = DateTime.UtcNow.Add(AccessTokenLifetime).ToUnixTimeStamp(),
+                expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
                 hasPin = !string.IsNullOrEmpty(user.Code)
             });
         }
@@ -365,7 +361,7 @@ public class AuthController : ControllerBase
 
         var newRefreshToken = GenerateRefreshToken();
         user.RefreshToken = newRefreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.Add(RefreshTokenLifetime);
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         await _userManager.UpdateAsync(user);
 
@@ -373,7 +369,7 @@ public class AuthController : ControllerBase
         {
             access_token = newAccessToken,
             refresh_token = newRefreshToken,
-            expires = DateTime.UtcNow.Add(AccessTokenLifetime).ToUnixTimeStamp(),
+            expires = DateTime.Now.AddMinutes(30).ToUnixTimeStamp(),
             hasPin = !string.IsNullOrEmpty(user.Code)
         });
     }
@@ -402,12 +398,11 @@ public class AuthController : ControllerBase
             claims.Add(new Claim(ClaimTypes.Role, "User"));
         }
 
-
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.Add(AccessTokenLifetime),
+            expires: DateTime.UtcNow.AddMinutes(30),
             signingCredentials: credentials
         );
 
