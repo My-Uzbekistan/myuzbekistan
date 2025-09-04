@@ -152,14 +152,18 @@ public class EsimController(
 
     #region PromoCode
 
-    [HttpGet("promocode/verify")]
+    [HttpPost("promocode/verify")]
     public async Task<IActionResult> VerifyPromoCode(
-        [FromQuery] string code, 
-        [FromQuery] long userId,
+        [FromQuery] string code,
         [FromQuery] long packageId,
         CancellationToken cancellationToken = default)
     {
-        var (IsApplyable, ErrorMessage) = await eSimPromoCodeService.Verify(code, userId, packageId, cancellationToken);
+        var session = await sessionResolver.GetSession(cancellationToken);
+        if (session == null)
+        {
+            return Unauthorized();
+        }
+        var (IsApplyable, ErrorMessage) = await eSimPromoCodeService.Verify(code, session, packageId, cancellationToken);
         if (IsApplyable)
         {
             return Ok();

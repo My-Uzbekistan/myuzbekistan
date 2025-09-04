@@ -534,7 +534,7 @@ public class ESimPackageService(
             }
         }
 
-        var promoCodeCheck = await eSimPromoCodeService.Verify(command.PromoCode, user.Id, eSimPackage.Id, cancellationToken);
+        var promoCodeCheck = await eSimPromoCodeService.Verify(command.PromoCode, command.Session, eSimPackage.Id, cancellationToken);
         ESimPromoCodeEntity? eSimPromoCodeEntity;
         if (promoCodeCheck.IsApplyable)
         {

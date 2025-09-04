@@ -9,7 +9,7 @@ public interface IESimPromoCodeService : IComputeService
     Task<ESimPromoCodeView> Get(long Id, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
-    Task<(bool IsApplyable, string ErrorMessage)> Verify(string?promoCode, long userId, long packageId, CancellationToken cancellationToken = default);
+    Task<(bool IsApplyable, string ErrorMessage)> Verify(string?promoCode, Session? session, long packageId, CancellationToken cancellationToken = default);
 
     [CommandHandler]
     Task Create(CreateESimPromoCodeCommand command, CancellationToken cancellationToken = default);
