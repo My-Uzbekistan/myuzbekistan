@@ -1,6 +1,6 @@
 namespace myuzbekistan.Services;
 
-public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<AppDbContext>(services), IESimPromoCodeService
+public class ESimPromoCodeService(IServiceProvider services, IUserService userService) : DbServiceBase<AppDbContext>(services), IESimPromoCodeService
 {
     #region Queries
 
@@ -28,10 +28,15 @@ public class ESimPromoCodeService(IServiceProvider services) : DbServiceBase<App
         return promoCode.MapToView();
     }
 
-    public async virtual Task<(bool IsApplyable, string ErrorMessage)> Verify(string? code, long userId, long packageId, CancellationToken cancellationToken = default)
+    public async virtual Task<(bool IsApplyable, string ErrorMessage)> Verify(string? code, Session? session, long packageId, CancellationToken cancellationToken = default)
     {
         await Invalidate();
         await using var dbContext = await DbHub.CreateDbContext(cancellationToken);
+
+        var user = await userService.GetUserAsync(session!, cancellationToken)
+            ?? throw new NotFoundException("User Not Found");
+        var userId = user.Id;
+
         var promoCode = await dbContext.ESimPromoCodes
             .AsNoTracking()
             .FirstOrDefaultAsync(x => !string.IsNullOrEmpty(code) && x.Code == code.ToUpper(), cancellationToken);
