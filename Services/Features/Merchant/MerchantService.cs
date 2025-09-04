@@ -24,7 +24,7 @@ public class MerchantService(IServiceProvider services) : DbServiceBase<AppDbCon
                     || s.Responsible.Contains(options.Search)
             );
         }
-        if (merchantCategoryId.HasValue && merchantCategoryId.Value > 0)
+        if (merchantCategoryId.HasValue )
             merchant = merchant.Where(x => x.MerchantCategory.Id == merchantCategoryId);
 
         #region Search by Language

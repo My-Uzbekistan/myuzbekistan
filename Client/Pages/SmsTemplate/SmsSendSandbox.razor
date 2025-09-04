@@ -1,0 +1,107 @@
+@using myuzbekistan.Shared
+@using MudBlazor
+@inject ISmsTemplateService SmsTemplateService
+@inject ISmsSendService SmsSendService
+@inject ISnackbar Snackbar
+@inject Session Session
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6">SMS Sandbox</MudText>
+    <MudStack Row="true" Spacing="2" Class="my-4">
+        <MudSelect T="string" Value="@selectedId" ValueChanged="@(v => OnTemplateChanged(v))" Label="Template" Dense="true" Style="min-width:250px;">
+            @foreach (var g in Grouped())
+            {
+                <MudSelectItem Value="@g.Key.ToString()">@($"{g.Key} - {g.First().Key}")</MudSelectItem>
+            }
+        </MudSelect>
+        <MudSelect T="string" Value="@locale" ValueChanged="@(v => OnLocaleChanged(v))" Label="Locale" Dense="true">
+            <MudSelectItem Value="@("uz")">uz</MudSelectItem>
+            <MudSelectItem Value="@("ru")">ru</MudSelectItem>
+            <MudSelectItem Value="@("en")">en</MudSelectItem>
+        </MudSelect>
+    </MudStack>
+
+    <MudStack Row="true" Spacing="2" Class="my-4">
+        <MudTextField T="string" Value="@phone" ValueChanged="@(v => OnPhoneChanged(v))" Label="Phone (998...)" Required="true" />
+        <MudTextField T="string" Value="@codeValue" ValueChanged="@(v => OnCodeChanged(v))" Label="Code (%w)" />
+    </MudStack>
+
+    <MudDivider Class="my-4" />
+    <MudText Typo="Typo.subtitle2">Preview</MudText>
+    <MudPaper Class="pa-3 mb-4" Outlined="true" Style="white-space:pre-line; min-height:120px;">@preview</MudPaper>
+
+    <MudStack Row="true" Spacing="2" Style="justify-content:flex-end;">
+        <MudButton Color="Color.Primary" Disabled="@IsSendDisabled" OnClick="SendAsync">
+            @(sending ? "Sending..." : "Send")
+        </MudButton>
+    </MudStack>
+</MudPaper>
+
+@code {
+    private TableOptions options = new() { Page = 1, PageSize = 500, SortLabel = "Id", SortDirection = 1, Lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName };
+    private IEnumerable<SmsTemplateView> Templates = Enumerable.Empty<SmsTemplateView>();
+    private string? selectedId;
+    private string locale = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+    private string phone = string.Empty;
+    private string codeValue = string.Empty;
+    private string preview = string.Empty;
+    private bool sending;
+
+    private bool IsSendDisabled => sending || string.IsNullOrWhiteSpace(phone) || string.IsNullOrWhiteSpace(selectedId);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var all = await SmsTemplateService.GetAll(options);
+        Templates = all.Items;
+        selectedId = Templates.FirstOrDefault()?.Id.ToString();
+        UpdatePreview();
+    }
+
+    private void OnTemplateChanged(string? v)
+    {
+        selectedId = v;
+        UpdatePreview();
+    }
+    private void OnLocaleChanged(string? v)
+    {
+        if (!string.IsNullOrWhiteSpace(v)) locale = v;
+        UpdatePreview();
+    }
+    private void OnPhoneChanged(string? v) => phone = v ?? string.Empty;
+    private void OnCodeChanged(string? v)
+    {
+        codeValue = v ?? string.Empty;
+        UpdatePreview();
+    }
+
+    private void UpdatePreview()
+    {
+        if (string.IsNullOrEmpty(selectedId) || !long.TryParse(selectedId, out var lid)) { preview = string.Empty; return; }
+        var variant = Templates.Where(t => t.Id == lid)
+            .OrderByDescending(t => t.Locale == locale)
+            .FirstOrDefault();
+        if (variant == null) { preview = string.Empty; return; }
+        preview = variant.Template.Replace("%w", codeValue ?? string.Empty);
+    }
+
+    private async Task SendAsync()
+    {
+        if (IsSendDisabled) return;
+        sending = true;
+        try
+        {
+            await SmsSendService.Send(new SendSmsCommand(Session, long.Parse(selectedId!), locale, phone, new() { { "code", codeValue } }));
+            Snackbar.Add("SMS sent", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            sending = false;
+        }
+    }
+
+    private IEnumerable<IGrouping<long, SmsTemplateView>> Grouped() => Templates.GroupBy(t => t.Id);
+}

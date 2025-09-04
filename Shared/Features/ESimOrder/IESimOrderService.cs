@@ -4,6 +4,9 @@ public interface IESimOrderService : IComputeService
 {
     [ComputeMethod]
     Task<TableResponse<ESimOrderView>> GetAll(TableOptions options, Session? session, CancellationToken cancellationToken = default);
+    
+    [ComputeMethod]
+    Task<TableResponse<ESimOrderListView>> GetAllList(TableOptions options, CancellationToken cancellationToken = default);
 
     [ComputeMethod]
     Task<ESimOrderView> Get(long Id, Session? session, CancellationToken cancellationToken = default);

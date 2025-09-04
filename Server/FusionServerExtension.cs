@@ -36,6 +36,10 @@ public static class FusionServerExtension
         fusion.AddService<IESimPackageService, ESimPackageService>();
         fusion.AddService<IESimOrderService, ESimOrderService>();
         fusion.AddService<IESimSlugService, ESimSlugService>();
+        fusion.AddService<IDeviceService, DeviceService>();
+        fusion.AddService<ISmsTemplateService, SmsTemplateService>();
+        fusion.AddService<IESimPromoCodeService, ESimPromoCodeService>();
+        fusion.AddService<INotificationService, NotificationService>();
 
         return fusion;
     }

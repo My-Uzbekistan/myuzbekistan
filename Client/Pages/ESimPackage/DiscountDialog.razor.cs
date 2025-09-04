@@ -5,7 +5,7 @@ public partial class DiscountDialog
     [Parameter]
     public ESimPackageView ESimPackageView { get; set; } = null!;
     [Parameter]
-    public PackageDiscountView PackageDiscountView { get; set; } = new();
+    public PackageDiscountView? PackageDiscountView { get; set; } = new();
     [CascadingParameter]
     private IMudDialogInstance? MudDialog { get; set; }
 
@@ -16,7 +16,7 @@ public partial class DiscountDialog
     {
         if (ESimPackageView.PackageDiscountId > 0)
         {
-            PackageDiscountView = ESimPackageView.PackageDiscountView;
+            PackageDiscountView = ESimPackageView.PackageDiscountView ?? new();
         }
         base.OnParametersSet();
     }
@@ -46,7 +46,7 @@ public partial class DiscountDialog
             return;
         }
 
-        PackageDiscountView.DiscountPercentage = discountPercentage;
+        PackageDiscountView!.DiscountPercentage = discountPercentage;
         PackageDiscountView.DiscountPrice = ESimPackageView.CustomPrice * ((100 - discountPercentage) / 100);
     }
 
@@ -57,7 +57,7 @@ public partial class DiscountDialog
             Injector.Snackbar.Add(L["DiscountError2"], Severity.Error);
             return;
         }
-        PackageDiscountView.DiscountPrice = discountPrice;
+        PackageDiscountView!.DiscountPrice = discountPrice;
         PackageDiscountView.DiscountPercentage = ((ESimPackageView.CustomPrice - discountPrice) / ESimPackageView.CustomPrice) * 100;
     }
 }

@@ -22,8 +22,8 @@ public class JsonbValueConverter<T> : ValueConverter<T, string>
 {
     public JsonbValueConverter()
         : base(
-            v => JsonConvert.SerializeObject(v),   // �������������� �� ������� � ������ (����������)
-            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  // �������������� �� ������ � ������ (������)
+            v => JsonConvert.SerializeObject(v),   
+            v => JsonConvert.DeserializeObject<T>(v) ?? default!)  
     { }
 }
 public partial class AppDbContext : DbContextBase
@@ -47,6 +47,8 @@ public partial class AppDbContext : DbContextBase
     public DbSet<DbKeyValue> KeyValues { get; protected set; } = null!;
     public DbSet<DbOperation> Operations { get; protected set; } = null!;
     public DbSet<DbEvent> Events { get; protected set; } = null!;
+    public DbSet<NotificationEntity> Notifications { get; set; } = null!;
+    public DbSet<NotificationReadEntity> NotificationReads { get; set; } = null!;
 
     public override int SaveChanges()
     {
@@ -64,7 +66,7 @@ public partial class AppDbContext : DbContextBase
 
 
         modelBuilder.Entity<ContentEntity>()
-            .HasIndex(c => c.PhotoId) // ������ ��� ������������
+            .HasIndex(c => c.PhotoId) 
             .IsUnique(false);
 
         modelBuilder.Entity<MerchantEntity>()
@@ -96,6 +98,12 @@ public partial class AppDbContext : DbContextBase
             .WithMany(x => x.ESimPackages)
             .HasForeignKey(x => x.ESimSlugId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ESimOrderEntity>()
+            .HasOne(x => x.ESimPromoCodeEntity)
+            .WithMany(x => x.ESimOrderEntities)
+            .HasForeignKey(x => x.PromoCodeId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

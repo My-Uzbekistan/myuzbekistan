@@ -74,7 +74,7 @@ namespace Services.Migrations
 
                     b.HasIndex("UserId", "IsSignOutForced");
 
-                    b.ToTable("_Sessions", (string)null);
+                    b.ToTable("_Sessions");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUser<string>", b =>
@@ -98,7 +98,7 @@ namespace Services.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUserIdentity<string>", b =>
@@ -121,7 +121,7 @@ namespace Services.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("UserIdentities", (string)null);
+                    b.ToTable("UserIdentities");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.EntityFramework.Operations.DbEvent", b =>
@@ -152,7 +152,7 @@ namespace Services.Migrations
 
                     b.HasIndex("State", "DelayUntil");
 
-                    b.ToTable("_Events", (string)null);
+                    b.ToTable("_Events");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.EntityFramework.Operations.DbOperation", b =>
@@ -191,7 +191,7 @@ namespace Services.Migrations
                     b.HasIndex("Uuid")
                         .IsUnique();
 
-                    b.ToTable("_Operations", (string)null);
+                    b.ToTable("_Operations");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Extensions.Services.DbKeyValue", b =>
@@ -210,7 +210,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ExpiresAt");
 
-                    b.ToTable("_KeyValues", (string)null);
+                    b.ToTable("_KeyValues");
                 });
 
             modelBuilder.Entity("ContentEntityFacilityEntity", b =>
@@ -231,7 +231,7 @@ namespace Services.Migrations
 
                     b.HasIndex("FacilitiesId", "FacilitiesLocale");
 
-                    b.ToTable("ContentEntityFacilityEntity", (string)null);
+                    b.ToTable("ContentEntityFacilityEntity");
                 });
 
             modelBuilder.Entity("ContentEntityFileEntity", b =>
@@ -249,7 +249,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentFilesId", "ContentFilesLocale");
 
-                    b.ToTable("ContentEntityFileEntity", (string)null);
+                    b.ToTable("ContentEntityFileEntity");
                 });
 
             modelBuilder.Entity("ContentEntityFileEntity1", b =>
@@ -267,7 +267,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentPhotosId", "ContentPhotosLocale");
 
-                    b.ToTable("ContentEntityFileEntity1", (string)null);
+                    b.ToTable("ContentEntityFileEntity1");
                 });
 
             modelBuilder.Entity("ContentEntityLanguageEntity", b =>
@@ -288,7 +288,7 @@ namespace Services.Migrations
 
                     b.HasIndex("LanguagesId", "LanguagesLocale");
 
-                    b.ToTable("ContentEntityLanguageEntity", (string)null);
+                    b.ToTable("ContentEntityLanguageEntity");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.CardColorEntity", b =>
@@ -312,7 +312,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.ToTable("CardColors", (string)null);
+                    b.ToTable("CardColors");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.CardEntity", b =>
@@ -372,7 +372,7 @@ namespace Services.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Cards", (string)null);
+                    b.ToTable("Cards");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.CardPrefixEntity", b =>
@@ -405,7 +405,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CardPrefixes", (string)null);
+                    b.ToTable("CardPrefixes");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.CategoryEntity", b =>
@@ -457,7 +457,7 @@ namespace Services.Migrations
 
                     b.HasIndex("IconId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ContentEntity", b =>
@@ -547,7 +547,7 @@ namespace Services.Migrations
 
                     b.HasIndex("RegionId", "RegionLocale");
 
-                    b.ToTable("Contents", (string)null);
+                    b.ToTable("Contents");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ContentRequestEntity", b =>
@@ -590,7 +590,49 @@ namespace Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContentRequests", (string)null);
+                    b.ToTable("ContentRequests");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.DeviceEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AppVersion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FirebaseToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OsVersion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Session")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Devices");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimOrderEntity", b =>
@@ -669,6 +711,9 @@ namespace Services.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<long?>("PromoCodeId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("QrCode")
                         .IsRequired()
                         .HasColumnType("text");
@@ -702,7 +747,9 @@ namespace Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ESimOrders", (string)null);
+                    b.HasIndex("PromoCodeId");
+
+                    b.ToTable("ESimOrders");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
@@ -800,7 +847,88 @@ namespace Services.Migrations
 
                     b.HasIndex("ESimSlugId");
 
-                    b.ToTable("ESimPackages", (string)null);
+                    b.ToTable("ESimPackages");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimPromoCodeEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("AppliedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("DiscountValue")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCompatibleWithDiscount")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MaxUsagePerUser")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PromoCodeType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UsageLimit")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ESimPromoCodes");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimPromoCodeUsageEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ApplicationUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("ESimOrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PromoCodeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ESimPromoCodeUsages");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimSlugEntity", b =>
@@ -844,7 +972,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ESimSlugs", (string)null);
+                    b.ToTable("ESimSlugs");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FacilityEntity", b =>
@@ -875,7 +1003,7 @@ namespace Services.Migrations
 
                     b.HasIndex("IconId");
 
-                    b.ToTable("Facilities", (string)null);
+                    b.ToTable("Facilities");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FavoriteEntity", b =>
@@ -906,7 +1034,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentId", "ContentLocale");
 
-                    b.ToTable("Favorites", (string)null);
+                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.FileEntity", b =>
@@ -944,7 +1072,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Files", (string)null);
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.InvoiceEntity", b =>
@@ -993,7 +1121,7 @@ namespace Services.Migrations
 
                     b.HasIndex("MerchantId", "MerchantLocale");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.LanguageEntity", b =>
@@ -1019,7 +1147,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id", "Locale");
 
-                    b.ToTable("Languages", (string)null);
+                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.MerchantCategoryEntity", b =>
@@ -1111,7 +1239,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ServiceTypeId", "ServiceTypeLocale");
 
-                    b.ToTable("MerchantCategories", (string)null);
+                    b.ToTable("MerchantCategories");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.MerchantEntity", b =>
@@ -1184,7 +1312,74 @@ namespace Services.Migrations
 
                     b.HasIndex("MerchantCategoryId", "MerchantCategoryLocale");
 
-                    b.ToTable("Merchants", (string)null);
+                    b.ToTable("Merchants");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.NotificationEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ActionLink")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsGlobal")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("PublishAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.NotificationReadEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("NotificationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("SeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotificationReads");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.PackageDiscountEntity", b =>
@@ -1224,7 +1419,7 @@ namespace Services.Migrations
                     b.HasIndex("ESimPackageId")
                         .IsUnique();
 
-                    b.ToTable("PackageDiscounts", (string)null);
+                    b.ToTable("PackageDiscounts");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.PaymentEntity", b =>
@@ -1274,7 +1469,7 @@ namespace Services.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.RegionEntity", b =>
@@ -1311,7 +1506,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ParentRegionId", "ParentRegionLocale");
 
-                    b.ToTable("Regions", (string)null);
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ReviewEntity", b =>
@@ -1348,7 +1543,7 @@ namespace Services.Migrations
 
                     b.HasIndex("ContentEntityId", "ContentEntityLocale");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ServiceTypeEntity", b =>
@@ -1374,7 +1569,7 @@ namespace Services.Migrations
 
                     b.HasKey("Id", "Locale");
 
-                    b.ToTable("ServiceTypes", (string)null);
+                    b.ToTable("ServiceTypes");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.SimCountryEntity", b =>
@@ -1411,7 +1606,37 @@ namespace Services.Migrations
 
                     b.HasKey("Id", "Locale");
 
-                    b.ToTable("SimCountries", (string)null);
+                    b.ToTable("SimCountries");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.SmsTemplateEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Locale")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Template")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id", "Locale");
+
+                    b.ToTable("SmsTemplates");
                 });
 
             modelBuilder.Entity("ActualLab.Fusion.Authentication.Services.DbUserIdentity<string>", b =>
@@ -1522,6 +1747,16 @@ namespace Services.Migrations
                     b.Navigation("Photo");
 
                     b.Navigation("Region");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimOrderEntity", b =>
+                {
+                    b.HasOne("myuzbekistan.Shared.ESimPromoCodeEntity", "ESimPromoCodeEntity")
+                        .WithMany("ESimOrderEntities")
+                        .HasForeignKey("PromoCodeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ESimPromoCodeEntity");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
@@ -1648,6 +1883,11 @@ namespace Services.Migrations
             modelBuilder.Entity("myuzbekistan.Shared.ESimPackageEntity", b =>
                 {
                     b.Navigation("PackageDiscountEntity");
+                });
+
+            modelBuilder.Entity("myuzbekistan.Shared.ESimPromoCodeEntity", b =>
+                {
+                    b.Navigation("ESimOrderEntities");
                 });
 
             modelBuilder.Entity("myuzbekistan.Shared.ESimSlugEntity", b =>

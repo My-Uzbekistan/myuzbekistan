@@ -1,5 +1,5 @@
 namespace myuzbekistan.Shared;
-
+[SkipGeneration]
 public class ESimPackageEntity : BaseEntity
 {
     public string OperatorName { get; set; } = string.Empty;

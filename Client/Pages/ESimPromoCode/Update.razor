@@ -1,0 +1,11 @@
+﻿@page "/esim-promo-codes/{Id:long}"
+@inherits ComputedStateComponent<ESimPromoCodeView>
+@{
+    var Model = State.GetValue(Injector);
+}
+
+<Client.Pages.ESimPromoCode._Form OnSubmit="OnSubmit"
+                         Model="Model"
+                         Processing="@Processing"
+                         IsNew="false" />
+                

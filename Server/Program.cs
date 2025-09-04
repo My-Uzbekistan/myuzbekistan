@@ -99,6 +99,17 @@ services.AddHttpClient("globalpay", (client) =>
     client.DefaultRequestHeaders.Add("accept", "application/json");
 });
 
+services.AddHttpClient("smsxabar", (sp, c) =>
+{
+    var cfgLocal = sp.GetRequiredService<IConfiguration>();
+    c.BaseAddress = new Uri("https://send.smsxabar.uz/broker-api/");
+    // Do NOT set Content-Type here (content header). It will be set by PostAsJsonAsync.
+    var basic = cfgLocal["SmsXabar:AuthBasic"];
+    if (!string.IsNullOrWhiteSpace(basic))
+        c.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", basic);
+});
+services.AddScoped<ISmsSendService, SmsSendService>();
+
 services.AddScoped<MultiCardService>();
 services.AddScoped<GlobalPayService>();
 

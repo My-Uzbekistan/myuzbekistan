@@ -83,9 +83,9 @@ public class LanguageService(IServiceProvider services) : DbServiceBase<AppDbCon
         }
         await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
         var language = await dbContext.Languages
-        .FirstOrDefaultAsync(x => x.Id == command.Id);
-        if (language == null) throw  new ValidationException("LanguageEntity Not Found");
-        dbContext.Remove(language);
+            .Where(x => x.Id == command.Id)
+        .ToListAsync(cancellationToken: cancellationToken) ?? throw new ValidationException("LanguageEntity Not Found");
+        dbContext.RemoveRange(language);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 

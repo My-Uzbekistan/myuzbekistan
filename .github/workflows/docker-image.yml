@@ -33,3 +33,4 @@ jobs:
           sudo docker rmi timeshift92/myuzbekistan-server --force
           sudo docker-compose -f docker-compose-prod.yml down
           sudo docker-compose -f docker-compose-prod.yml up -d --remove-orphans
+          sudo docker system prune -af

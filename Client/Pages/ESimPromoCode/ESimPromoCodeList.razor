@@ -1,0 +1,43 @@
+﻿@page "/esim-promo-codes"
+
+@inherits MixedStateComponent<TableResponse<ESimPromoCodeView>,TableOptions>
+@{
+    Items = State.GetValue(Injector);
+}
+
+<ListContainer Title="ESimPromoCode">
+    <Actions>
+        <MudLink Href="/esim-promo-codes/create">
+            <MudButton Style="float:right;" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+                @L["Create"]
+            </MudButton>
+        </MudLink>
+    </Actions>
+    <ChildContent>
+        <UTCTable Values=@Items SortColumns="SortColumns" MutableState="MutableState" Tclass="ESimPromoCodeView" ColumnGroups="@ColumnWidths">
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.Code</MudTd>
+            <MudTd>@context.IsCompatibleWithDiscount</MudTd>
+            <MudTd>@L[context.PromoCodeType.ToString()!]</MudTd>
+            <MudTd>@context.UsageLimit</MudTd>
+            <MudTd>@context.StartDate?.ToLocalTime().ToString("dd.MM.yyyy")</MudTd>
+            <MudTd>@context.EndDate?.ToLocalTime().ToString("dd.MM.yyyy")</MudTd>
+            <MudTd>@context.IsActive</MudTd>
+            <MudTd>@L[context.DiscountType.ToString()!]</MudTd>
+            <MudTd>@context.DiscountValue</MudTd>
+            <MudTd>@context.AppliedCount</MudTd>
+            <MudTd>@context.MaxUsagePerUser</MudTd>
+            <MudTd Class="d-flex justify-end">
+                <div style="display:flex; gap:7px;">
+                    @if(context.AppliedCount == 0)
+                    {
+                        <MudLink Href=@($"/esim-promo-codes/{context.Id}")>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                        </MudLink>
+                    }
+                    <MudFab @onclick="() => Delete(context.Id)" Color=Color.Secondary StartIcon=@Icons.Material.Filled.Delete Size=Size.Small IconSize=Size.Small />
+                </div>
+            </MudTd>
+        </UTCTable>
+    </ChildContent>
+</ListContainer>

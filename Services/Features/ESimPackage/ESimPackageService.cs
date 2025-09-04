@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Diagnostics;
 
 namespace myuzbekistan.Services;
@@ -11,11 +10,12 @@ public class ESimPackageService(
     ICurrencyService currencyService,
     IUserService userService,
     IESimOrderService eSimOrderService,
-    ICommander commander) 
+    IESimPromoCodeService eSimPromoCodeService,
+    ICommander commander)
     : DbServiceBase<AppDbContext>(services), IESimPackageService
 {
     #region Queries
-    
+
     public virtual async Task<List<ESimCoverageView>> GetPackageCoverages(long Id, Language language, CancellationToken cancellationToken = default)
     {
         await Invalidate();
@@ -298,7 +298,7 @@ public class ESimPackageService(
 
         await dbContext.SaveChangesAsync(cancellationToken);
     }
-    
+
     public async virtual Task Delete(DeleteESimPackageCommand command, CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
@@ -341,12 +341,12 @@ public class ESimPackageService(
             await using var dbContext = await DbHub.CreateOperationDbContext(cancellationToken);
 
             string[] types = ["local", "global"];
-            foreach(var type in types)
+            foreach (var type in types)
             {
                 int pageSize = 20;
                 int page = 1;
                 bool hasMore = true;
-                while(hasMore)
+                while (hasMore)
                 {
                     var packages = await airaloPackageService.GetAllAsync(new TableOptions()
                     {
@@ -534,6 +534,32 @@ public class ESimPackageService(
             }
         }
 
+        var promoCodeCheck = await eSimPromoCodeService.Verify(command.PromoCode, command.Session, eSimPackage.Id, cancellationToken);
+        ESimPromoCodeEntity? eSimPromoCodeEntity;
+        if (promoCodeCheck.IsApplyable)
+        {
+            eSimPromoCodeEntity = await dbContext.ESimPromoCodes
+                .FirstOrDefaultAsync(x => !string.IsNullOrEmpty(command.PromoCode) && 
+                                          x.Code == command.PromoCode.ToUpper(), cancellationToken)
+                ?? throw new NotFoundException("ESimPromoCodeEntity Not Found");
+        }
+        else
+        {
+            throw new BadRequestException(promoCodeCheck.ErrorMessage);
+        }
+
+        if (eSimPromoCodeEntity is not null)
+        {
+            double discountAmount = eSimPromoCodeEntity.DiscountType == DiscountType.Percentage ?
+                (price * eSimPromoCodeEntity.DiscountValue) / 100.0 : eSimPromoCodeEntity.DiscountValue;
+            price -= discountAmount;
+
+            if (price < 0) price = 0;
+            eSimPromoCodeEntity.AppliedCount += 1;
+            dbContext.Update(eSimPromoCodeEntity);
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         IAiraloBalanceService airaloBalanceService = new AiraloBalanceService(airaloTokenService, configuration);
         var balanceCheck = await airaloBalanceService.Get(cancellationToken);
         var currency = await currencyService.GetUsdCourse(cancellationToken);
@@ -561,6 +587,19 @@ public class ESimPackageService(
         if (discountEntity is not null)
         {
             order.DiscountPercentage = discountEntity.DiscountPercentage;
+        }
+
+        if (eSimPromoCodeEntity is not null)
+        {
+            ESimPromoCodeUsageEntity usage = new()
+            {
+                PromoCodeId = eSimPromoCodeEntity.Id,
+                ApplicationUserId = user.Id,
+                CreatedAt = DateTime.UtcNow,
+                ESimOrderId = order.Id
+            };
+            dbContext.Add(usage);
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         return await commander.Call(new CreateESimOrderCommand(command.Session, order), cancellationToken);
