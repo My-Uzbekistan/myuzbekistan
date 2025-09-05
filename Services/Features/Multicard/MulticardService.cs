@@ -1,4 +1,4 @@
-﻿using ActualLab.CommandR;
+using ActualLab.CommandR;
 using ActualLab.Fusion;
 using Microsoft.AspNetCore.Http;
 using myuzbekistan.Shared;
@@ -68,8 +68,7 @@ public class MultiCardService(IHttpClientFactory httpClientFactory, IHttpContext
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            var errorWrapper = JsonSerializer.Deserialize<MultiErrorWrapper<MultiError>>(responseString);
-            throw new MultiException(errorWrapper!);
+            throw new MyUzException(responseString!);
         }
 
         response.EnsureSuccessStatusCode();

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace myuzbekistan.Services;
 
@@ -542,8 +542,7 @@ public class GlobalPayService(
 
         if ((int)response.StatusCode >= 400)
         {
-            var errorWrapper = JsonSerializer.Deserialize<MultiErrorWrapper<MultiError>>(responseString);
-            throw new MultiException(errorWrapper!);
+            throw new MyUzException(responseString!);
         }
 
         response.EnsureSuccessStatusCode();

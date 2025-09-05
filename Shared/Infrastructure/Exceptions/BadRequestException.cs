@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using System.Runtime.CompilerServices;
 
 namespace myuzbekistan.Shared;
@@ -15,10 +15,6 @@ public class BadRequestException : SystemException
     {
 
     }
-}
-public class MultiException(MultiErrorWrapper<MultiError> multiErrorWrapper) : SystemException
-{
-    public MultiErrorWrapper<MultiError> MultiErrorWrapper { get; } = multiErrorWrapper;
 }
 
 public class ErrorResponse(int status, string code, string message)
